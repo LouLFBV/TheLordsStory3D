@@ -1,0 +1,280 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class PlayerStats : MonoBehaviour
+{
+
+    public static PlayerStats instance;
+
+    [Header("Others Elements References")]
+
+    [SerializeField]private Animator animator;
+    public ReputationData reputationData;
+    [SerializeField] private MoveBehaviour playerMovementScript;
+
+    [Header("Health")]
+
+    [SerializeField]
+    private float maxHealth = 100f;
+    public float currentHealth;
+
+    [SerializeField]
+    private Image healthBarFill;
+
+    [SerializeField]
+    private float healthDecreaseRateForHungerAndThirst;
+
+    [Header("Endurance")]
+
+    [SerializeField] 
+    private float enduranceRecoveryDelay = 2f;  // délai avant regen endurance
+    private float enduranceRecoveryTimer = 0f;
+    private bool canRecoverEndurance = true;
+    private float maxEndurance = 100f;
+    public float currentEndurance;
+    public float coutDuSprint = 30f;
+
+    [SerializeField]private Image enduranceBarFill;
+
+    [SerializeField]private float enduranceDecreaseRateForHungerAndThirst;
+
+    [Header("Hunger")]
+
+    [SerializeField]
+    private float maxHunger = 100f;
+    public float currentHunger;
+
+    [SerializeField]
+    private Image hungerBarFill;
+
+    [SerializeField]
+    private float hungerDecreaseRate;
+
+    [Header("Thirst")]
+
+    [SerializeField]
+    private float maxThirst = 100f;
+    public float currentThirst;
+
+    [SerializeField]
+    private Image thirstBarFill;
+
+    [SerializeField]
+    private float thirstDecreaseRate;
+
+
+    [Header("Armor")]
+    public float currentArmourPoints;
+    public float currentArmourPointsPercant;
+    public float currentArmourPointsContendant;
+    public float currentArmourPointsTranchant;
+    public float currentArmourPointsFire;
+    public float currentArmourPointsIce;
+    public float currentArmourPointsElectric;
+    public float currentArmourPointsMagic;
+
+    [SerializeField] private TextMeshProUGUI armorText;
+    [SerializeField] private TextMeshProUGUI armorPercantText;
+    [SerializeField] private TextMeshProUGUI armorContendantText;
+    [SerializeField] private TextMeshProUGUI armorTranchantText;
+    [SerializeField] private TextMeshProUGUI armorFireText;
+    [SerializeField] private TextMeshProUGUI armorIceText;
+    [SerializeField] private TextMeshProUGUI armorElectricText;
+    [SerializeField] private TextMeshProUGUI armorMagicText;
+
+
+    [Header("Gold")]
+
+    public int goldAmount;
+
+    [SerializeField] private TextMeshProUGUI goldText;
+
+    [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private AudioClip goldSound;
+
+
+    [HideInInspector] public bool isDead = false;
+    [HideInInspector] public EquipmentLibraryItem equipmentToEquip, equipmentToDesequip;
+    [HideInInspector] public bool isEquiping = false;
+    void Awake()
+    {
+        instance = this;
+        currentHealth = maxHealth;
+        currentHunger = maxHunger;
+        currentThirst = maxThirst;
+        currentEndurance = maxEndurance;
+    }
+
+    void Update()
+    {
+        UpdateHungerAndThirstBarFill();
+
+        bool isNotHungryOrThirsty = currentHunger >= 0 || currentThirst >= 0;
+        bool isHungryAndThirsty = currentHunger <= 0 && currentThirst <= 0;
+
+        if (currentEndurance <= 0)
+        {
+            canRecoverEndurance = false;
+            enduranceRecoveryTimer += Time.deltaTime;
+
+            // Après le délai, on peut régénérer si pas faim ni soif
+            if (enduranceRecoveryTimer >= enduranceRecoveryDelay && !isHungryAndThirsty)
+            {
+                canRecoverEndurance = true;
+                enduranceRecoveryTimer = 0f;
+            }
+        }
+        else
+        {
+            // Si endurance > 0 on reset le timer et on peut toujours regen
+            enduranceRecoveryTimer = 0f;
+            canRecoverEndurance = true;
+        }
+
+        if (!playerMovementScript.behaviourManager.IsSprinting() && currentEndurance < maxEndurance && canRecoverEndurance && isNotHungryOrThirsty && !isHungryAndThirsty)
+        {
+            UpdateEndurance(20f * Time.deltaTime); // regen endurance
+        }
+        else if (isHungryAndThirsty)
+        {
+            // endurance diminue passivement si faim ET soif
+            UpdateEndurance(-enduranceDecreaseRateForHungerAndThirst * Time.deltaTime);
+        }
+    }
+
+
+    public void TakeDamage(float damage,DamageType damageType, bool overTime = false)
+    {
+        if (overTime)
+        {
+            currentHealth -= damage * Time.deltaTime;
+        }
+        else
+        {
+            switch(damageType)
+            {
+                case DamageType.Percant:
+                    damage -= (currentArmourPointsPercant / 100);
+                    break;
+                case DamageType.Contendant:
+                    damage -= (currentArmourPointsContendant / 100);
+                    break;
+                case DamageType.Tranchant:
+                    damage -= (currentArmourPointsTranchant / 100);
+                    break;
+                case DamageType.Feu:
+                    damage -= (currentArmourPointsFire / 100);
+                    break;
+                case DamageType.Glace:
+                    damage -= (currentArmourPointsIce / 100);
+                    break;
+                case DamageType.Foudre:
+                    damage -= (currentArmourPointsElectric / 100);
+                    break;
+                case DamageType.Magie:
+                    damage -= (currentArmourPointsMagic / 100);
+                    break;
+                case DamageType.Classique:
+                    damage -= (currentArmourPoints / 100);
+                    break;
+            }
+            currentHealth -= damage;
+        }
+        if (currentHealth <= 0 && !isDead)
+        {
+            currentHealth = 0;
+            Die();
+        }
+        UpdateHealthBar();
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        playerMovementScript.canMove = false;
+
+        hungerDecreaseRate = 0;
+        thirstDecreaseRate = 0;
+
+        animator.SetTrigger("Die");
+    }
+
+    public void UpdateHealthBar()
+    {
+        healthBarFill.fillAmount = currentHealth / maxHealth;
+    }
+
+    private void UpdateHungerAndThirstBarFill()
+    {
+        currentHunger -= hungerDecreaseRate * Time.deltaTime;
+        currentThirst -= thirstDecreaseRate * Time.deltaTime;
+
+        currentHunger = currentHunger < 0 ? 0 : currentHunger;
+        currentThirst = currentThirst < 0 ? 0 : currentThirst;
+
+        hungerBarFill.fillAmount = currentHunger / maxHunger;
+        thirstBarFill.fillAmount = currentThirst / maxThirst;
+    }
+
+    public void UpdateEndurance(float amount)
+    {
+        currentEndurance = Mathf.Clamp(currentEndurance + amount, 0, maxEndurance);
+        enduranceBarFill.fillAmount = currentEndurance / maxEndurance;
+    }
+
+    public void ConsumeItem(float health, float hunger, float thirst)
+    {
+        currentHealth = Mathf.Min(currentHealth + health, maxHealth);
+        currentHunger = Mathf.Min(currentHunger + hunger, maxHunger);
+        currentThirst = Mathf.Min(currentThirst + thirst, maxThirst);
+        UpdateHealthBar();
+        UpdateHungerAndThirstBarFill();
+    }
+
+    public void AddGold(int amount)
+    {
+        goldAmount += amount;
+        audioSource.PlayOneShot(goldSound);
+        UpdateGoldText();
+    }
+
+    public void UpdateGoldText()
+    {
+        goldText.text = goldAmount.ToString() ;
+    }
+
+    public void UpddateArmorText()
+    {
+        armorText.text = currentArmourPoints.ToString() + "%";
+        armorPercantText.text = currentArmourPointsPercant.ToString() + "%";
+        armorContendantText.text = currentArmourPointsContendant.ToString() + "%";
+        armorTranchantText.text = currentArmourPointsTranchant.ToString() + "%";
+        armorFireText.text = currentArmourPointsFire.ToString() + "%";
+        armorIceText.text = currentArmourPointsIce.ToString() + "%";
+        armorElectricText.text = currentArmourPointsElectric.ToString() + "%";
+        armorMagicText.text = currentArmourPointsMagic.ToString() + "%";
+    }
+
+    public void EquipAndActiveItem()
+    {
+        equipmentToEquip.itemPrefab.SetActive(true);
+        equipmentToEquip = null;
+    }
+    public void DesequipAndDesactiveItem()
+    {
+        equipmentToDesequip.itemPrefab.SetActive(false);
+        equipmentToDesequip = null;
+    }
+
+    public void ActiveIsEquiping()
+    {
+        isEquiping = true;
+    }
+
+    public void DesactiveIsEquiping()
+    {
+        isEquiping = false;
+    }
+}

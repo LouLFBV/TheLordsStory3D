@@ -1,0 +1,24 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class CraftingTable : CraftingTableParent
+{
+    [Header("References")]
+    [SerializeField] private CraftingSystem craftingSystem;
+
+    [Header("Others")]
+    [SerializeField] private GameObject craftPanel;
+    public bool isCrafting, isCooking;
+    public CraftingTableParent craftingTableParent;
+
+    public void OpenCraftingTablePanel(List<RecipeData> list)
+    {
+        if (craftPanel != null && !craftPanel.activeInHierarchy)
+        {
+            craftingSystem.availableRecipes = list;
+            craftingSystem.UpdateDisplayRecipes();
+            craftPanel.SetActive(true);
+            craftingSystem.textIsRecipeListEmpty.SetActive(craftingSystem.availableRecipes.Count == 0);
+        }
+    }
+}
