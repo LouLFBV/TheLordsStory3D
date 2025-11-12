@@ -16,7 +16,7 @@ public class Palette : MonoBehaviour
     [SerializeField] private ItemActionsSystem itemActionsSystem;
 
     [SerializeField] private Animator animator;
-    
+
 
     [Header("Palette Settings")]
 
@@ -26,9 +26,9 @@ public class Palette : MonoBehaviour
 
     [SerializeField] private KeyCode touchePourArme1, touchePourArme2, touchePourObjet1, touchePourObjet2;
 
-
+    #region Weapons And Objects Data
     [Header("Weapon 1")]
-        
+
     public Button weapon1SlotDesequipButton;
     public ItemData equipmentWeapon1Item;
     public Image weapon1SlotImage;
@@ -66,7 +66,9 @@ public class Palette : MonoBehaviour
     public TextMeshProUGUI object2CountText;
     public GameObject object2ImageSelected;
 
-     private void Awake()
+    #endregion
+
+    private void Awake()
     {
         if (instance == null)
         {
@@ -86,7 +88,6 @@ public class Palette : MonoBehaviour
         UpdateEquipmentsDesequipButtons();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(touchePourArme1) && equipmentWeapon1Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
@@ -100,23 +101,23 @@ public class Palette : MonoBehaviour
             else
             {
                 EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).First();
+                PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
                 if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.Bow)
                 {
-                    PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
                     animator.SetTrigger("DesequipBow");
                     animator.SetBool("BowEquipped", false);
                 }
-                else
-                    equipmentLibraryItem.itemPrefab.SetActive(false);
 
                 isEquippedWeapon1 = false;
                 if (equipmentWeapon1Item.handWeaponType == HandWeapon.TwoHanded)
                 {
                     animator.SetBool("IsTwoHandedWeapon", false);
+                    animator.SetTrigger("DesequipLongSword");
                 }
                 else if (equipmentWeapon1Item.handWeaponType == HandWeapon.OneHanded)
                 {
                     animator.SetBool("IsOneHandedWeapon", false);
+                    animator.SetTrigger("DesequipSword");
                 }
                 UpdateImageSeleted();
             }
@@ -132,23 +133,23 @@ public class Palette : MonoBehaviour
             else
             {
                 EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).First();
+                PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
                 if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.Bow)
                 {
-                    PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
                     animator.SetTrigger("DesequipBow");
                     animator.SetBool("BowEquipped", false);
                 }
-                else
-                    equipmentLibraryItem.itemPrefab.SetActive(false);
 
                 isEquippedWeapon2 = false;
                 if (equipmentWeapon2Item.handWeaponType == HandWeapon.TwoHanded)
                 {
                     animator.SetBool("IsTwoHandedWeapon", false);
+                    animator.SetTrigger("DesequipLongSword");
                 }
                 else if (equipmentWeapon2Item.handWeaponType == HandWeapon.OneHanded)
                 {
                     animator.SetBool("IsOneHandedWeapon", false);
+                    animator.SetTrigger("DesequipSword");
                 }
                 UpdateImageSeleted();
             }
@@ -209,10 +210,10 @@ public class Palette : MonoBehaviour
 
 
             EquipmentLibraryItem equipmentLibraryWeapon1 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).FirstOrDefault();
-            if (equipmentLibraryWeapon1 != null) equipmentLibraryWeapon1.itemPrefab.SetActive(false);
+            equipmentLibraryWeapon1?.itemPrefab.SetActive(false);
 
             EquipmentLibraryItem equipmentLibraryWeapon2 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).FirstOrDefault();
-            if (equipmentLibraryWeapon2 != null) equipmentLibraryWeapon2.itemPrefab.SetActive(false);
+            equipmentLibraryWeapon2?.itemPrefab.SetActive(false);
 
         }
         else
@@ -222,18 +223,20 @@ public class Palette : MonoBehaviour
 
 
             EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).FirstOrDefault();
-            if (equipmentLibraryItem1 != null && equipmentLibraryItem1.itemData != objects[1].itemData)equipmentLibraryItem1.itemPrefab.SetActive(false);
+            if (equipmentLibraryItem1 != null && equipmentLibraryItem1.itemData != objects[1].itemData) equipmentLibraryItem1.itemPrefab.SetActive(false);
 
             EquipmentLibraryItem equipmentLibraryWeapon1 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).FirstOrDefault();
-            if (equipmentLibraryWeapon1 != null) equipmentLibraryWeapon1.itemPrefab.SetActive(false);
+            equipmentLibraryWeapon1?.itemPrefab.SetActive(false);
 
             EquipmentLibraryItem equipmentLibraryWeapon2 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).FirstOrDefault();
-            if (equipmentLibraryWeapon2 != null) equipmentLibraryWeapon2.itemPrefab.SetActive(false);
+            equipmentLibraryWeapon2?.itemPrefab.SetActive(false);
         }
+        UpdateEquipmentsDesequipButtons();
     }
 
     private void UseWeapon(int numberOfWeapon)
     {
+        Debug.Log("Using weapon");
         isEquippedObject1 = false;
         isEquippedObject2 = false;
         animator.SetBool("CarryingConsumable", false);
@@ -274,9 +277,9 @@ public class Palette : MonoBehaviour
         }
         print("Equip item in palette : " + itemToEquip.name);
 
-        
+
         //DESEQUIP
-        if(itemToEquip == equipmentWeapon1Item && equipmentWeapon2Item != null)
+        if (itemToEquip == equipmentWeapon1Item && equipmentWeapon2Item != null)
         {
             EquipmentLibraryItem equipmentLibraryItemToDesequip = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).First();
             if (equipmentLibraryItemToDesequip.itemData.handWeaponType == HandWeapon.Bow && isEquippedWeapon2)
@@ -284,9 +287,9 @@ public class Palette : MonoBehaviour
                 PlayerStats.instance.equipmentToDesequip = equipmentLibraryItemToDesequip;
                 animator.SetTrigger("DesequipBow");
                 animator.SetBool("BowEquipped", false);
+                animator.SetTrigger("DesequipLongSword");
+                animator.SetTrigger("DesequipSword");
             }
-            else
-                 equipmentLibraryItemToDesequip.itemPrefab.SetActive(false);
             isEquippedWeapon2 = false;
         }
         else if (itemToEquip == equipmentWeapon2Item && equipmentWeapon1Item != null)
@@ -297,55 +300,57 @@ public class Palette : MonoBehaviour
                 PlayerStats.instance.equipmentToDesequip = equipmentLibraryItemToDesequip;
                 animator.SetTrigger("DesequipBow");
                 animator.SetBool("BowEquipped", false);
+                animator.SetTrigger("DesequipLongSword");
+                animator.SetTrigger("DesequipSword");
             }
-            else
-                 equipmentLibraryItemToDesequip.itemPrefab.SetActive(false);
             isEquippedWeapon1 = false;
         }
 
         //OBJECTS
         EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).FirstOrDefault();
-        if (equipmentLibraryItem1 != null)
-        {
-            equipmentLibraryItem1.itemPrefab.SetActive(false);
-        }
+        equipmentLibraryItem1?.itemPrefab.SetActive(false);
 
         EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).FirstOrDefault();
-        if (equipmentLibraryItem2 != null) 
-        {
-            
-            equipmentLibraryItem2.itemPrefab.SetActive(false);
-        }
+        equipmentLibraryItem2?.itemPrefab.SetActive(false);
+        
 
         //EQUIP
         EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == itemToEquip).First();
+        PlayerStats.instance.equipmentToEquip = equipmentLibraryItem;
+        Debug.Log("Equipping item : " + equipmentLibraryItem.itemData.itemName);
         if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.Bow)
         {
-            PlayerStats.instance.equipmentToEquip = equipmentLibraryItem;
             animator.SetTrigger("EquipBow");
             animator.SetBool("BowEquipped", true);
         }
-        else
-            equipmentLibraryItem.itemPrefab.SetActive(true);
+        else if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.TwoHanded)
+        {
+            animator.SetTrigger("EquipLongSword");
+        }
+        else if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.OneHanded)
+        {
+            animator.SetTrigger("EquipSword");
+        }
+        UpdateEquipmentsDesequipButtons();
     }
 
     public void UpdateEquipmentsDesequipButtons()
     {
         weapon2SlotDesequipButton.onClick.RemoveAllListeners();
         weapon2SlotDesequipButton.onClick.AddListener(delegate { DesequipWeapon(2); });
-        weapon2SlotDesequipButton.gameObject.SetActive(equipmentWeapon2Item != null && !isEquippedWeapon2);
+        weapon2SlotDesequipButton.gameObject.SetActive((equipmentWeapon2Item != null && !isEquippedWeapon2) && Inventory.instance.isOpen);
 
         weapon1SlotDesequipButton.onClick.RemoveAllListeners();
         weapon1SlotDesequipButton.onClick.AddListener(delegate { DesequipWeapon(1); });
-        weapon1SlotDesequipButton.gameObject.SetActive(equipmentWeapon1Item != null && !isEquippedWeapon1);
+        weapon1SlotDesequipButton.gameObject.SetActive((equipmentWeapon1Item != null && !isEquippedWeapon1) && Inventory.instance.isOpen);
 
         object2SlotDesequipButton.onClick.RemoveAllListeners();
         object2SlotDesequipButton.onClick.AddListener(delegate { DesequipObject(2); });
-        object2SlotDesequipButton.gameObject.SetActive(equipmentObject2Item != null && !isEquippedObject2);
+        object2SlotDesequipButton.gameObject.SetActive((equipmentObject2Item != null && !isEquippedObject2) && Inventory.instance.isOpen);
 
         object1SlotDesequipButton.onClick.RemoveAllListeners();
         object1SlotDesequipButton.onClick.AddListener(delegate { DesequipObject(1); });
-        object1SlotDesequipButton.gameObject.SetActive(equipmentObject1Item != null && !isEquippedObject1);
+        object1SlotDesequipButton.gameObject.SetActive((equipmentObject1Item != null && !isEquippedObject1) && Inventory.instance.isOpen);
     }
 
     public void DesequipWeapon(int numberOfWeapon)
@@ -357,7 +362,7 @@ public class Palette : MonoBehaviour
         }
 
         ItemData currentItem = null;
-        if(numberOfWeapon == 1)
+        if (numberOfWeapon == 1)
         {
             currentItem = equipmentWeapon1Item;
             weapon1SlotImage.sprite = Inventory.instance.emptySlotVisual;
@@ -373,7 +378,7 @@ public class Palette : MonoBehaviour
             isEquippedWeapon2 = false;
             RemoveWeapon(2);
         }
-        
+
 
         EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == currentItem).FirstOrDefault();
         if (currentItem.handWeaponType == HandWeapon.TwoHanded && equipmentLibraryItem.itemPrefab.activeSelf)
@@ -389,7 +394,7 @@ public class Palette : MonoBehaviour
         {
             equipmentLibraryItem.itemPrefab.SetActive(false);
         }
-       
+
         if (currentItem)
         {
             Inventory.instance.AddItem(currentItem);
@@ -425,9 +430,8 @@ public class Palette : MonoBehaviour
         EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == currentItem).FirstOrDefault();
 
         if (equipmentLibraryItem != null)
-        {
-            equipmentLibraryItem.itemPrefab.SetActive(false);
-        }
+        equipmentLibraryItem?.itemPrefab.SetActive(false);
+        
         if (currentItem)
         {
             Inventory.instance.AddItem(currentItem);
@@ -447,7 +451,6 @@ public class Palette : MonoBehaviour
 
         object2SlotImage.sprite = equipmentObject2Item ? equipmentObject2Item.visual : Inventory.instance.emptySlotVisual;
         object2CountText.gameObject.SetActive(equipmentObject2Item);
-
         UpdateEquipmentsDesequipButtons();
     }
 
@@ -456,7 +459,7 @@ public class Palette : MonoBehaviour
         if (equipmentWeapon1Item == null)
         {
             equipmentWeapon1Item = item;
-            ItemInInventory newWeapon1 = 
+            ItemInInventory newWeapon1 =
                     new ItemInInventory
                     {
                         itemData = item,
@@ -464,7 +467,7 @@ public class Palette : MonoBehaviour
                     };
             weapons[0] = newWeapon1;
         }
-        else if (equipmentWeapon2Item == null) 
+        else if (equipmentWeapon2Item == null)
         {
             equipmentWeapon2Item = item;
             ItemInInventory newWeapon2 =
@@ -524,7 +527,7 @@ public class Palette : MonoBehaviour
 
     private void AddToSlot(int slotIndex, ItemData item)
     {
-        var inventoryItem = objects[slotIndex]; 
+        var inventoryItem = objects[slotIndex];
         if (inventoryItem.itemData == null)
         {
             Debug.Log("Creating new ItemInInventory for slot " + slotIndex);
@@ -536,7 +539,7 @@ public class Palette : MonoBehaviour
         {
             Debug.Log("Incrementing count for slot " + slotIndex);
             if (inventoryItem.count < item.maxStack)
-            { 
+            {
                 inventoryItem.count++;
             }
         }
@@ -570,7 +573,7 @@ public class Palette : MonoBehaviour
     }
 
     public void RemoveObject(int numberOfObject)
-    {        
+    {
         if (numberOfObject == 1)
         {
 

@@ -29,6 +29,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     // Retourne l’angle horizontal actuel.
     public float GetH { get { return angleH; } }
 
+
     void Awake()
     {
         // Référence au transform de la caméra.

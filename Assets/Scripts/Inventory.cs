@@ -35,7 +35,7 @@ public class Inventory : MonoBehaviour
 
 
     const int InventorySize = 32;
-    private bool isOpen = false;
+    public bool isOpen = false;
 
 
     private void Awake()
@@ -62,12 +62,10 @@ public class Inventory : MonoBehaviour
             if (!isOpen)
             {
                 Opennventory();
-                isOpen = true;
             }
             else
             {
                 CloseInventory();
-                isOpen = false;
             }
         }
     }
@@ -153,12 +151,16 @@ public class Inventory : MonoBehaviour
     {
         RefreshContent();
         inventoryPanel.SetActive(true);
+        isOpen = true;
+        Palette.instance.UpdateEquipmentsDesequipButtons();
     }
     public void CloseInventory()
     {
         inventoryPanel.SetActive(false);
         itemActionsSystem.actionPanel.SetActive(false);
+        isOpen = false;
         TooltipSystem.instance.Hide();
+        Palette.instance.UpdateEquipmentsDesequipButtons();
     }
 
     public void RefreshContent()

@@ -60,12 +60,16 @@ public class UIManager : MonoBehaviour
             aimBehaviourBasic.enabled = false;
             playerCamera.horizontalAimingSpeed = 0f;
             playerCamera.verticalAimingSpeed = 0f;
+            Cursor.visible = true; // affiche le curseur
+            Cursor.lockState = CursorLockMode.None; // le libère
         }
         else
         {
             aimBehaviourBasic.enabled = true;
             playerCamera.horizontalAimingSpeed = defaultHorizontalAimingSpeed;
             playerCamera.verticalAimingSpeed = defaultVerticalAimingSpeed;
+            Cursor.visible = false; // cache le curseur
+            Cursor.lockState = CursorLockMode.Locked; // le bloque au centre de l’écran
         }
     }
 }
