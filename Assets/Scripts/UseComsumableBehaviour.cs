@@ -11,15 +11,20 @@ public class UseComsumableBehaviour : MonoBehaviour
 
     private Animator animator;
 
+    private PlayerControls controls;
+
     private void Awake()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         animator = player.GetComponent<Animator>();
+        controls = new PlayerControls();
     }
+    private void OnEnable() => controls.Enable();
+    private void OnDisable() => controls.Disable();
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && CanEat())
+        if (controls.Player.Attack.triggered && CanEat())
         {
             if (palette.isEquippedObject1 && palette.equipmentObject1Item.itemType == ItemType.Consumable)
             {

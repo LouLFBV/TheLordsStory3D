@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class Palette : MonoBehaviour
 {
@@ -24,8 +25,6 @@ public class Palette : MonoBehaviour
 
     public ItemInInventory[] objects = new ItemInInventory[2];
 
-    [SerializeField] private KeyCode touchePourArme1, touchePourArme2, touchePourObjet1, touchePourObjet2;
-
     #region Weapons And Objects Data
     [Header("Weapon 1")]
 
@@ -33,6 +32,7 @@ public class Palette : MonoBehaviour
     public ItemData equipmentWeapon1Item;
     public Image weapon1SlotImage;
     public TextMeshProUGUI weapon1Text;
+    public Image iconeInputWeapon1;
     public bool isEquippedWeapon1 = false;
     public GameObject weapon1ImageSelected;
 
@@ -42,6 +42,7 @@ public class Palette : MonoBehaviour
     public ItemData equipmentWeapon2Item;
     public Image weapon2SlotImage;
     public TextMeshProUGUI weapon2Text;
+    public Image iconeInputWeapon2;
     public bool isEquippedWeapon2 = false;
     public GameObject weapon2ImageSelected;
 
@@ -51,6 +52,7 @@ public class Palette : MonoBehaviour
     public ItemData equipmentObject1Item;
     public Image object1SlotImage;
     public TextMeshProUGUI object1Text;
+    public Image iconeInputObject1;
     public bool isEquippedObject1 = false;
     public TextMeshProUGUI object1CountText;
     public GameObject object1ImageSelected;
@@ -62,10 +64,17 @@ public class Palette : MonoBehaviour
     public ItemData equipmentObject2Item;
     public Image object2SlotImage;
     public TextMeshProUGUI object2Text;
+    public Image iconeInputObject2;
     public bool isEquippedObject2 = false;
     public TextMeshProUGUI object2CountText;
     public GameObject object2ImageSelected;
 
+    #endregion
+
+    #region PlayerControls
+
+    private PlayerControls controls;
+    private DeviceType currentDevice;
     #endregion
 
     private void Awake()
@@ -78,19 +87,21 @@ public class Palette : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        controls = new PlayerControls();
     }
-    void Start()
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
+
+    private void Start()
     {
-        weapon1Text.text = touchePourArme1.ToString();
-        weapon2Text.text = touchePourArme2.ToString();
-        object1Text.text = touchePourObjet1.ToString();
-        object2Text.text = touchePourObjet2.ToString();
         UpdateEquipmentsDesequipButtons();
+        currentDevice = Gamepad.current != null ? DeviceType.Gamepad : DeviceType.Keyboard;
+        UpdateBindingDisplay();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(touchePourArme1) && equipmentWeapon1Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
+        if (controls.Palette.Weapon1.triggered && equipmentWeapon1Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
         {
             if (!isEquippedWeapon1)
             {
@@ -122,7 +133,7 @@ public class Palette : MonoBehaviour
                 UpdateImageSeleted();
             }
         }
-        if (Input.GetKeyDown(touchePourArme2) && equipmentWeapon2Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
+        if (controls.Palette.Weapon2.triggered && equipmentWeapon2Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
         {
             if (!isEquippedWeapon2)
             {
@@ -154,7 +165,7 @@ public class Palette : MonoBehaviour
                 UpdateImageSeleted();
             }
         }
-        if (Input.GetKeyDown(touchePourObjet1) && equipmentObject1Item != null && !PlayerStats.instance.isEquiping)
+        if (controls.Palette.Object1.triggered && equipmentObject1Item != null && !PlayerStats.instance.isEquiping)
         {
             if (!isEquippedObject1)
             {
@@ -172,7 +183,7 @@ public class Palette : MonoBehaviour
                 UpdateImageSeleted();
             }
         }
-        if (Input.GetKeyDown(touchePourObjet2) && equipmentObject2Item != null && !PlayerStats.instance.isEquiping)
+        if (controls.Palette.Object2.triggered && equipmentObject2Item != null && !PlayerStats.instance.isEquiping)
         {
             if (!isEquippedObject2)
             {
@@ -190,7 +201,75 @@ public class Palette : MonoBehaviour
                 UpdateImageSeleted();
             }
         }
+
+        DeviceType newDevice = Keyboard.current != null && Keyboard.current.wasUpdatedThisFrame
+        ? DeviceType.Keyboard
+        : Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame
+            ? DeviceType.Gamepad
+            : currentDevice;
+
+        if (newDevice != currentDevice)
+        {
+            currentDevice = newDevice;
+            UpdateBindingDisplay();
+        }
+
     }
+    private void UpdateBindingDisplayForAction(InputAction action, TextMeshProUGUI textField, Image iconField)
+    {
+        InputBinding binding = default;
+
+        if (currentDevice == DeviceType.Gamepad)
+        {
+            binding = action.bindings.FirstOrDefault(b =>
+                !string.IsNullOrEmpty(b.effectivePath) &&
+                b.effectivePath.Contains("<Gamepad>")
+            );
+
+            if (binding != default)
+            {
+                // Affiche l’icône
+                iconField.sprite = GamepadIconDatabase.instance.GetIcon(binding.effectivePath);
+                iconField.enabled = true;
+
+                // On masque le texte
+                textField.text = "";
+                return;
+            }
+        }
+        else
+        {
+            binding = action.bindings.FirstOrDefault(b =>
+                !string.IsNullOrEmpty(b.effectivePath) &&
+                (b.effectivePath.Contains("<Keyboard>") ||
+                 b.effectivePath.Contains("<Mouse>"))
+            );
+
+            if (binding != default)
+            {
+                // Pas d’icône pour clavier
+                iconField.enabled = false;
+
+                textField.text = binding.ToDisplayString();
+                return;
+            }
+        }
+
+        // Fallback
+        iconField.enabled = false;
+        textField.text = "[No Binding]";
+    }
+
+
+    private void UpdateBindingDisplay()
+    {
+        UpdateBindingDisplayForAction(controls.Palette.Weapon1, weapon1Text, iconeInputWeapon1);
+        UpdateBindingDisplayForAction(controls.Palette.Weapon2, weapon2Text, iconeInputWeapon2);
+        UpdateBindingDisplayForAction(controls.Palette.Object1, object1Text, iconeInputObject1);
+        UpdateBindingDisplayForAction(controls.Palette.Object2, object2Text, iconeInputObject2);
+    }
+
+
 
     private void UseObject(int numberOfObject)
     {

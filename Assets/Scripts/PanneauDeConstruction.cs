@@ -24,6 +24,10 @@ public class PanneauDeConstruction : MonoBehaviour
             craftingSystem.UpdateDisplayRecipes();
             craftingSystem.textIsRecipeListEmpty.SetActive(false);
             craftPanel.SetActive(true);
+            if (craftingSystem.uiNavigationManager != null)
+            {
+                craftingSystem.uiNavigationManager.onCancel = craftingSystem.ClosePanel;
+            }
         }
     }
 }

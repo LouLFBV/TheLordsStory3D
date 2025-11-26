@@ -1,7 +1,5 @@
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using System.Linq;
 
 public class Recipe : MonoBehaviour
@@ -10,6 +8,7 @@ public class Recipe : MonoBehaviour
 
     [SerializeField]
     private Image craftableItemImage;
+    public UISelectable craftableItemImageGO;
 
     [SerializeField]
     private GameObject elementRequiredPrefab;
@@ -19,6 +18,7 @@ public class Recipe : MonoBehaviour
 
     [SerializeField]
     private Button craftButton;
+    public UISelectable craftButtonGO;
 
     [SerializeField]
     private Sprite canBuildIcon;
@@ -32,12 +32,8 @@ public class Recipe : MonoBehaviour
     [SerializeField]
     private Color availableColor;
 
-    [SerializeField] private CraftingSystem craftingSystem;
+    [HideInInspector] public CraftingSystem craftingSystem;
 
-    private void Start()
-    {
-        craftingSystem = transform.parent.GetComponent<CraftingSystem>();
-    }
 
 
     public void Configure(RecipeData recipe)

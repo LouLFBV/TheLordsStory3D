@@ -7,6 +7,17 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private List<GameObject> otherPanels;
+    private PlayerControls controls;
+
+    [SerializeField] private UINavigationManager navManager;
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+    }
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
+
     private bool IsAnyPanelActive()
     {
         return otherPanels.Any(panel => panel != null && panel.activeSelf);
@@ -14,14 +25,37 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !IsAnyPanelActive())
+        if (controls.UI.Menu.triggered && !IsAnyPanelActive())
         {
             bool isActive = !pauseMenuUI.activeSelf;
 
-            pauseMenuUI.SetActive(isActive);
-            optionsPanel.SetActive(false);
+            if(isActive)
+            {
+                OpenMenu();
+            }
+            else
+            {
+                CloseMenu();
+            }
+        }
+    }
 
-            Time.timeScale = isActive ? 0f : 1f;
+    private void OpenMenu()
+    {
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        if (navManager != null)
+        {
+            navManager.onCancel = CloseMenu;
+        }
+    }
+    private void CloseMenu()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        if (navManager != null)
+        {
+            navManager.onCancel = null;
         }
     }
 }

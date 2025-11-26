@@ -11,12 +11,11 @@ public class CraftingTable : CraftingTableParent
     public bool isCrafting, isCooking;
     public CraftingTableParent craftingTableParent;
 
-    public void OpenCraftingTablePanel(List<RecipeData> list)
+    public void OpenCraftingTablePanel(/*List<RecipeData> list*/)
     {
         if (craftPanel != null && !craftPanel.activeInHierarchy)
         {
-            craftingSystem.availableRecipes = list;
-            craftingSystem.UpdateDisplayRecipes();
+            //craftingSystem.availableRecipes = list;
             craftPanel.SetActive(true);
             craftingSystem.textIsRecipeListEmpty.SetActive(craftingSystem.availableRecipes.Count == 0);
         }

@@ -16,10 +16,22 @@ public class AttackBehaviour : MonoBehaviour
     private bool isAttacking = false;
     public bool canAttack;
     private ItemData weaponActive;
+
+    #region PlayerControls
+    private PlayerControls controls;
+    private bool attackInput;
+    #endregion
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+        controls.Player.Attack.performed += ctx => attackInput = true;
+        controls.Player.Attack.canceled += ctx => attackInput = false;
+    }
+
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.Mouse0) && CanAttack() && !bowBehaviour.chargeBow)
+        if (attackInput && CanAttack() && !bowBehaviour.chargeBow)
         {
             weaponActive = palette.isEquippedWeapon1 ? palette.equipmentWeapon1Item : palette.equipmentWeapon2Item;
 
@@ -33,12 +45,14 @@ public class AttackBehaviour : MonoBehaviour
                 animator.SetTrigger("Attack");
             }
         }
-        else if ((Input.GetKeyUp(KeyCode.Mouse0) || !Input.GetKey(KeyCode.Mouse0)) && bowBehaviour.chargeBow && CanAttack() && bowBehaviour.canShoot)
+        else if (!attackInput && bowBehaviour.chargeBow && CanAttack() && bowBehaviour.canShoot)
         {
             bowBehaviour.ShootArrow();
         }
     }
 
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
     public bool CanAttack()
     {
         return (palette.isEquippedWeapon1 || palette.isEquippedWeapon2) && !isAttacking && !uiManager.atLeashOnePanelOpened && !interactBehaviour.isBusy && !playerStats.isDead && canAttack;
@@ -61,5 +75,4 @@ public class AttackBehaviour : MonoBehaviour
         equipmentLibraryItem.itemPrefab.GetComponent<BoxCollider>().enabled = false;
         equipmentLibraryItem.itemPrefab.GetComponent<HitBoxWeapon>().enabled = false;
     }
-    
 }

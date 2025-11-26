@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Cette classe correspond aux fonctionnalités de la caméra à la troisième personne.
 public class ThirdPersonOrbitCamBasic : MonoBehaviour
@@ -11,8 +12,6 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     public float verticalAimingSpeed = 6f;                             // Vitesse de rotation verticale.
     public float maxVerticalAngle = 30f;                               // Angle vertical maximal autorisé.
     public float minVerticalAngle = -60f;                              // Angle vertical minimal autorisé.
-    public string XAxis = "Analog X";                                  // Nom par défaut de l’axe horizontal d’entrée.
-    public string YAxis = "Analog Y";                                  // Nom par défaut de l’axe vertical d’entrée.
 
     private float angleH = 0;                                          // Angle horizontal de la caméra en fonction du mouvement de la souris.
     private float angleV = 0;                                          // Angle vertical de la caméra en fonction du mouvement de la souris.
@@ -27,11 +26,34 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     private bool isCustomOffset;                                       // Indique si un décalage personnalisé est utilisé.
 
     // Retourne l’angle horizontal actuel.
-    public float GetH { get { return angleH; } }
+    public float GetH => angleH;
+
+    #region PlayerControls
+
+    [Header("Sensibilités")]
+    public float mouseSensitivity = 1f;
+    public float gamepadSensitivity = 3f;   // généralement plus élevée
+
+    private PlayerControls controls; 
+    private Vector2 mouseLook;
+    private Vector2 gamepadLook;
+
+    #endregion
 
 
     void Awake()
     {
+        controls = new PlayerControls();
+        // Souris
+        controls.Player.LookMouse.performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
+        controls.Player.LookMouse.canceled += _ => mouseLook = Vector2.zero;
+
+        // Gamepad
+        controls.Player.LookGamepad.performed += ctx => gamepadLook = ctx.ReadValue<Vector2>();
+        controls.Player.LookGamepad.canceled += _ => gamepadLook = Vector2.zero;
+
+
+
         // Référence au transform de la caméra.
         cam = transform;
 
@@ -58,12 +80,15 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     void Update()
     {
         // Récupère le mouvement de la souris pour faire tourner la caméra autour du joueur.
-        // Souris :
-        angleH += Mathf.Clamp(Input.GetAxis("Mouse X"), -1, 1) * horizontalAimingSpeed;
-        angleV += Mathf.Clamp(Input.GetAxis("Mouse Y"), -1, 1) * verticalAimingSpeed;
-        // Joystick :
-        angleH += Mathf.Clamp(Input.GetAxis(XAxis), -1, 1) * 60 * horizontalAimingSpeed * Time.deltaTime;
-        angleV += Mathf.Clamp(Input.GetAxis(YAxis), -1, 1) * 60 * verticalAimingSpeed * Time.deltaTime;
+        Vector2 mouse = mouseLook * mouseSensitivity;
+        Vector2 pad = gamepadSensitivity * Time.deltaTime * gamepadLook;
+
+        Vector2 finalLook = mouse + pad;
+
+        angleH += finalLook.x * horizontalAimingSpeed;
+        angleV += finalLook.y * verticalAimingSpeed;
+
+
 
         // Limite le mouvement vertical.
         angleV = Mathf.Clamp(angleV, minVerticalAngle, targetMaxVerticalAngle);
@@ -97,6 +122,9 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
         cam.position = player.position + camYRotation * smoothPivotOffset + aimRotation * smoothCamOffset;
     }
+
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
 
     // Définit les décalages de caméra à des valeurs personnalisées.
     public void SetTargetOffsets(Vector3 newPivotOffset, Vector3 newCamOffset)

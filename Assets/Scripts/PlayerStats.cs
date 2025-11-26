@@ -8,22 +8,17 @@ public class PlayerStats : MonoBehaviour
     public static PlayerStats instance;
 
     [Header("Others Elements References")]
-
-    [SerializeField]private Animator animator;
+    [SerializeField] private Animator animator;
     public ReputationData reputationData;
-    [SerializeField] private MoveBehaviour playerMovementScript;
+    private MoveBehaviour playerMovementScript;
 
     [Header("Health")]
-
-    [SerializeField]
-    private float maxHealth = 100f;
+    [SerializeField] private float maxHealth = 100f;
     public float currentHealth;
 
-    [SerializeField]
-    private Image healthBarFill;
+    [SerializeField] private Image healthBarFill;
 
-    [SerializeField]
-    private float healthDecreaseRateForHungerAndThirst;
+    [SerializeField] private float healthDecreaseRateForHungerAndThirst;
 
     [Header("Endurance")]
 
@@ -35,12 +30,11 @@ public class PlayerStats : MonoBehaviour
     public float currentEndurance;
     public float coutDuSprint = 30f;
 
-    [SerializeField]private Image enduranceBarFill;
+    [SerializeField] private Image enduranceBarFill;
 
-    [SerializeField]private float enduranceDecreaseRateForHungerAndThirst;
+    [SerializeField] private float enduranceDecreaseRateForHungerAndThirst;
 
     [Header("Hunger")]
-
     [SerializeField]
     private float maxHunger = 100f;
     public float currentHunger;
@@ -52,16 +46,13 @@ public class PlayerStats : MonoBehaviour
     private float hungerDecreaseRate;
 
     [Header("Thirst")]
-
     [SerializeField]
     private float maxThirst = 100f;
     public float currentThirst;
 
-    [SerializeField]
-    private Image thirstBarFill;
+    [SerializeField] private Image thirstBarFill;
 
-    [SerializeField]
-    private float thirstDecreaseRate;
+    [SerializeField] private float thirstDecreaseRate;
 
 
     [Header("Armor")]
@@ -101,6 +92,7 @@ public class PlayerStats : MonoBehaviour
     void Awake()
     {
         instance = this;
+        playerMovementScript = GetComponent<MoveBehaviour>();
         currentHealth = maxHealth;
         currentHunger = maxHunger;
         currentThirst = maxThirst;
@@ -133,7 +125,7 @@ public class PlayerStats : MonoBehaviour
             canRecoverEndurance = true;
         }
 
-        if (!playerMovementScript.behaviourManager.IsSprinting() && currentEndurance < maxEndurance && canRecoverEndurance && isNotHungryOrThirsty && !isHungryAndThirsty)
+        if (!playerMovementScript.isSprinting  && currentEndurance < maxEndurance && canRecoverEndurance && isNotHungryOrThirsty && !isHungryAndThirsty)
         {
             UpdateEndurance(20f * Time.deltaTime); // regen endurance
         }

@@ -13,6 +13,8 @@ public class CraftingSystem : MonoBehaviour
 
     public GameObject craftPanel;
     public GameObject textIsRecipeListEmpty;
+
+    public UINavigationManager uiNavigationManager;
     void Start()
     {
         UpdateDisplayRecipes();
@@ -26,7 +28,22 @@ public class CraftingSystem : MonoBehaviour
         for (int i = 0; i < availableRecipes.Count; i++)
         {
             GameObject currentRecipe = Instantiate(recipeUiPrefab, recipesParent);
-            currentRecipe.GetComponent<Recipe>().Configure(availableRecipes[i]);
+            Recipe recipe = currentRecipe.GetComponent<Recipe>();
+            recipe.Configure(availableRecipes[i]);
+            recipe.craftingSystem = this;
+            uiNavigationManager.elements.Clear();
+            uiNavigationManager.elements.Add(recipe.craftableItemImageGO);
+            uiNavigationManager.elements.Add(recipe.craftButtonGO);
+        }
+    }
+
+    public void ClosePanel()
+    {
+        TooltipSystem.instance.Hide();
+        craftPanel.SetActive(false);
+        if (uiNavigationManager != null)
+        {
+            uiNavigationManager.onCancel = null;
         }
     }
 }

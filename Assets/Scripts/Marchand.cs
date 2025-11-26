@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Marchand : MonoBehaviour
+public class Marchand : MonoBehaviour, IDialogue
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -31,6 +31,13 @@ public class Marchand : MonoBehaviour
     [HideInInspector] public float inputCooldown = 0.2f; // Temps d'attente après lancement du dialogue
     [HideInInspector] public float dialogueStartTime, dialogueEndTime;
 
+    private PlayerControls controls;
+    private void Awake()
+    {
+        controls = new PlayerControls();
+    }
+    private void OnEnable() => controls.Enable();
+    private void OnDisable() => controls.Disable();
 
     private void Start()
     {
@@ -44,7 +51,7 @@ public class Marchand : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         { 
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
@@ -117,6 +124,9 @@ public class Marchand : MonoBehaviour
         }
     }
 
+    public bool IsOnDialogue() => isOnDial;
+    public float LastDialogueTime() => dialogueEndTime;
+    public float InputCooldown() => inputCooldown;
     public void EndCommerce()
     {
         isOnDial = false;

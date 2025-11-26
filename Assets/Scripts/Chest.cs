@@ -49,6 +49,15 @@ public class Chest : MonoBehaviour
     private bool destroyed = false;
     private Animator animator;
     private UIManager uiManager;
+
+    private PlayerControls controls;
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+    }
+    private void OnEnable() => controls.Enable();
+    private void OnDisable() => controls.Disable();
     private void Start()
     {
         closedRotation = topChest.transform.rotation;
@@ -73,6 +82,11 @@ public class Chest : MonoBehaviour
         else if (bottomChest == null && topChest != null)
         {
             Destroy(topChest);
+        }
+
+        if(descriptionPanel.activeSelf && controls.UI.Cancel.triggered)
+        {
+            descriptionPanel.SetActive(false);
         }
     }
 

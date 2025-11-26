@@ -33,10 +33,14 @@ public class Inventory : MonoBehaviour
 
     public Sprite emptySlotVisual;
 
+    [SerializeField] private UINavigationManager navManager;
+
 
     const int InventorySize = 32;
     public bool isOpen = false;
 
+
+    private PlayerControls controls;
 
     private void Awake()
     {
@@ -48,7 +52,11 @@ public class Inventory : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        controls = new PlayerControls();
     }
+
+    private void OnEnable() => controls.Enable();
+    private void OnDisable() => controls.Disable();
 
     private void Start()
     {
@@ -57,7 +65,7 @@ public class Inventory : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (controls.UI.Inventory.triggered)
         {
             if (!isOpen)
             {
@@ -153,15 +161,28 @@ public class Inventory : MonoBehaviour
         inventoryPanel.SetActive(true);
         isOpen = true;
         Palette.instance.UpdateEquipmentsDesequipButtons();
+
+        if (navManager != null)
+        {
+            navManager.onCancel = CloseInventory;
+        }
     }
     public void CloseInventory()
     {
         inventoryPanel.SetActive(false);
         itemActionsSystem.actionPanel.SetActive(false);
+
         isOpen = false;
         TooltipSystem.instance.Hide();
         Palette.instance.UpdateEquipmentsDesequipButtons();
+
+        // Retirer l’action pour éviter les callbacks fantômes
+        if (navManager != null)
+        {
+            navManager.onCancel = null;
+        }
     }
+
 
     public void RefreshContent()
     {
@@ -188,7 +209,6 @@ public class Inventory : MonoBehaviour
                 currentSlot.countTexte.enabled = true;
             }
             equipment.UpdateEquipmentsDesequipButtons();
-            craftingSystem.UpdateDisplayRecipes();
         }
     }
 

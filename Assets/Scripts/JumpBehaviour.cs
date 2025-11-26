@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class JumpBehaviour : GenericBehaviour
 {
@@ -15,9 +16,17 @@ public class JumpBehaviour : GenericBehaviour
 
     public bool IsJumping => behaviourManager.GetAnim.GetBool(jumpBool) && !behaviourManager.IsGrounded();
 
+    private PlayerControls controls;
+
+
 
     [Header("References")]
     private AimBehaviourBasic aimBehaviour;
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+    }
 
     void Start()
     {
@@ -30,7 +39,7 @@ public class JumpBehaviour : GenericBehaviour
     void Update()
     {
         // Détection de la touche de saut
-        if (!jump && Input.GetButtonDown(jumpButton) && !aimBehaviour.IsAiming)
+        if (!jump && controls.Player.Jump.triggered && !aimBehaviour.IsAiming)
         {
             jump = true;
 
@@ -41,6 +50,10 @@ public class JumpBehaviour : GenericBehaviour
     {
         JumpManagement();
     }
+
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
+
 
     // --- GESTION DU SAUT PRINCIPAL ---
     void JumpManagement()

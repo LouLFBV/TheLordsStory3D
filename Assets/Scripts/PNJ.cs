@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PNJ : MonoBehaviour
+public class PNJ : MonoBehaviour, IDialogue
 {
     [Header("Dialogue")]
     [SerializeField] private float distanceToInteract = 2f;
@@ -48,6 +48,14 @@ public class PNJ : MonoBehaviour
     public float inputCooldown = 1f;
     private float dialogueStartTime;
 
+    private PlayerControls controls;
+    private void Awake()
+    {
+        controls = new PlayerControls();
+    }
+    private void OnEnable() => controls.Enable();
+    private void OnDisable() => controls.Disable();
+
     private void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -72,7 +80,7 @@ public class PNJ : MonoBehaviour
             agent.ResetPath();
             animator.SetFloat("Speed", 0f);
 
-            if (Input.GetKeyDown(KeyCode.E))
+            if (controls.Player.Interact.triggered)
             {
                 if (isOnDial && Time.time - dialogueStartTime > inputCooldown)
                 {
@@ -177,6 +185,7 @@ public class PNJ : MonoBehaviour
             // Fin du dialogue
             if (activeQuest != null && activeQuest.status == QuestStatus.NotStarted && currentDialogue != sentencesIfPlayerIsBad)
             {
+                print("lol");
                 DialogueManager.instance.ShowQuestButtons(this);
                 animator.SetBool("isTalking", false);
             }
@@ -372,6 +381,9 @@ public class PNJ : MonoBehaviour
         }
     }
 
+    public bool IsOnDialogue() => isOnDial;
+    public float LastDialogueTime() => dialogueEndTime;
+    public float InputCooldown() => inputCooldown;
 
 
     private void OnDrawGizmos()

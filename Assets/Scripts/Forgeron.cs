@@ -12,7 +12,7 @@ public class Forgeron : PNJParent
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
@@ -20,7 +20,7 @@ public class Forgeron : PNJParent
     }
 
     // GESTION DU DIALOGUE
-    public void StartDialogue(List<DialogueResponse> sentence)
+    public void StartDialogue(List<DialogueResponse> sentence = null)
     {
         if (index == 0 && leghthSentences == sentences.Count)
         {

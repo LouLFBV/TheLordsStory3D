@@ -122,6 +122,8 @@ public class InteractBehaviour : MonoBehaviour
     }
     public void DiseableTwoHand()
     {
+        if(equipmentToDesactiveAndActive == null)
+            return;
         if (equipmentToDesactiveAndActive != null && equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.TwoHanded)
         {
             playerAnimator.SetBool("IsTwoHandedWeapon", false);

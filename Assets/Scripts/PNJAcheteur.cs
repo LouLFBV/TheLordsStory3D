@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PNJAcheteur : PNJParent
 {
@@ -17,9 +18,11 @@ public class PNJAcheteur : PNJParent
     [SerializeField] private float pourcentagePerte;
 
 
+
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
@@ -166,21 +169,18 @@ public class PNJAcheteur : PNJParent
         {
             GameObject produitItem = Instantiate(produitItemPrefab, parentsProduits.transform);
             Transform childName = produitItem.transform.GetChild(0); // Correct usage of GetChild
-            TextMeshProUGUI nameText = childName.GetComponent<TextMeshProUGUI>();
-            if (nameText != null)
+            if (childName.TryGetComponent<TextMeshProUGUI>(out var nameText))
             {
                 nameText.text = item.itemName; // Assign the name text
             }
             Transform childIcone = produitItem.transform.GetChild(1); // Correct usage of GetChild
-            Image spriteRenderer = childIcone.GetComponent<Image>();
-            if (spriteRenderer != null)
+            if (childIcone.TryGetComponent<Image>(out var spriteRenderer))
             {
                 spriteRenderer.sprite = item.visual; // Assign the sprite
             }
             // PRIX
             Transform childPrix = produitItem.transform.GetChild(2); // Correct usage of GetChild
-            TextMeshProUGUI prixText = childPrix.GetComponent<TextMeshProUGUI>();
-            if (prixText != null)
+            if (childPrix.TryGetComponent<TextMeshProUGUI>(out var prixText))
             {
                 if(PlayerStats.instance.reputationData.reputationPoints == 0)
                     prixText.text = Mathf.RoundToInt(item.prix * pourcentageDeRachat).ToString(); 
@@ -194,11 +194,15 @@ public class PNJAcheteur : PNJParent
             }
             // BUTTON
             Transform childButton = produitItem.transform.GetChild(3); // Correct usage of GetChild
-            Button button = childButton.GetComponent<Button>();
-            if (button != null)
+            if (childButton.TryGetComponent<Button>(out var button))
             {
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => methode(item));
+            }
+
+            if(childButton.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
+            {
+                navManager.elements.Add(uiSelectable);
             }
         }
     }
@@ -249,5 +253,5 @@ public class PNJAcheteur : PNJParent
             Equipment.instance.equipmentHeadItem == null && Equipment.instance.equipmentChestItem == null &&
             Equipment.instance.equipmentHandsItem == null && Equipment.instance.equipmentLegsItem == null &&
             Equipment.instance.equipmentFeetItem == null;
-    }
+    }    
 }

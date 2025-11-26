@@ -4,7 +4,7 @@ using System.Collections;
 // AimBehaviour hérite de GenericBehaviour. Cette classe correspond au comportement de visée et de déplacement latéral (strafe).
 public class AimBehaviourBasic : GenericBehaviour
 {
-    public string aimButton = "Aim", shoulderButton = "Aim Shoulder";     // Touches par défaut pour viser et changer d’épaule.
+    public string shoulderButton = "Aim Shoulder";     // Touches par défaut pour viser et changer d’épaule.
     public GameObject crosshair;                                          // Texture du réticule de visée.
     public float aimTurnSmoothing = 0.15f;                                // Vitesse de rotation du joueur pour correspondre à l’orientation de la caméra lors de la visée.
     public Vector3 aimPivotOffset = new (0.5f, 1.2f, 0f);         // Décalage du pivot de la caméra lorsqu’on vise.
@@ -15,8 +15,22 @@ public class AimBehaviourBasic : GenericBehaviour
     public bool IsAiming => aim;
 
     private PlayerStats playerStats;                     // Référence au script PlayerStats.
-    private MoveBehaviour moveBehaviour;                 // Référence au script MoveBehaviour.
-    private JumpBehaviour jumpBehaviour;
+    private MoveBehaviour moveBehaviour;         // Référence au script MoveBehaviour.
+    [SerializeField] private ThirdPersonOrbitCamBasic camScript;
+
+    #region PlayerControls
+    private PlayerControls controls;
+    private bool aimInput;
+    #endregion
+
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+
+        controls.Player.Aim.performed += _ => aimInput = true;
+        controls.Player.Aim.canceled += _ => aimInput = false;
+    }
 
     // Start est toujours appelé après toutes les fonctions Awake.
     void Start()
@@ -25,21 +39,22 @@ public class AimBehaviourBasic : GenericBehaviour
         aimBool = Animator.StringToHash("Aim");
         playerStats = GetComponent<PlayerStats>();
         moveBehaviour = GetComponent<MoveBehaviour>();
-        jumpBehaviour = GetComponent<JumpBehaviour>();
     }
 
     // Update est utilisé pour définir des comportements quel que soit le comportement actif.
     void Update()
     {
-        // Active/désactive la visée selon l’entrée du joueur.
-        if (Input.GetAxisRaw(aimButton) != 0 && !aim && !playerStats.isDead)
+        // Activer la visée tant que le bouton est tenu
+        if (aimInput && !aim && !playerStats.isDead && behaviourManager.IsGrounded())
         {
             StartCoroutine(ToggleAimOn());
         }
-        else if ((aim && Input.GetAxisRaw(aimButton) == 0) || playerStats.isDead)
+        // Désactiver la visée quand on relâche le bouton
+        else if (!aimInput && aim)
         {
             StartCoroutine(ToggleAimOff());
         }
+
 
         // 🔸 Forcer le comportement "strafe" même sans viser, si une arme est équipée.
         if (Palette.instance.IfPlayerHasWeaponEquipped() && !aim && !behaviourManager.IsOverriding(this))
@@ -69,10 +84,18 @@ public class AimBehaviourBasic : GenericBehaviour
         UpdateCrosshairVisibility();
     }
 
+    void OnEnable() => controls.Enable();
+    void OnDisable() => controls.Disable();
+
     // Coroutine pour activer le mode visée avec un léger délai.
     private IEnumerator ToggleAimOn()
     {
-        yield return new WaitForSeconds(0.05f);
+        if (moveBehaviour.changedFOV)
+        {
+            camScript.ResetFOV();
+            moveBehaviour.changedFOV = false;
+        }
+            yield return new WaitForSeconds(0.05f);
         // La visée n’est pas possible si un autre comportement verrouille temporairement le contrôle (ex : attaque, roulade).
         if (behaviourManager.GetTempLockStatus(this.behaviourCode))
             yield break;
@@ -85,7 +108,7 @@ public class AimBehaviourBasic : GenericBehaviour
             aimCamOffset.x = Mathf.Abs(aimCamOffset.x) * signal;
             aimPivotOffset.x = Mathf.Abs(aimPivotOffset.x) * signal;
             yield return new WaitForSeconds(0.1f);
-            behaviourManager.GetAnim.SetFloat(speedFloat, 0);
+            behaviourManager.GetAnim.SetFloat("Speed", 0);
             // Cet état remplace le comportement actif actuel.
             behaviourManager.OverrideWithBehaviour(this);
         }

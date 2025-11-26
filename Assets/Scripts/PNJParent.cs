@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PNJParent : MonoBehaviour
+public class PNJParent : MonoBehaviour, IDialogue
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -31,7 +31,19 @@ public class PNJParent : MonoBehaviour
     protected float dialogueStartTime;
     [HideInInspector] public float dialogueEndTime;
 
+    protected PlayerControls controls;
 
+    [SerializeField] protected UINavigationManager navManager;
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+    }
+
+    private void OnEnable()=>controls.Enable();
+    
+    private void OnDisable()=>controls.Disable();
+    
     private void Start()
     {
         leghthSentences = sentences.Count;
@@ -41,6 +53,7 @@ public class PNJParent : MonoBehaviour
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
     }
+
     public void EndCommerce()
     {
         isOnDial = false;
@@ -68,6 +81,8 @@ public class PNJParent : MonoBehaviour
             DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0 &&
             DialogueManager.instance.dialoguePlayerPanel.transform.localScale.z > 0)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
+
+        ClosePanel();
     }
     protected IEnumerator RotateTowardsPlayer()
     {
@@ -92,5 +107,22 @@ public class PNJParent : MonoBehaviour
     {
         animatorPanelProduits.SetBool("PanelIsOpen", true);
         isActive.SetActive(true);
+
+        if (navManager != null)
+        {
+            navManager.onCancel = ClosePanel;
+        }
+    }
+
+    public bool IsOnDialogue() => isOnDial;
+    public float LastDialogueTime() => dialogueEndTime;
+    public float InputCooldown() => inputCooldown;
+
+    protected void ClosePanel()
+    {
+        if (navManager != null)
+        {
+            navManager.onCancel = null;
+        }
     }
 }

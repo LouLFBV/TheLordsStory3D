@@ -12,8 +12,10 @@ public class FlyBehaviour : GenericBehaviour
 	private bool fly = false;                     // Boolean to determine whether or not the player activated fly mode.
 	private CapsuleCollider col;                  // Reference to the player capsulle collider.
 
-	// Start is always called after any Awake functions.
-	void Start()
+	private MoveBehaviour moveBehaviour;    // Reference to the MoveBehaviour script.
+
+    // Start is always called after any Awake functions.
+    void Start()
 	{
 		// Set up the references.
 		flyBool = Animator.StringToHash("Fly");
@@ -77,14 +79,14 @@ public class FlyBehaviour : GenericBehaviour
 		behaviourManager.GetCamScript.SetMaxVerticalAngle(flyMaxVerticalAngle);
 
 		// Call the fly manager.
-		FlyManagement(behaviourManager.GetH, behaviourManager.GetV);
+		FlyManagement(moveBehaviour.H, moveBehaviour.V);
 	}
 	// Deal with the player movement when flying.
 	void FlyManagement(float horizontal, float vertical)
 	{
 		// Add a force player's rigidbody according to the fly direction.
 		Vector3 direction = Rotating(horizontal, vertical);
-		behaviourManager.GetRigidBody.AddForce((direction * flySpeed * 100 * (behaviourManager.IsSprinting() ? sprintFactor : 1)), ForceMode.Acceleration);
+		//behaviourManager.GetRigidBody.AddForce((direction * flySpeed * 100 * (behaviourManager.IsSprinting() ? sprintFactor : 1)), ForceMode.Acceleration);
 	}
 
 	// Rotate the player to match correct orientation, according to camera and key pressed.
@@ -100,7 +102,7 @@ public class FlyBehaviour : GenericBehaviour
 		Vector3 targetDirection = forward * vertical + right * horizontal;
 
 		// Rotate the player to the correct fly position.
-		if ((behaviourManager.IsMoving() && targetDirection != Vector3.zero))
+		if ((moveBehaviour.IsMoving() && targetDirection != Vector3.zero))
 		{
 			Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
 

@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
             playerCamera.horizontalAimingSpeed = 0f;
             playerCamera.verticalAimingSpeed = 0f;
             Cursor.visible = true; // affiche le curseur
-            Cursor.lockState = CursorLockMode.None; // le libère
+            Cursor.lockState = CursorLockMode.None; // déverrouille le curseur
         }
         else
         {
@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
             playerCamera.horizontalAimingSpeed = defaultHorizontalAimingSpeed;
             playerCamera.verticalAimingSpeed = defaultVerticalAimingSpeed;
             Cursor.visible = false; // cache le curseur
-            Cursor.lockState = CursorLockMode.Locked; // le bloque au centre de l’écran
+            Cursor.lockState = CursorLockMode.Locked; // verrouille le curseur au centre de l'écran
         }
     }
 }

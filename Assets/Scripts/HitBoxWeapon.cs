@@ -52,7 +52,6 @@ public class HitBoxWeapon : MonoBehaviour
 
             case DamageType.Glace:
                 enemyAI.TakeDamage(itemData.attackPoints, itemData.damageType);
-                float originalSpeed = enemyAI.agent.speed;
                 enemyAI.UpdateSpeedWitchCoefficient(0.5f);
                 yield return new WaitForSeconds(3f);
                 enemyAI.UpdateSpeedWitchCoefficient(2f);
