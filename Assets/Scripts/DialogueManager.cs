@@ -47,6 +47,8 @@ public class DialogueManager : MonoBehaviour
 
     public void ShowQuestButtons(PNJ pnj)
     {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         questButtons.SetActive(true);
         iconeToSkip.SetActive(false);
 

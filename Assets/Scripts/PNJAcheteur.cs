@@ -96,7 +96,6 @@ public class PNJAcheteur : PNJParent
                 DialogueManager.instance.ShowLine(dialogueGroup.pnjDialogues[sentenceIndex], DialogueManager.Speaker.PNJ);
             animator.SetBool("isTalking", true);
             currentSpeaker = DialogueManager.Speaker.PNJ;
-
         }
         else
         {
@@ -119,8 +118,7 @@ public class PNJAcheteur : PNJParent
         {
             sentenceIndex = 0;
             index++;
-        }
-        
+        }        
     }
 
     // GESTION DES PRODUITS
@@ -198,11 +196,10 @@ public class PNJAcheteur : PNJParent
             {
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => methode(item));
-            }
-
-            if(childButton.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
-            {
-                navManager.elements.Add(uiSelectable);
+                if (button.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
+                {
+                    navManager.elements.Add(uiSelectable);
+                }
             }
         }
     }

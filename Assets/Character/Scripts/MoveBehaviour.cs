@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting.Antlr3.Runtime;
+﻿using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,27 +38,56 @@ public class MoveBehaviour : GenericBehaviour
 
 
     //Nouveau système Input
-    private PlayerControls controls;
+    [SerializeField] private PlayerInput playerInput;
     private Vector2 moveInput;
     private bool sprintInput;
 
     #endregion
 
-    void Awake()
+    private void Awake()
     {
-        controls = new PlayerControls();
+        if (playerInput == null)
+            playerInput = GetComponent<PlayerInput>();
+    }
+    #region PlayerInput Méthodes
+    private void OnEnable()
+    {
+        playerInput.actions["Move"].performed += OnMove;
+        playerInput.actions["Move"].canceled += OnMoveCanceled;
 
-        // Quand l’action Move est utilisée
-        controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        controls.Player.Move.canceled += _ => moveInput = Vector2.zero;
-
-        // Sprint
-        controls.Player.Sprint.performed += _ => sprintInput = true;
-        controls.Player.Sprint.canceled += _ => sprintInput = false;
+        playerInput.actions["Sprint"].performed += OnSprint;
+        playerInput.actions["Sprint"].canceled += OnSprintCanceled;
     }
 
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
+    private void OnDisable()
+    {
+        playerInput.actions["Move"].performed -= OnMove;
+        playerInput.actions["Move"].canceled -= OnMoveCanceled;
+
+        playerInput.actions["Sprint"].performed -= OnSprint;
+        playerInput.actions["Sprint"].canceled -= OnSprintCanceled;
+    }
+
+    private void OnMove(InputAction.CallbackContext ctx)
+    {
+        moveInput = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    {
+        moveInput = Vector2.zero;
+    }
+
+    private void OnSprint(InputAction.CallbackContext ctx)
+    {
+        sprintInput = true;
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    {
+        sprintInput = false;
+    }
+    #endregion
 
     void Start()
     {
@@ -86,7 +116,6 @@ public class MoveBehaviour : GenericBehaviour
         behaviourManager.GetAnim.SetFloat(vFloat, v, 0.1f, Time.deltaTime);
 
         // --- SPRINT ---
-        isSprinting = sprintInput;
         if (PlayerStats.instance != null && PlayerStats.instance.currentEndurance <= 0f)
             isSprinting = false;
 
@@ -97,7 +126,6 @@ public class MoveBehaviour : GenericBehaviour
 
     public override void LocalFixedUpdate()
     {
-        sprintInput = controls.Player.Sprint.IsPressed(); // mise à jour à chaque frame physique
         HandleMovement(moveInput.x, moveInput.y);
     }
 
@@ -106,8 +134,12 @@ public class MoveBehaviour : GenericBehaviour
     {
         // Sécurisation pour éviter division par zéro
         float normalizedSpeed = runSpeed > 0f ? speed / runSpeed : 0f;
+        bool bowCharging = BowBehaviour.instance != null && BowBehaviour.instance.chargeBow;
 
-        bool useRootMotion = !behaviourManager.GetAnim.GetBool("Jump") && (normalizedSpeed < 0.7f || aimBehaviour.IsAiming || BowBehaviour.instance.chargeBow);
+        bool useRootMotion =
+            !behaviourManager.GetAnim.GetBool("Jump") &&
+            (normalizedSpeed < 0.7f || aimBehaviour.IsAiming || bowCharging);
+
         behaviourManager.GetAnim.applyRootMotion = useRootMotion;
     }
     private void HandleMovement(float horizontal, float vertical)
@@ -126,9 +158,9 @@ public class MoveBehaviour : GenericBehaviour
         float targetSpeed = inputMagnitude * speedSeeker;
 
         // 🟢 Gestion du sprint avec le nouveau Input System
-        isSprinting = sprintInput && PlayerStats.instance.currentEndurance > 0f && !attackBehaviour.CanAttack();
+        isSprinting = CanSprint();
 
-        if (isSprinting)
+        if (isSprinting && IsMoving())
         {
             targetSpeed = sprintSpeed;
             changedFOV = true;
@@ -176,6 +208,14 @@ public class MoveBehaviour : GenericBehaviour
         behaviourManager.GetAnim.SetFloat("Speed", animSpeed, speedDampTime, Time.deltaTime);
     }
 
+    private bool CanSprint()
+    {
+        return canMove
+            && moveInput.magnitude > 0.1f
+            && sprintInput
+            && PlayerStats.instance.currentEndurance > 0f
+            && !attackBehaviour.CanAttack(); // ou !attackBehaviour.isAttacking ?
+    }
 
     // Vérifie si le joueur se déplace horizontalement.
     public bool IsHorizontalMoving() => moveInput.x != 0;

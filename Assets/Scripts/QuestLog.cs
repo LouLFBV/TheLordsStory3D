@@ -24,6 +24,8 @@ public class QuestLog : MonoBehaviour
     [SerializeField] private Button buttonActivesQuests;
     [SerializeField] private Button buttonCompletedQuests;
 
+    [SerializeField] private UINavigationManager uiNavigationManager;
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -69,7 +71,7 @@ public class QuestLog : MonoBehaviour
     {
         GameObject button = Instantiate(buttonQuestPrefab, QuestsList);
         button.GetComponentInChildren<TextMeshProUGUI>().text = quest.data.questName;
-
+        uiNavigationManager.elements.Add(button.GetComponent<UISelectable>());
         button.GetComponent<Button>().onClick.RemoveAllListeners();
         button.GetComponent<Button>().onClick.AddListener(() =>
         {

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
 {
@@ -40,8 +41,9 @@ public class Inventory : MonoBehaviour
     public bool isOpen = false;
 
 
-    private PlayerControls controls;
+    [SerializeField] private PlayerInput playerInput;
 
+    private InputAction inventoryAction;
     private void Awake()
     {
         if (instance == null)
@@ -52,30 +54,33 @@ public class Inventory : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        controls = new PlayerControls();
     }
-
-    private void OnEnable() => controls.Enable();
-    private void OnDisable() => controls.Disable();
 
     private void Start()
     {
         CloseInventory();
         RefreshContent();
     }
-    private void Update()
+    private void OnEnable()
     {
-        if (controls.UI.Inventory.triggered)
-        {
-            if (!isOpen)
-            {
-                Opennventory();
-            }
-            else
-            {
-                CloseInventory();
-            }
-        }
+        inventoryAction = playerInput.actions["Inventory"]; // UI/Inventory
+
+        inventoryAction.performed += OnInventory;
+        inventoryAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inventoryAction.performed -= OnInventory;
+        inventoryAction.Disable();
+    }
+
+    private void OnInventory(InputAction.CallbackContext ctx)
+    {
+        if (!isOpen)
+            OpenInventory();
+        else
+            CloseInventory();
     }
 
     public void AddItem(ItemData item)
@@ -155,7 +160,7 @@ public class Inventory : MonoBehaviour
         content = newContent;
     }
 
-    private void Opennventory()
+    private void OpenInventory()
     {
         RefreshContent();
         inventoryPanel.SetActive(true);
@@ -169,6 +174,7 @@ public class Inventory : MonoBehaviour
     }
     public void CloseInventory()
     {
+        if (itemActionsSystem.actionPanel.activeSelf) return;
         inventoryPanel.SetActive(false);
         itemActionsSystem.actionPanel.SetActive(false);
 

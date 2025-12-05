@@ -1,22 +1,41 @@
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using System;
 
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private List<GameObject> otherPanels;
-    private PlayerControls controls;
+    [SerializeField] private PlayerInput playerInput;
+    private bool openPanel = false;
 
     [SerializeField] private UINavigationManager navManager;
 
-    void Awake()
+    void OnEnable()
     {
-        controls = new PlayerControls();
+        playerInput.actions["Menu"].Enable();
+        playerInput.actions["Menu"].performed += OnMenuPerformed;
+        playerInput.actions["Menu"].canceled += OnMenuCanceled;
     }
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
+    void OnDisable()
+    {
+        playerInput.actions["Menu"].performed -= OnMenuPerformed;
+        playerInput.actions["Menu"].canceled -= OnMenuCanceled;
+        playerInput.actions["Menu"].Disable();
+    }
+
+    private void OnMenuPerformed(InputAction.CallbackContext context)
+    {
+        openPanel = true;
+    }
+
+    private void OnMenuCanceled(InputAction.CallbackContext context)
+    {
+        openPanel = false;
+    }
 
     private bool IsAnyPanelActive()
     {
@@ -25,11 +44,9 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        if (controls.UI.Menu.triggered && !IsAnyPanelActive())
+        if (openPanel && !IsAnyPanelActive())
         {
-            bool isActive = !pauseMenuUI.activeSelf;
-
-            if(isActive)
+            if (!pauseMenuUI.activeSelf)
             {
                 OpenMenu();
             }
@@ -37,6 +54,7 @@ public class PauseMenu : MonoBehaviour
             {
                 CloseMenu();
             }
+            openPanel = false;
         }
     }
 
@@ -51,7 +69,8 @@ public class PauseMenu : MonoBehaviour
     }
     private void CloseMenu()
     {
-        pauseMenuUI.SetActive(false);
+        if (IsAnyPanelActive()) return;
+            pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         if (navManager != null)
         {

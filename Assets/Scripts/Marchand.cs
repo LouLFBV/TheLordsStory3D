@@ -32,6 +32,8 @@ public class Marchand : MonoBehaviour, IDialogue
     [HideInInspector] public float dialogueStartTime, dialogueEndTime;
 
     private PlayerControls controls;
+
+    [SerializeField] private UINavigationManager navManager;
     private void Awake()
     {
         controls = new PlayerControls();
@@ -42,7 +44,6 @@ public class Marchand : MonoBehaviour, IDialogue
     private void Start()
     {
         animator = GetComponent<Animator>();
-        RefreshProduits();
         uIManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
         uIManager.AddPanel(isActive);
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -64,6 +65,8 @@ public class Marchand : MonoBehaviour, IDialogue
         if (!isOnDial)
         {
             moveBehaviour.StopPlayer();
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             isOnDial = true;
 
             BasicBehaviour behaviourManager = playerTransform.GetComponent<BasicBehaviour>();
@@ -94,7 +97,6 @@ public class Marchand : MonoBehaviour, IDialogue
                 firstDialoguePnjDone = true;
                 DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
             }
-                
             else
                 DialogueManager.instance.ShowLine(dialogueGroup.pnjDialogues[sentenceIndex], DialogueManager.Speaker.PNJ);
             animator.SetBool("isTalking", true);
@@ -105,7 +107,7 @@ public class Marchand : MonoBehaviour, IDialogue
             int playerIndex = sentenceIndex - dialogueGroup.pnjDialogues.Length;
             if (!firstDialoguePlayerDone)
             {
-                DialogueManager.instance.ShowLine(dialogueGroup.playerResponses[sentenceIndex], DialogueManager.Speaker.Player, 0.75f);
+                DialogueManager.instance.ShowLine(dialogueGroup.playerResponses[playerIndex], DialogueManager.Speaker.Player, 0.75f);
                 firstDialoguePlayerDone = true;
                 DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
             }
@@ -120,7 +122,7 @@ public class Marchand : MonoBehaviour, IDialogue
         if (sentenceIndex >= dialogueGroup.pnjDialogues.Length + dialogueGroup.playerResponses.Length)
         {
             sentenceIndex = 0;
-                index++;
+            index++;
         }
     }
 
@@ -134,30 +136,41 @@ public class Marchand : MonoBehaviour, IDialogue
         dialogueEndTime = Time.time;
         animatorPanelProduits.SetBool("PanelIsOpen", false);
         isActive.SetActive(false);
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        if (navManager != null)
+        {
+            navManager.onCancel = null;
+        }
     }
     public void EndDiscussion()
     {
+        Debug.Log("EndDiscussion Marchand");
         firstDialoguePnjDone = false;
         firstDialoguePlayerDone = false;
         animator.SetBool("isTalking", false);
         dialogueEndTime = Time.time;
         index = 0;
 
-        if (DialogueManager.instance.dialoguePanel.transform.localScale.x > 0 &&
-            DialogueManager.instance.dialoguePanel.transform.localScale.y > 0 &&
-            DialogueManager.instance.dialoguePanel.transform.localScale.z > 0)
+        if (DialogueManager.instance.dialoguePanel.transform.localScale.y > 0)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
 
-        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.x > 0 &&
-            DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0 &&
-            DialogueManager.instance.dialoguePlayerPanel.transform.localScale.z > 0)
+        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
     }
 
     public void OpenProduitsPanel()
     {
         animatorPanelProduits.SetBool("PanelIsOpen", true);
+        RefreshProduits();
         isActive.SetActive(true);
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        if (navManager != null)
+        {
+            navManager.onCancel = EndCommerce;
+        }
     }
     // GESTION DES PRODUITS
     private void RefreshProduits()
@@ -171,39 +184,39 @@ public class Marchand : MonoBehaviour, IDialogue
             GameObject produitItem = Instantiate(produitItemPrefab, parentsProduits.transform);
 
             Transform childName = produitItem.transform.GetChild(0); // Correct usage of GetChild
-            TextMeshProUGUI nameText = childName.GetComponent<TextMeshProUGUI>();
-            if (nameText != null)
+            if (childName.TryGetComponent<TextMeshProUGUI>(out var nameText))
             {
                 nameText.text = produit.itemName; // Assign the name text
             }
 
 
             Transform childIcone = produitItem.transform.GetChild(1); // Correct usage of GetChild
-            Image spriteRenderer = childIcone.GetComponent<Image>();
-            if (spriteRenderer != null)
+            if (childIcone.TryGetComponent<Image>(out var spriteRenderer))
             {
                 spriteRenderer.sprite = produit.visual; // Assign the sprite
             }
 
             Transform childDescription = produitItem.transform.GetChild(2); // Correct usage of GetChild
-            TextMeshProUGUI descriptionText = childDescription.GetComponent<TextMeshProUGUI>();
-            if (descriptionText != null)
+            if (childDescription.TryGetComponent<TextMeshProUGUI>(out var descriptionText))
             {
                 descriptionText.text = produit.description; // Assign the description text
             }
 
             Transform childButton = produitItem.transform.GetChild(3); // Correct usage of GetChild
-            Button button = childButton.GetComponent<Button>();
-            if (button != null)
+            if (childButton.TryGetComponent<Button>(out var button))
             {
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(delegate { Acheter(produit); });
                 VerfifButtonAcheter(produit, button); // Check if the button should be interactable
+
+                if(button.TryGetComponent<UISelectable>(out var uiSelectable))
+                {
+                    navManager.elements.Add(uiSelectable);
+                }
             }
 
             Transform childPrix = produitItem.transform.GetChild(4).GetChild(0); // Correct usage of GetChild
-            TextMeshProUGUI prixText = childPrix.GetComponent<TextMeshProUGUI>();
-            if (prixText != null)
+            if (childPrix.TryGetComponent<TextMeshProUGUI>( out var prixText))
             {
                 prixText.text = "Prix : " + produit.prix.ToString(); // Assign the price text
             }

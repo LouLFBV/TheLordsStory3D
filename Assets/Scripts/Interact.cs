@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Linq;
+using Unity.VisualScripting;
+using System.Security.Claims;
 
 public class Interact : MonoBehaviour
 {
@@ -22,23 +24,43 @@ public class Interact : MonoBehaviour
 
     private DeviceType currentDevice;
 
-    #region PlayerControls
-    private PlayerControls controls;
+    #region PlayerInput
+    [SerializeField] private PlayerInput playerInput;
+    private bool interactPressed = false;
     #endregion
 
     private void Awake()
     {
-        controls = new PlayerControls();
+        if (playerInput == null)
+            playerInput = GetComponent<PlayerInput>();
     }
 
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
+    void OnEnable()
+    {
+        playerInput.actions["Interact"].performed += OnInteract;
+        playerInput.actions["Interact"].canceled += OnInteractCanceled;
+    }
+    void OnDisable()
+    {
+        playerInput.actions["Interact"].performed -= OnInteract;
+        playerInput.actions["Interact"].canceled -= OnInteractCanceled;
+    }
+
+    private void OnInteract(InputAction.CallbackContext context)
+    {
+        interactPressed = true;
+    }
+
+    private void OnInteractCanceled(InputAction.CallbackContext context)
+    {
+        interactPressed = false;
+    }
+
     void Update()
     {
-        RaycastHit hit;
         Debug.DrawRay(transform.position, transform.forward * interactRange, Color.red);
 
-        if (Physics.Raycast(transform.position, transform.forward, out hit, interactRange, layerMask))
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, interactRange, layerMask))
         {
             pointDeCollecte.SetActive(true);
             ChangeText(hit);
@@ -178,7 +200,7 @@ public class Interact : MonoBehaviour
 
     private string GetInteractPrefix()
     {
-        InputAction action = controls.Player.Interact;
+        InputAction action = playerInput.actions["Interact"];
 
         InputBinding binding;
 
@@ -191,7 +213,7 @@ public class Interact : MonoBehaviour
 
             if (binding != default)
             {
-                interactIcon.sprite = GamepadIconDatabase.instance.GetIcon(binding.effectivePath);
+                interactIcon.sprite = InputIconDatabase.instance.GetIcon(binding.effectivePath);
                 interactIcon.enabled = true;
                 return ""; // Pas de texte avant l’icône
             }
@@ -217,9 +239,12 @@ public class Interact : MonoBehaviour
 
     private void InteractionWithE(RaycastHit hit)
     {
+        if (!interactPressed)
+            return;
+
         Transform hitTransform = hit.transform;
         GameObject hitGameObject = hitTransform.gameObject;
-        if (controls.Player.Interact.triggered)
+        if (interactPressed)
         {
             if (hitTransform.CompareTag("Item"))
             {
@@ -305,5 +330,6 @@ public class Interact : MonoBehaviour
                     hitGameObject.GetComponent<CraftingTable>().OpenCraftingTablePanel(/*hitGameObject.GetComponent<CraftingTable>().craftingTableParent.recetteDeLObjectCooking*/);
             }
         }
+        interactPressed = false;
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 public class AttackBehaviour : MonoBehaviour
 {
@@ -17,17 +18,12 @@ public class AttackBehaviour : MonoBehaviour
     public bool canAttack;
     private ItemData weaponActive;
 
-    #region PlayerControls
-    private PlayerControls controls;
-    private bool attackInput;
+    #region PlayerInput
+    [Header("Input")]
+    [SerializeField] private PlayerInput playerInput;
+    private bool attackInput = false;
     #endregion
 
-    private void Awake()
-    {
-        controls = new PlayerControls();
-        controls.Player.Attack.performed += ctx => attackInput = true;
-        controls.Player.Attack.canceled += ctx => attackInput = false;
-    }
 
     void Update()
     {
@@ -50,9 +46,28 @@ public class AttackBehaviour : MonoBehaviour
             bowBehaviour.ShootArrow();
         }
     }
+    private void OnEnable()
+    {
+        playerInput.actions["Attack"].performed += OnAttackPerformed;
+        playerInput.actions["Attack"].canceled += OnAttackCanceled;
+    }
 
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
+    private void OnDisable()
+    {
+        playerInput.actions["Attack"].performed -= OnAttackPerformed;
+        playerInput.actions["Attack"].canceled -= OnAttackCanceled;
+    }
+
+
+    private void OnAttackPerformed(InputAction.CallbackContext ctx)
+    {
+        attackInput = true;
+    }
+
+    private void OnAttackCanceled(InputAction.CallbackContext ctx)
+    {
+        attackInput = false;
+    }
     public bool CanAttack()
     {
         return (palette.isEquippedWeapon1 || palette.isEquippedWeapon2) && !isAttacking && !uiManager.atLeashOnePanelOpened && !interactBehaviour.isBusy && !playerStats.isDead && canAttack;

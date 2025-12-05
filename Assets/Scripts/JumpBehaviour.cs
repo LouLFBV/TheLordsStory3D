@@ -1,22 +1,23 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class JumpBehaviour : GenericBehaviour
 {
     [Header("Paramètres de saut")]
-    public string jumpButton = "Jump";          // Touche de saut par défaut
     public float jumpHeight = 1.5f;             // Hauteur du saut
     public float jumpInertialForce = 10f;       // Force d’inertie horizontale
     public float jumpCooldown = 0.2f;           // Petit délai avant de pouvoir resauter
     public bool jump;                          // Indique si le joueur a déclenché un saut
     private bool isColliding;                   // Vérifie si le joueur touche un obstacle
-
+    public bool canJump = true;              // Indique si le joueur peut sauter
     private int jumpBool;                       // Paramètre Animator "Jump"
     private int groundedBool;                   // Paramètre Animator "Grounded"
 
     public bool IsJumping => behaviourManager.GetAnim.GetBool(jumpBool) && !behaviourManager.IsGrounded();
 
-    private PlayerControls controls;
+    [SerializeField] private PlayerInput playerInput;
+    private bool isJumpInput;
 
 
 
@@ -25,7 +26,8 @@ public class JumpBehaviour : GenericBehaviour
 
     void Awake()
     {
-        controls = new PlayerControls();
+        if (playerInput == null)
+            playerInput = GetComponent<PlayerInput>();
     }
 
     void Start()
@@ -36,13 +38,35 @@ public class JumpBehaviour : GenericBehaviour
         aimBehaviour = GetComponent<AimBehaviourBasic>();
     }
 
+    void OnEnable()
+    {
+        playerInput.actions["Jump"].performed += OnJumpPerformed;
+        playerInput.actions["Jump"].canceled += OnJumpCanceled;
+    }
+
+    void OnDisable()
+    {
+        playerInput.actions["Jump"].performed -= OnJumpPerformed;
+        playerInput.actions["Jump"].canceled -= OnJumpCanceled;
+    }
+    private void OnJumpPerformed(InputAction.CallbackContext context)
+    {
+        isJumpInput = true;
+    }
+
+    private void OnJumpCanceled(InputAction.CallbackContext context)
+    {
+        isJumpInput = false;
+    }
+
+
     void Update()
     {
         // Détection de la touche de saut
-        if (!jump && controls.Player.Jump.triggered && !aimBehaviour.IsAiming)
+        if (!jump && isJumpInput && !aimBehaviour.IsAiming && canJump)
         {
             jump = true;
-
+            isJumpInput = false;
         }
     }
 
@@ -50,9 +74,6 @@ public class JumpBehaviour : GenericBehaviour
     {
         JumpManagement();
     }
-
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
 
 
     // --- GESTION DU SAUT PRINCIPAL ---

@@ -56,12 +56,19 @@ public class PNJParent : MonoBehaviour, IDialogue
 
     public void EndCommerce()
     {
+        Debug.Log("[PNJParent] EndCommerce()");
         isOnDial = false;
         moveBehaviour.StartPlayer();
         dialogueEndTime = Time.time;
         animatorPanelProduits.SetBool("PanelIsOpen", false);
         isActive.SetActive(false);
         animator.SetBool("isTalking", false);
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        if (navManager != null)
+        {
+            navManager.onCancel = null;
+        }
     }
     public void EndDiscussion()
     {
@@ -72,17 +79,12 @@ public class PNJParent : MonoBehaviour, IDialogue
         index = 0;
         sentences.RemoveAt(sentences.Count - 1);
 
-        if (DialogueManager.instance.dialoguePanel.transform.localScale.x > 0 &&
-            DialogueManager.instance.dialoguePanel.transform.localScale.y > 0 &&
-            DialogueManager.instance.dialoguePanel.transform.localScale.z > 0)
+        if (DialogueManager.instance.dialoguePanel.transform.localScale.y > 0)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
 
-        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.x > 0 &&
-            DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0 &&
-            DialogueManager.instance.dialoguePlayerPanel.transform.localScale.z > 0)
+        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
 
-        ClosePanel();
     }
     protected IEnumerator RotateTowardsPlayer()
     {
@@ -108,9 +110,12 @@ public class PNJParent : MonoBehaviour, IDialogue
         animatorPanelProduits.SetBool("PanelIsOpen", true);
         isActive.SetActive(true);
 
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         if (navManager != null)
         {
-            navManager.onCancel = ClosePanel;
+            navManager.onCancel = EndCommerce;
         }
     }
 
@@ -118,11 +123,4 @@ public class PNJParent : MonoBehaviour, IDialogue
     public float LastDialogueTime() => dialogueEndTime;
     public float InputCooldown() => inputCooldown;
 
-    protected void ClosePanel()
-    {
-        if (navManager != null)
-        {
-            navManager.onCancel = null;
-        }
-    }
 }

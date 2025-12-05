@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
+using System.Security.Claims;
+using System;
 
 // AimBehaviour hérite de GenericBehaviour. Cette classe correspond au comportement de visée et de déplacement latéral (strafe).
 public class AimBehaviourBasic : GenericBehaviour
 {
-    public string shoulderButton = "Aim Shoulder";     // Touches par défaut pour viser et changer d’épaule.
     public GameObject crosshair;                                          // Texture du réticule de visée.
     public float aimTurnSmoothing = 0.15f;                                // Vitesse de rotation du joueur pour correspondre à l’orientation de la caméra lors de la visée.
     public Vector3 aimPivotOffset = new (0.5f, 1.2f, 0f);         // Décalage du pivot de la caméra lorsqu’on vise.
@@ -18,19 +20,62 @@ public class AimBehaviourBasic : GenericBehaviour
     private MoveBehaviour moveBehaviour;         // Référence au script MoveBehaviour.
     [SerializeField] private ThirdPersonOrbitCamBasic camScript;
 
-    #region PlayerControls
-    private PlayerControls controls;
+    #region PlayerInput
+    [SerializeField] private PlayerInput playerInput;
     private bool aimInput;
+    private bool shoulderInput;
     #endregion
 
-
+    #region Méthodes PlayerInput 
     void Awake()
     {
-        controls = new PlayerControls();
-
-        controls.Player.Aim.performed += _ => aimInput = true;
-        controls.Player.Aim.canceled += _ => aimInput = false;
+        if (playerInput == null)
+            playerInput = GetComponent<PlayerInput>();
     }
+
+    private void OnEnable()
+    {
+        playerInput.actions["Aim"].Enable();
+        playerInput.actions["Aim"].performed += OnAim;
+        playerInput.actions["Aim"].canceled += OnAimCanceled;
+
+        playerInput.actions["Shoulder"].Enable();
+        playerInput.actions["Shoulder"].performed += OnShoulder;
+        playerInput.actions["Shoulder"].canceled += OnShoulderCanceled;
+    }
+
+
+    private void OnDisable()
+    {
+        playerInput.actions["Aim"].Disable();
+        playerInput.actions["Aim"].performed -= OnAim;
+        playerInput.actions["Aim"].canceled -= OnAimCanceled;
+
+        playerInput.actions["Shoulder"].Disable();
+        playerInput.actions["Shoulder"].performed -= OnShoulder;
+        playerInput.actions["Shoulder"].canceled -= OnShoulderCanceled;
+    }
+
+    private void OnShoulderCanceled(InputAction.CallbackContext context)
+    {
+        shoulderInput = false;
+    }
+
+    private void OnShoulder(InputAction.CallbackContext context)
+    {
+        shoulderInput = true;
+    }
+
+    private void OnAimCanceled(InputAction.CallbackContext context)
+    {
+        aimInput = false;
+    }
+
+    private void OnAim(InputAction.CallbackContext context)
+    {
+        aimInput = true;
+    }
+    #endregion
 
     // Start est toujours appelé après toutes les fonctions Awake.
     void Start()
@@ -55,7 +100,6 @@ public class AimBehaviourBasic : GenericBehaviour
             StartCoroutine(ToggleAimOff());
         }
 
-
         // 🔸 Forcer le comportement "strafe" même sans viser, si une arme est équipée.
         if (Palette.instance.IfPlayerHasWeaponEquipped() && !aim && !behaviourManager.IsOverriding(this))
         {
@@ -72,11 +116,17 @@ public class AimBehaviourBasic : GenericBehaviour
         canSprint = !aim;
 
         // Change la position de la caméra (épaule gauche/droite).
-        if (aim && Input.GetButtonDown(shoulderButton))
+        if (shoulderInput)
         {
-            aimCamOffset.x = aimCamOffset.x * (-1);
-            aimPivotOffset.x = aimPivotOffset.x * (-1);
+            shoulderInput = false;
+
+            if (aim)
+            {
+                aimCamOffset.x = -aimCamOffset.x;
+                aimPivotOffset.x = -aimPivotOffset.x;
+            }
         }
+
 
         // Définit le booléen de visée dans l’Animator Controller.
         behaviourManager.GetAnim.SetBool(aimBool, aim);
@@ -84,8 +134,6 @@ public class AimBehaviourBasic : GenericBehaviour
         UpdateCrosshairVisibility();
     }
 
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
 
     // Coroutine pour activer le mode visée avec un léger délai.
     private IEnumerator ToggleAimOn()
