@@ -267,6 +267,7 @@ public class MoveBehaviour : GenericBehaviour
 
     public void StopPlayer()
     {
+        Debug.Log("Stopping player movement.");
         canMove = false;
         attackBehaviour.canAttack = false;
 
@@ -279,6 +280,7 @@ public class MoveBehaviour : GenericBehaviour
 
     public void StartPlayer()
     {
+        Debug.Log("Starting player movement.");
         canMove = true;
         attackBehaviour.canAttack = true;
     }

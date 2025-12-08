@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Linq;
 
-public class Door : MonoBehaviour
+public class Door : InteractableBase
 {
     [SerializeField] private int niveauDeVerrouillage = 0; // Niveau de verrouillage de la porte
     [SerializeField] private bool IsUnlockable = true;
@@ -34,7 +34,6 @@ public class Door : MonoBehaviour
     public bool isLocked = false;
 
     [SerializeField] private ItemData keyItem; // L'item de clé requis pour ouvrir la porte
-
 
     private Animator animator;
 
@@ -184,4 +183,13 @@ public class Door : MonoBehaviour
         OpenAndCloseDoor();
     }
 
+    public override void OnInteract(PlayerInteractor player)
+    {
+        if (palette.equipmentObject1Item != null && palette.equipmentObject1Item.itemType == ItemType.Key && palette.isEquippedObject1)
+            TryToOpenWithKey(palette.equipmentObject1Item);
+        else if (palette.equipmentObject2Item != null && palette.equipmentObject2Item.itemType == ItemType.Key && palette.isEquippedObject2)
+            TryToOpenWithKey(palette.equipmentObject2Item);
+        else
+            OpenAndCloseDoor();
+    }
 }

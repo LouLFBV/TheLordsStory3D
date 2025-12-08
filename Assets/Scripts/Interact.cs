@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Linq;
-using Unity.VisualScripting;
-using System.Security.Claims;
 
 public class Interact : MonoBehaviour
 {
@@ -210,26 +208,20 @@ public class Interact : MonoBehaviour
                 !string.IsNullOrEmpty(b.effectivePath) &&
                 b.effectivePath.Contains("<Gamepad>")
             );
-
-            if (binding != default)
-            {
-                interactIcon.sprite = InputIconDatabase.instance.GetIcon(binding.effectivePath);
-                interactIcon.enabled = true;
-                return ""; // Pas de texte avant l’icône
-            }
         }
-        else
+        else // Keyboard + Mouse
         {
             binding = action.bindings.FirstOrDefault(b =>
                 !string.IsNullOrEmpty(b.effectivePath) &&
                 (b.effectivePath.Contains("<Keyboard>") || b.effectivePath.Contains("<Mouse>"))
             );
+        }
 
-            if (binding != default)
-            {
-                interactIcon.enabled = false;
-                return " " + binding.ToDisplayString() + " ";
-            }
+        if (binding != default)
+        {
+            interactIcon.sprite = InputIconDatabase.instance.GetIcon(binding.effectivePath);
+            interactIcon.enabled = true;
+            return ""; // Pas de texte avant l’icône
         }
 
         // fallback

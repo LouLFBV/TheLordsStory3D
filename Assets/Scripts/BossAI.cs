@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,9 +16,12 @@ public class BossAI : EnemyParent
     private Collider basicCollider;
     [SerializeField] private GameObject colliderOfDeath;
 
-
-    //[Header("Audio Settings")]
-    private AudioSource audioSource;
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] phaseMusic;
+    private Coroutine phaseMusicRoutine;
+    [SerializeField] private float fadeDuration = 1.2f;
+    private float baseVolume;
 
     private bool playerDetected = false;
     private bool isDefending = false;
@@ -32,12 +36,14 @@ public class BossAI : EnemyParent
         colliderOfDeath.SetActive(false);
         UpdateLife();
 
+        baseVolume = audioSource.volume;
         foreach (var attack in attacksBoss)
         {
             attack.hitBoxAttack.damageAmount = attack.damage;
             attack.hitBoxAttack.damageType = attack.damageType;
             attack.hitBoxAttack.isFireBreath = attack.isFireBreath;
         }
+        PlayPhase1Music();
     }
 
     private void Update()
@@ -97,24 +103,31 @@ public class BossAI : EnemyParent
 
         currentHealth = (int)Mathf.Max(0, currentHealth - damage);
         UpdateLife();
+        if (currentHealth <= 0f)
+        {
+            Die();
+            return;
+        }
+
         if (currentHealth <= enemyData.pvMax / 2 && !phase2)
         {
             phase2 = true;
             animator.SetTrigger("Scream");
+
+            if (phaseMusicRoutine != null)
+                StopCoroutine(phaseMusicRoutine);
+
+            phaseMusicRoutine = StartCoroutine(PlayPhase2MusicSequence());
+
             foreach (var attack in attacksBoss)
             {
-                attack.damage = attack.damage + attack.boostDamage;
+                attack.damage += attack.boostDamage;
             }
-        }
-        else if (currentHealth <= 0f)
-        {
-            Die();
         }
         else if (currentHealth >= enemyData.pvMax / 2 && !phase2)
         {
             animator.SetTrigger("GetHit");
         }
-
     }
 
     private void PlayAttack(float distanceToPlayer, BossAttack bossAttack)
@@ -126,10 +139,9 @@ public class BossAI : EnemyParent
             Debug.Log($"Attaquer lancée : {bossAttack.animTriggerName}");
         }
     }
-    private void AttackPlayer(string animTrigger)
-    {
-        animator.SetTrigger(animTrigger);
-    }
+    #region Animator
+    private void AttackPlayer(string animTrigger) => animator.SetTrigger(animTrigger);
+    
 
     public void ActiveIsDefending() { isDefending = true; }
 
@@ -149,11 +161,18 @@ public class BossAI : EnemyParent
 
     public void DesactiveIsScreaming() { isScreaming = false; }
 
+    #endregion
     protected override void Die()
     {
         IsDead = true;
         basicCollider.enabled = false;
-        if(colliderOfDeath != null)
+        if (phaseMusicRoutine != null)
+            StopCoroutine(phaseMusicRoutine);
+
+        StartCoroutine(FadeAndStop());
+
+
+        if (colliderOfDeath != null)
             colliderOfDeath.SetActive(true);
         agent.isStopped = true;
         QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
@@ -196,6 +215,60 @@ public class BossAI : EnemyParent
         base.UpdateLife();
         currentHealthText.text = currentHealth.ToString()+"/"+enemyData.pvMax.ToString();
     }
+
+    private void PlayPhase1Music()
+    {
+        if (phaseMusic.Length < 1 || phaseMusic[0] == null) return;
+
+        audioSource.clip = phaseMusic[0];
+        audioSource.loop = true;
+        audioSource.volume = 0f;
+        audioSource.Play();
+
+        StartCoroutine(FadeVolume(0f, baseVolume, fadeDuration));
+    }
+
+
+    private IEnumerator PlayPhase2MusicSequence()
+    {
+        if (phaseMusic.Length < 2) yield break;
+
+        // --- Fade Out Phase 1 ---
+        yield return StartCoroutine(FadeVolume(audioSource.volume, 0f, fadeDuration));
+
+        if (IsDead) yield break;
+
+        // --- Phase 2 ---
+        audioSource.clip = phaseMusic[1];
+        audioSource.loop = true;
+        audioSource.volume = 0f;
+        audioSource.Play();
+
+        yield return StartCoroutine(FadeVolume(0f, baseVolume, fadeDuration));
+    }
+
+
+    private IEnumerator FadeVolume(float from, float to, float duration)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(from, to, timer / duration);
+            yield return null;
+        }
+
+        audioSource.volume = to;
+    }
+
+    private IEnumerator FadeAndStop()
+    {
+        yield return StartCoroutine(FadeVolume(audioSource.volume, 0f, fadeDuration));
+        audioSource.Stop();
+    }
+
+
 
     private void OnDrawGizmosSelected()
     {

@@ -32,7 +32,6 @@ public class Palette : MonoBehaviour
     public Button weapon1SlotDesequipButton;
     public ItemData equipmentWeapon1Item;
     public Image weapon1SlotImage;
-    public TextMeshProUGUI weapon1Text;
     public Image iconeInputWeapon1;
     public bool isEquippedWeapon1 = false;
     public GameObject weapon1ImageSelected;
@@ -42,7 +41,6 @@ public class Palette : MonoBehaviour
     public Button weapon2SlotDesequipButton;
     public ItemData equipmentWeapon2Item;
     public Image weapon2SlotImage;
-    public TextMeshProUGUI weapon2Text;
     public Image iconeInputWeapon2;
     public bool isEquippedWeapon2 = false;
     public GameObject weapon2ImageSelected;
@@ -52,7 +50,6 @@ public class Palette : MonoBehaviour
     public Button object1SlotDesequipButton;
     public ItemData equipmentObject1Item;
     public Image object1SlotImage;
-    public TextMeshProUGUI object1Text;
     public Image iconeInputObject1;
     public bool isEquippedObject1 = false;
     public TextMeshProUGUI object1CountText;
@@ -64,7 +61,6 @@ public class Palette : MonoBehaviour
     public Button object2SlotDesequipButton;
     public ItemData equipmentObject2Item;
     public Image object2SlotImage;
-    public TextMeshProUGUI object2Text;
     public Image iconeInputObject2;
     public bool isEquippedObject2 = false;
     public TextMeshProUGUI object2CountText;
@@ -283,7 +279,8 @@ public class Palette : MonoBehaviour
         }
 
     }
-    private void UpdateBindingDisplayForAction(InputAction action, TextMeshProUGUI textField, Image iconField)
+
+    private void UpdateBindingDisplayForAction(InputAction action, Image iconField)
     {
         InputBinding binding = default;
 
@@ -293,48 +290,36 @@ public class Palette : MonoBehaviour
                 !string.IsNullOrEmpty(b.effectivePath) &&
                 b.effectivePath.Contains("<Gamepad>")
             );
-
-            if (binding != default)
-            {
-                // Affiche l’icône
-                iconField.sprite = InputIconDatabase.instance.GetIcon(binding.effectivePath);
-                iconField.enabled = true;
-
-                // On masque le texte
-                textField.text = "";
-                return;
-            }
         }
-        else
+        else // Keyboard + Mouse
         {
             binding = action.bindings.FirstOrDefault(b =>
                 !string.IsNullOrEmpty(b.effectivePath) &&
-                (b.effectivePath.Contains("<Keyboard>") ||
-                 b.effectivePath.Contains("<Mouse>"))
+                (b.effectivePath.Contains("<Keyboard>") || b.effectivePath.Contains("<Mouse>"))
             );
+        }
 
-            if (binding != default)
+        if (binding != default)
+        {
+            Sprite icon = InputIconDatabase.instance.GetIcon(binding.effectivePath);
+
+            if (icon != null)
             {
-                // Pas d’icône pour clavier
-                iconField.enabled = false;
-
-                textField.text = binding.ToDisplayString();
+                iconField.sprite = icon;
+                iconField.enabled = true;
                 return;
             }
         }
 
-        // Fallback
+        // Fallback sécurité
         iconField.enabled = false;
-        textField.text = "[No Binding]";
     }
-
-
     private void UpdateBindingDisplay()
     {
-        UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], weapon1Text, iconeInputWeapon1);
-        UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], weapon2Text, iconeInputWeapon2);
-        UpdateBindingDisplayForAction(playerInput.actions["Object1"], object1Text, iconeInputObject1);
-        UpdateBindingDisplayForAction(playerInput.actions["Object2"], object2Text, iconeInputObject2);
+        UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1);
+        UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2);
+        UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1);
+        UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2);
     }
 
     private void UseObject(int numberOfObject)

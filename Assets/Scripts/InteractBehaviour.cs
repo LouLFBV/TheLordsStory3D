@@ -12,6 +12,7 @@ public class InteractBehaviour : MonoBehaviour
     [SerializeField] private EquipmentLibrary equipmentLibrary;
     [SerializeField] private AudioSource audioSource;
     [HideInInspector] public bool isBusy = false;
+    [SerializeField] private PlayerInteractor playerInteractor;
 
     [Header("Tools Configuration")]
     [SerializeField] private GameObject pickaxeVisual;
@@ -53,8 +54,9 @@ public class InteractBehaviour : MonoBehaviour
             }
         }
 
+        Debug.Log("Picking up item: " + item.name);
+        player.StopPlayer();
         playerAnimator.SetTrigger("PickUp");
-        player.canMove = false;
     }
 
     public void DoHarvest(Harvestable harvestable)
@@ -70,7 +72,7 @@ public class InteractBehaviour : MonoBehaviour
     }
 
     //Coroutine appelé depuis l'animation "Haversitng"
-    IEnumerator BreakHarvestable()
+    public IEnumerator BreakHarvestable()
     {
         Harvestable currentlyHarveting = currentHarvestable;
         currentlyHarveting.gameObject.layer = LayerMask.NameToLayer("Default");
@@ -103,31 +105,34 @@ public class InteractBehaviour : MonoBehaviour
                 instantiatedRessource.transform.position = currentlyHarveting.transform.position + spawnItemOffset + randomOffset;
             }
         }
+        Debug.Log("Harvested: " + currentlyHarveting.name);
         Destroy(currentlyHarveting.gameObject);
         RespawnObject(currentlyHarveting.transform);
     }
     public void ReEnablePlayerMouvement()
     {
         EnableToolGameObjectFromTool(currentTool);
-        player.canMove = true;
+        player.StartPlayer();
         isBusy = false;
     }
     
     public void EnableTwoHand()
     {
-        if (equipmentToDesactiveAndActive != null && equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.TwoHanded)
-        {
-            playerAnimator.SetBool("IsTwoHandedWeapon", true);
-        }
+        if (equipmentToDesactiveAndActive == null) return;
+        if (playerAnimator == null) return; // <- protection supplémentaire
+        if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
+
+        playerAnimator.SetBool("IsTwoHandedWeapon", true);
+        
     }
-    public void DiseableTwoHand()
+    public void DisableTwoHand()
     {
-        if(equipmentToDesactiveAndActive == null)
-            return;
-        if (equipmentToDesactiveAndActive != null && equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.TwoHanded)
-        {
-            playerAnimator.SetBool("IsTwoHandedWeapon", false);
-        }
+        if (equipmentToDesactiveAndActive == null) return;
+        if (playerAnimator == null) return; // <- protection supplémentaire
+        if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
+
+        playerAnimator.SetBool("IsTwoHandedWeapon", false);
+        
     }
     public void AddItemToInventory()
     {
@@ -155,7 +160,10 @@ public class InteractBehaviour : MonoBehaviour
             }
         }
 
-        audioSource.PlayOneShot(pickUpSound); 
+        audioSource.PlayOneShot(pickUpSound);
+
+        var interact = currentItem.GetComponent<IInteractable>();
+        interact?.SetTargeted(false);
         Destroy(currentItem.gameObject);
 
         RespawnObject(currentItem.transform);

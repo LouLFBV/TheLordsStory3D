@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PanneauDeConstruction : MonoBehaviour
+public class PanneauDeConstruction : InteractableBase
 {
     public CraftingSystem craftingSystem;
 
@@ -10,6 +10,11 @@ public class PanneauDeConstruction : MonoBehaviour
 
     [SerializeField] private RecipeData recetteDeLObject;
     private UIManager uiManager;
+
+    public override void OnInteract(PlayerInteractor player)
+    {
+        OpenPanel();
+    }
 
     public void OpenPanel()
     {

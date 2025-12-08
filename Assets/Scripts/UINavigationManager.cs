@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using UnityEngine.InputSystem.HID;
 
 public class UINavigationManager : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class UINavigationManager : MonoBehaviour
     private float lastMoveTime;
 
     [Header("Enfant/ Parent")]
-    [SerializeField] private GameObject[] childToDisableWhenActive;
+    [SerializeField] private GameObject childToDisableWhenActive;
 
     [SerializeField] private PlayerInput playerInput;
     private Vector2 navigationInput;
@@ -48,7 +49,7 @@ public class UINavigationManager : MonoBehaviour
         a["Submit"].canceled += OnSubmitCanceled;
         a["Cancel"].performed += OnCancel;
 
-        Debug.Log($"[NAV] OnEnable() UI ENABLED sur {name}");
+        currentIndex = 0;
 
         CheckChildToChange(false);
         lastMoveTime = Time.unscaledTime;
@@ -56,6 +57,11 @@ public class UINavigationManager : MonoBehaviour
 
     private void OnDisable()
     {
+        if (childToDisableWhenActive != null)
+        {
+            CheckChildToChange(true);
+            return;
+        }
         var a = playerInput.actions;
         a["Navigate"].Disable();
         a["Submit"].Disable();
@@ -65,10 +71,6 @@ public class UINavigationManager : MonoBehaviour
         a["Submit"].performed -= OnSubmitPerformed;
         a["Submit"].canceled -= OnSubmitCanceled;
         a["Cancel"].performed -= OnCancel;
-
-        Debug.Log($"[NAV] OnDisable() UI DISABLED sur {name}");
-
-        CheckChildToChange(true);
     }
     private void OnNavigatePerformed(InputAction.CallbackContext ctx)
     {
@@ -217,14 +219,28 @@ public class UINavigationManager : MonoBehaviour
 
     private void CheckChildToChange(bool actived)
     {
-        foreach (var child in childToDisableWhenActive)
+        if (childToDisableWhenActive == null)
+            return;
+        if (childToDisableWhenActive.TryGetComponent<UINavigationManager>(out var nav))
+            nav.isActive = actived;
+        else
+            Debug.LogWarning("Le GameObject assigné n'a pas de UINavigationManager.");
+        if(actived)
         {
-            if (!child) continue;
+            var a = playerInput.actions;
+            a["Navigate"].Enable();
+            a["Submit"].Enable();
+            a["Cancel"].Enable();
+            a["Navigate"].performed += OnNavigatePerformed;
+            a["Navigate"].canceled += OnNavigateCanceled;
+            a["Submit"].performed += OnSubmitPerformed;
+            a["Submit"].canceled += OnSubmitCanceled;
+            a["Cancel"].performed += OnCancel;
 
-            if (child.TryGetComponent<UINavigationManager>(out var nav))
-                nav.isActive = actived;
+            currentIndex = 0;
         }
     }
+
     #endregion
 
     public IEnumerator SmoothScrollTo(Selectable selectable, float duration = 0.2f, float offset = 40f)

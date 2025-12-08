@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class Livre : MonoBehaviour
+public class Livre :InteractableBase
 {
     [TextArea]
     [SerializeField] private string textePage1, textePage2;
@@ -44,5 +44,10 @@ public class Livre : MonoBehaviour
             isOpen = false;
             moveBehaviour.StartPlayer();
         }
+    }
+
+    public override void OnInteract(PlayerInteractor player)
+    {
+        OuvrirFermerLivre();
     }
 }

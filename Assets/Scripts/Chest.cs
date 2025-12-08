@@ -3,8 +3,9 @@ using UnityEngine;
 using System.Linq;
 using TMPro;
 using UnityEngine.UI;
-
-public class Chest : MonoBehaviour
+using UnityEngine.InputSystem;
+using System;
+public class Chest : InteractableBase
 {
     [Header("References")]
     [SerializeField] private Palette palette; // Référence à la palette pour vérifier les items
@@ -34,7 +35,7 @@ public class Chest : MonoBehaviour
 
     [SerializeField] private AudioSource unlockChestSound;
 
-    [Header("ItemR eward")]
+    [Header("Item Reward")]
     [SerializeField] private ItemData rewardItemData;
     [SerializeField] private int amountOfItem;
 
@@ -50,16 +51,41 @@ public class Chest : MonoBehaviour
     private Animator animator;
     private UIManager uiManager;
 
-    private PlayerControls controls;
+    #region Player Input
+    [SerializeField] private PlayerInput playerInput;
+    private bool isCancelling;
 
-    private void Awake()
+    private void OnEnable()
     {
-        controls = new PlayerControls();
+        playerInput.actions["Cancel"].Enable();
+        playerInput.actions["Cancel"].performed += OnCancelPerformed;
+        playerInput.actions["Cancel"].canceled += OnCancelCanceled;
     }
-    private void OnEnable() => controls.Enable();
-    private void OnDisable() => controls.Disable();
+
+    private void OnCancelCanceled(InputAction.CallbackContext context)
+    {
+        isCancelling = false;
+    }
+
+    private void OnCancelPerformed(InputAction.CallbackContext context)
+    {
+        isCancelling = true;
+    }
+
+    private void OnDisable()
+    {
+        if (playerInput == null) return;
+        playerInput.actions["Cancel"].Disable();
+        playerInput.actions["Cancel"].performed -= OnCancelPerformed;
+        playerInput.actions["Cancel"].canceled -= OnCancelCanceled;
+    }
+    #endregion
     private void Start()
     {
+        if (playerInput == null)
+        {
+            playerInput = InputProvider.Instance.UIInput;
+        }
         closedRotation = topChest.transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
         bottomChest.GetComponent<Harvestable>().enabled = false;
@@ -84,10 +110,15 @@ public class Chest : MonoBehaviour
             Destroy(topChest);
         }
 
-        if(descriptionPanel.activeSelf && controls.UI.Cancel.triggered)
+        if(descriptionPanel.activeSelf && isCancelling)
         {
             descriptionPanel.SetActive(false);
+            isCancelling = false;
         }
+    }
+    public override void OnInteract(PlayerInteractor player)
+    {
+        Open();
     }
 
     public void Open()
