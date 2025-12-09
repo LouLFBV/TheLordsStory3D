@@ -85,6 +85,6 @@ public class UseComsumableBehaviour : MonoBehaviour
 
     private bool CanEat()
     {
-        return (palette.isEquippedObject1 || palette.isEquippedObject2);
+        return ((palette.isEquippedObject1 && palette.equipmentObject1Item.itemType == ItemType.Consumable) || (palette.isEquippedObject2 && palette.equipmentObject2Item.itemType == ItemType.Consumable));
     }
 }

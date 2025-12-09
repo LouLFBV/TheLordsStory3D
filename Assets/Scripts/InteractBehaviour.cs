@@ -115,11 +115,18 @@ public class InteractBehaviour : MonoBehaviour
         player.StartPlayer();
         isBusy = false;
     }
-    
+
+    public void SetCurrentEquippedItem(EquipmentLibraryItem equippedItem)
+    {
+        equipmentToDesactiveAndActive = equippedItem;
+    }
+
     public void EnableTwoHand()
     {
         if (equipmentToDesactiveAndActive == null) return;
         if (playerAnimator == null) return; // <- protection supplémentaire
+        if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
+
         if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
 
         playerAnimator.SetBool("IsTwoHandedWeapon", true);
@@ -129,6 +136,7 @@ public class InteractBehaviour : MonoBehaviour
     {
         if (equipmentToDesactiveAndActive == null) return;
         if (playerAnimator == null) return; // <- protection supplémentaire
+        if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
         if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
 
         playerAnimator.SetBool("IsTwoHandedWeapon", false);

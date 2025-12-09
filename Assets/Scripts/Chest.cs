@@ -1,21 +1,22 @@
 using System.Collections;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using System;
+using static NavigationController;
+
 public class Chest : InteractableBase
 {
     [Header("References")]
-    [SerializeField] private Palette palette; // Référence à la palette pour vérifier les items
-    [SerializeField] private EquipmentLibrary equipmentLibrary; // Référence à l'item d'équipement si nécessaire
+    [SerializeField] private Palette palette;
+    [SerializeField] private EquipmentLibrary equipmentLibrary;
 
-    [Header("Description d'objet")]
+    [Header("Description Panel")]
     [SerializeField] private GameObject descriptionPanel;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI amountText;
-    [SerializeField] private Image imageObject;
+    [SerializeField] private Image objectImage;
 
     [Header("Chest Parts")]
     [SerializeField] private GameObject topChest;
@@ -26,130 +27,226 @@ public class Chest : InteractableBase
     [Header("Chest Settings")]
     [SerializeField] private float rotationSpeed = 2f;
     [SerializeField] private Vector3 openEulerAngles = new Vector3(0, 0, 90);
-    public bool isLocked = false;
-    [SerializeField] private ItemData keyItem; 
+    [SerializeField] private bool isLocked = false;
+    [SerializeField] private ItemData keyItem;
 
-    [SerializeField] private AudioSource lockedChestSound;
+    [Header("Audio")]
+    [SerializeField] private AudioSource openSound;
+    [SerializeField] private AudioSource lockedSound;
+    [SerializeField] private AudioSource unlockSound;
 
-    [SerializeField] private AudioSource Opensound;
-
-    [SerializeField] private AudioSource unlockChestSound;
-
-    [Header("Item Reward")]
-    [SerializeField] private ItemData rewardItemData;
-    [SerializeField] private int amountOfItem;
+    [Header("Reward")]
+    [SerializeField] private ItemData rewardItem;
+    [SerializeField] private int rewardAmount = 1;
 
     [Header("Gold Reward")]
-    [SerializeField] private int amountOfGold;
+    [SerializeField] private int goldAmount = 0;
     [SerializeField] private GameObject goldVisual;
 
     private Quaternion closedRotation;
     private Quaternion openRotation;
-    public bool isOpen = false;
+
+    private bool isOpen = false;
     private bool isAnimating = false;
-    private bool destroyed = false;
-    private Animator animator;
+    private bool destroyed = false; 
+    private bool isAlive = true;
+
+    private Animator playerAnimator;
+    private PlayerInput playerInput;
     private UIManager uiManager;
 
-    #region Player Input
-    [SerializeField] private PlayerInput playerInput;
-    private bool isCancelling;
+    // -------------------------------------------------------
+    // INITIALISATION
+    // -------------------------------------------------------
 
-    private void OnEnable()
-    {
-        playerInput.actions["Cancel"].Enable();
-        playerInput.actions["Cancel"].performed += OnCancelPerformed;
-        playerInput.actions["Cancel"].canceled += OnCancelCanceled;
-    }
-
-    private void OnCancelCanceled(InputAction.CallbackContext context)
-    {
-        isCancelling = false;
-    }
-
-    private void OnCancelPerformed(InputAction.CallbackContext context)
-    {
-        isCancelling = true;
-    }
-
-    private void OnDisable()
-    {
-        if (playerInput == null) return;
-        playerInput.actions["Cancel"].Disable();
-        playerInput.actions["Cancel"].performed -= OnCancelPerformed;
-        playerInput.actions["Cancel"].canceled -= OnCancelCanceled;
-    }
-    #endregion
     private void Start()
     {
-        if (playerInput == null)
-        {
-            playerInput = InputProvider.Instance.UIInput;
-        }
-        closedRotation = topChest.transform.rotation;
-        openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
-        bottomChest.GetComponent<Harvestable>().enabled = false;
+        Debug.Log("<color=cyan>[CHEST] Initialisation du coffre…</color>");
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
-            animator = player.GetComponent<Animator>();
-        }
-
-        uiManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
-        uiManager.AddPanel(descriptionPanel);
-    }
-    private void Update()
-    {
-        if (!destroyed && !isAnimating)
-        {
-            BecomeHarvestable();
-        }
-        else if (bottomChest == null && topChest != null)
-        {
-            Destroy(topChest);
-        }
-
-        if(descriptionPanel.activeSelf && isCancelling)
-        {
-            descriptionPanel.SetActive(false);
-            isCancelling = false;
-        }
-    }
-    public override void OnInteract(PlayerInteractor player)
-    {
-        Open();
-    }
-
-    public void Open()
-    {
-        if (!isOpen && !isAnimating && !isLocked)
-        {
-            StartCoroutine(OpenChest());
-        }
-        else if (isLocked)
-        {
-            lockedChestSound.PlayOneShot(lockedChestSound.clip);
-        }
-    }
-
-    private IEnumerator OpenChest()
-    {
-        transform.GetComponent<BoxCollider>().enabled = false;
-        isAnimating = true;
-        isOpen = true;
-        Opensound.PlayOneShot(Opensound.clip);
-        if (rewardItemData == null && amountOfGold > 0)
-        {
-            goldVisual.GetComponent<Coin>().goldAmount = amountOfGold;
-            goldVisual.SetActive(true);
+            playerInput = player.GetComponent<PlayerInput>();
+            playerAnimator = player.GetComponent<Animator>();
+            Debug.Log("[CHEST] PlayerInput trouvé !");
         }
         else
         {
-            ActiveDescriptionPanel();
+            Debug.LogError("[CHEST] Player introuvable !");
         }
+
+        
+
+
+        // --- UI Manager ---
+        uiManager = GameObject.FindWithTag("GameManager").GetComponent<UIManager>();
+        uiManager.AddPanel(descriptionPanel);
+
+        // --- Chest Setup ---
+        closedRotation = topChest.transform.rotation;
+        openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
+
+        bottomChest.GetComponent<Harvestable>().enabled = false;
+
+        if (palette == null)
+            palette = Palette.instance;
+        if (equipmentLibrary == null)
+            equipmentLibrary = GameObject.FindWithTag("GameManager").GetComponent<EquipmentLibrary>();
+    }
+
+
+    private void ActiveCancel()
+    {
+        if (playerInput != null)
+        {
+            var cancel = playerInput.actions["Cancel"];
+
+            if (cancel == null)
+            {
+                Debug.LogError("[CHEST] Action 'Cancel' introuvable dans PlayerInput !");
+            }
+            else
+            {
+                cancel.performed += OnCancel;
+                cancel.Enable();
+                Debug.Log("<color=lime>[CHEST] Cancel correctement bindé.</color>");
+            }
+        }
+        else
+        {
+            Debug.LogError("[CHEST] PlayerInput est NULL !");
+        }
+    }
+    private void OnDisable()
+    {
+        if (playerInput != null)
+        {
+            playerInput.actions["Cancel"].performed -= OnCancel;
+        }
+    }
+
+
+    private void OnDestroy()
+    {
+        isAlive = false;
+
+        if (playerInput != null)
+        {
+            playerInput.actions["Cancel"].performed -= OnCancel;
+        }
+    }
+
+    // -------------------------------------------------------
+    // INPUT : Cancel
+    // -------------------------------------------------------
+
+    private void OnCancel(InputAction.CallbackContext ctx)
+    {
+        if (!isAlive || descriptionPanel == null) return;
+
+        if (descriptionPanel.activeSelf)
+        {
+            descriptionPanel.SetActive(false);
+            playerInput.actions["Cancel"].performed -= OnCancel;
+            playerInput.actions["Cancel"].Disable();
+        }
+    }
+
+
+    // -------------------------------------------------------
+    // INTERACTION
+    // -------------------------------------------------------
+
+    public override void OnInteract(PlayerInteractor player)
+    {
+        TryOpenChest();
+    }
+
+    private void TryOpenChest()
+    {
+        if (isAnimating) return;
+
+        // Déverrouillage
+        if (isLocked && TryUnlockWithEquippedKey())
+        {
+            unlockSound.Play();
+            isLocked = false;
+        }
+
+        if (isLocked)
+        {
+            lockedSound.Play();
+            return;
+        }
+
+        // OUVERTURE
+        if (!isOpen)
+        {
+            StartCoroutine(OpenChest());
+        }
+    }
+
+    private bool TryUnlockWithEquippedKey()
+    {
+        ItemData equipped1 = palette.equipmentObject1Item;
+        ItemData equipped2 = palette.equipmentObject2Item;
+
+        if (equipped1 == keyItem && palette.isEquippedObject1)
+        {
+            RemoveEquippedKey(1, equipped1);
+            return true;
+        }
+
+        if (equipped2 == keyItem && palette.isEquippedObject2)
+        {
+            RemoveEquippedKey(2, equipped2);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void RemoveEquippedKey(int slot, ItemData equipped)
+    {
+        EquipmentLibraryItem libItem = equipmentLibrary.content
+            .Where(x => x.itemData == equipped)
+            .FirstOrDefault();
+
+        libItem?.itemPrefab.SetActive(false);
+
+        palette.RemoveObject(slot);
+        palette.UpdateImageSeleted();
+        playerAnimator.SetBool("CarryingConsumable", false);
+    }
+
+    // -------------------------------------------------------
+    // OPEN ANIMATION
+    // -------------------------------------------------------
+
+    private IEnumerator OpenChest()
+    {
+        isAnimating = true;
+        isOpen = true;
+
+        openSound.Play();
+        GetComponent<Collider>().enabled = false;
+
+        // Reward immédiat
+        if (rewardItem == null && goldAmount > 0)
+        {
+            goldVisual.GetComponent<Coin>().goldAmount = goldAmount;
+            goldVisual.SetActive(true);
+        }
+        else if (rewardItem != null)
+        {
+            ShowDescriptionPanel();
+        }
+
+        // Unlocking physics
         topLock.isKinematic = false;
         bottomLock.isKinematic = false;
+
+        // Animation
         while (Quaternion.Angle(topChest.transform.rotation, openRotation) > 0.1f)
         {
             topChest.transform.rotation = Quaternion.Slerp(
@@ -160,84 +257,59 @@ public class Chest : InteractableBase
             yield return null;
         }
 
-        // S’assure que la rotation est précise à la fin
         topChest.transform.rotation = openRotation;
-
-
         isAnimating = false;
     }
 
-    public void BecomeHarvestable()
-    {
-        if (isOpen)
-        {
-            destroyed = true;
-            bottomChest.layer = LayerMask.NameToLayer("Harvestable");
-            bottomChest.tag = "Harvestable";
-            bottomChest.GetComponent<Harvestable>().enabled = true;
-        }
-    }
+    // -------------------------------------------------------
+    // REWARD UI
+    // -------------------------------------------------------
 
-    public void TryToOpenWithKey(ItemData key)
-    {
-        if (equipmentLibrary == null)
-        {
-             equipmentLibrary = GameObject.FindGameObjectWithTag("GameManager").GetComponent<EquipmentLibrary>();
-        }
-        if (palette == null)
-            palette = Palette.instance;
-        if (isLocked && key != null && key == keyItem)
-        {
-            ItemInInventory itemInInventory = palette.objects.Where(x => x.itemData == key).FirstOrDefault();
-            if (itemInInventory != null && palette.isEquippedObject1)
-            {
-                EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == palette.equipmentObject1Item).FirstOrDefault();
-                if (equipmentLibraryItem1 != null)
-                {
-                    equipmentLibraryItem1.itemPrefab.SetActive(false);
-                }
-                palette.RemoveObject(1);
-                palette.isEquippedObject1 = false;
-            }
-            else if (itemInInventory != null && palette.isEquippedObject2)
-            {
-                EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == palette.equipmentObject2Item).First();
-                if (equipmentLibraryItem2 != null)
-                {
-                    equipmentLibraryItem2.itemPrefab.SetActive(false);
-                }
-                palette.RemoveObject(2);
-                palette.isEquippedObject2 = false;
-            }
-            palette.UpdateImageSeleted();
-            animator.SetBool("CarryingConsumable", false);
-            isLocked = false;
-            unlockChestSound.PlayOneShot(unlockChestSound.clip);
-            Open();
-        }
-        else if (isLocked)
-        {
-            lockedChestSound.PlayOneShot(lockedChestSound.clip);
-        }
-    }
-
-    private void ActiveDescriptionPanel()
+    private void ShowDescriptionPanel()
     {
         descriptionPanel.SetActive(true);
-        nameText.text = rewardItemData.itemName;
-        imageObject.sprite = rewardItemData.visual;
-        if (amountOfItem > 1)
+        ActiveCancel();
+        nameText.text = rewardItem.itemName;
+        objectImage.sprite = rewardItem.visual;
+
+        if (rewardAmount > 1)
         {
-            amountText.text = "x" + amountOfItem.ToString();
-            for (int i = 0; i < amountOfItem; i++)
-            {
-                Inventory.instance.AddItem(rewardItemData);
-            }
+            amountText.text = $"x{rewardAmount}";
+            for (int i = 0; i < rewardAmount; i++)
+                Inventory.instance.AddItem(rewardItem);
         }
         else
         {
             amountText.text = "";
-            Inventory.instance.AddItem(rewardItemData);
+            Inventory.instance.AddItem(rewardItem);
+        }
+    }
+
+    // -------------------------------------------------------
+    // HARVESTABLE STATE
+    // -------------------------------------------------------
+
+    private void Update()
+    {
+        if (!destroyed)
+        {
+            MakeHarvestableIfOpen();
+        }
+        else if (bottomChest == null && topChest != null)
+        {
+            Destroy(topChest);
+        }
+    }
+
+    private void MakeHarvestableIfOpen()
+    {
+        if (isOpen)
+        {
+            destroyed = true;
+
+            bottomChest.layer = LayerMask.NameToLayer("Harvestable");
+            bottomChest.tag = "Harvestable";
+            bottomChest.GetComponent<Harvestable>().enabled = true;
         }
     }
 }

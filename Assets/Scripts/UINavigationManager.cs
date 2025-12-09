@@ -28,7 +28,6 @@ public class UINavigationManager : MonoBehaviour
     [SerializeField] private ScrollRect scrollRect; // drag ton ScrollRect dans l'inspecteur
 
     public bool isActive = true;
-    [SerializeField] private bool canCancel = true;
 
     #region Méthodes PlayerInput 
     private void Awake()
@@ -72,6 +71,17 @@ public class UINavigationManager : MonoBehaviour
         a["Submit"].canceled -= OnSubmitCanceled;
         a["Cancel"].performed -= OnCancel;
     }
+
+    private void OnDestroy()
+    {
+        if (playerInput != null)
+        {
+            var cancel = playerInput.actions["Cancel"];
+            cancel.performed -= OnCancel;
+        }
+    }
+
+
     private void OnNavigatePerformed(InputAction.CallbackContext ctx)
     {
         navigationInput = ctx.ReadValue<Vector2>();
@@ -204,8 +214,8 @@ public class UINavigationManager : MonoBehaviour
 
     private void Cancel()
     {
-        if (!canCancel)
-            return;
+        if (this == null) return;
+        if (!gameObject) return;
         if (onCancel != null)
         {
             onCancel.Invoke();

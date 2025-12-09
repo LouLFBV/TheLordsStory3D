@@ -1,5 +1,7 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public static class InputRebindManager
 {
@@ -24,5 +26,40 @@ public static class InputRebindManager
     {
         PlayerPrefs.DeleteKey(RebindsKey);
         playerInput.actions.RemoveAllBindingOverrides();
+    }
+
+    public static void UpdateBindingDisplayForAction(InputAction action, Image iconField, DeviceType type)
+    {
+        InputBinding binding = default;
+
+        if (type == DeviceType.Gamepad)
+        {
+            binding = action.bindings.FirstOrDefault(b =>
+                !string.IsNullOrEmpty(b.effectivePath) &&
+                b.effectivePath.Contains("<Gamepad>")
+            );
+        }
+        else // Keyboard + Mouse
+        {
+            binding = action.bindings.FirstOrDefault(b =>
+                !string.IsNullOrEmpty(b.effectivePath) &&
+                (b.effectivePath.Contains("<Keyboard>") || b.effectivePath.Contains("<Mouse>"))
+            );
+        }
+
+        if (binding != default)
+        {
+            Sprite icon = InputIconDatabase.instance.GetIcon(binding.effectivePath);
+
+            if (icon != null)
+            {
+                iconField.sprite = icon;
+                iconField.enabled = true;
+                return;
+            }
+        }
+
+        // Fallback sécurité
+        iconField.enabled = false;
     }
 }

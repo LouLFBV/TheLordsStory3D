@@ -130,16 +130,16 @@ public class Interact : MonoBehaviour
 
             case "Chest":
                 Chest chest = hitGameObject.GetComponent<Chest>();
-                if (!chest.isOpen)
-                {
-                    pointDeCollecteText1.text = "Appuyez sur";
-                    pointDeCollecteText2.text = GetInteractPrefix();
-                    pointDeCollecteText3.text = chest.isLocked ? "(clé requise)" : "pour ouvrir le coffre";
-                }
-                else
-                {
-                    pointDeCollecte.SetActive(false);
-                }
+                //if (!chest.isOpen)
+                //{
+                //    pointDeCollecteText1.text = "Appuyez sur";
+                //    pointDeCollecteText2.text = GetInteractPrefix();
+                //    pointDeCollecteText3.text = chest.isLocked ? "(clé requise)" : "pour ouvrir le coffre";
+                //}
+                //else
+                //{
+                //    pointDeCollecte.SetActive(false);
+                //}
                 break;
 
             case "PNJ":
@@ -267,21 +267,21 @@ public class Interact : MonoBehaviour
 
                 }
             }
-            else if (hitTransform.CompareTag("Chest"))
-            {
-                if (palette.equipmentObject1Item != null && palette.equipmentObject1Item.itemType == ItemType.Key && palette.isEquippedObject1)
-                {
-                    hitGameObject.GetComponent<Chest>().TryToOpenWithKey(palette.equipmentObject1Item);
-                }
-                else if (palette.equipmentObject2Item != null && palette.equipmentObject2Item.itemType == ItemType.Key && palette.isEquippedObject2)
-                {
-                    hitGameObject.GetComponent<Chest>().TryToOpenWithKey(palette.equipmentObject2Item);
-                }
-                else
-                {
-                    hitGameObject.GetComponent<Chest>().Open();
-                }
-            }
+            //else if (hitTransform.CompareTag("Chest"))
+            //{
+            //    if (palette.equipmentObject1Item != null && palette.equipmentObject1Item.itemType == ItemType.Key && palette.isEquippedObject1)
+            //    {
+            //        hitGameObject.GetComponent<Chest>().TryToOpenWithKey(palette.equipmentObject1Item);
+            //    }
+            //    else if (palette.equipmentObject2Item != null && palette.equipmentObject2Item.itemType == ItemType.Key && palette.isEquippedObject2)
+            //    {
+            //        hitGameObject.GetComponent<Chest>().TryToOpenWithKey(palette.equipmentObject2Item);
+            //    }
+            //    else
+            //    {
+            //        hitGameObject.GetComponent<Chest>().Open();
+            //    }
+            //}
             else if (hitTransform.CompareTag("PNJ") && !hit.transform.gameObject.GetComponent<PNJ>().isOnDial && Time.time - hitGameObject.GetComponent<PNJ>().dialogueEndTime > hit.transform.gameObject.GetComponent<PNJ>().inputCooldown)
             {
                 hitGameObject.GetComponent<PNJ>().StartDialogue();

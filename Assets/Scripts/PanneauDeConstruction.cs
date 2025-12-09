@@ -20,7 +20,7 @@ public class PanneauDeConstruction : InteractableBase
     {
         if (uiManager == null)
         {
-            uiManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
+            uiManager = UIManager.instance;
             uiManager.AddPanel(craftPanel);
         }
         if (craftPanel != null && !craftPanel.activeInHierarchy)
@@ -29,6 +29,7 @@ public class PanneauDeConstruction : InteractableBase
             craftingSystem.UpdateDisplayRecipes();
             craftingSystem.textIsRecipeListEmpty.SetActive(false);
             craftPanel.SetActive(true);
+            SetTargeted(false);
             if (craftingSystem.uiNavigationManager != null)
             {
                 craftingSystem.uiNavigationManager.onCancel = craftingSystem.ClosePanel;

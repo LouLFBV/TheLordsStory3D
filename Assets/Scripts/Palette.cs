@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEditorInternal.VersionControl;
 
 public class Palette : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class Palette : MonoBehaviour
     [SerializeField] private ItemActionsSystem itemActionsSystem;
 
     [SerializeField] private Animator animator;
+    [SerializeField] private InteractBehaviour interactBehaviour;
 
 
     [Header("Palette Settings")]
@@ -280,46 +282,12 @@ public class Palette : MonoBehaviour
 
     }
 
-    private void UpdateBindingDisplayForAction(InputAction action, Image iconField)
-    {
-        InputBinding binding = default;
-
-        if (currentDevice == DeviceType.Gamepad)
-        {
-            binding = action.bindings.FirstOrDefault(b =>
-                !string.IsNullOrEmpty(b.effectivePath) &&
-                b.effectivePath.Contains("<Gamepad>")
-            );
-        }
-        else // Keyboard + Mouse
-        {
-            binding = action.bindings.FirstOrDefault(b =>
-                !string.IsNullOrEmpty(b.effectivePath) &&
-                (b.effectivePath.Contains("<Keyboard>") || b.effectivePath.Contains("<Mouse>"))
-            );
-        }
-
-        if (binding != default)
-        {
-            Sprite icon = InputIconDatabase.instance.GetIcon(binding.effectivePath);
-
-            if (icon != null)
-            {
-                iconField.sprite = icon;
-                iconField.enabled = true;
-                return;
-            }
-        }
-
-        // Fallback sécurité
-        iconField.enabled = false;
-    }
     private void UpdateBindingDisplay()
     {
-        UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1);
-        UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2);
-        UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1);
-        UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2);
+        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1, currentDevice);
+        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2, currentDevice);
+        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1, currentDevice);
+        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2, currentDevice);
     }
 
     private void UseObject(int numberOfObject)
@@ -334,6 +302,7 @@ public class Palette : MonoBehaviour
             EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).First();
             equipmentLibraryItem1.itemPrefab.SetActive(true);
 
+            interactBehaviour.SetCurrentEquippedItem(equipmentLibraryItem1);
 
             EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).FirstOrDefault();
             if (equipmentLibraryItem2 != null && equipmentLibraryItem2.itemData != objects[0].itemData) equipmentLibraryItem2.itemPrefab.SetActive(false);
@@ -350,6 +319,7 @@ public class Palette : MonoBehaviour
         {
             EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).First();
             equipmentLibraryItem2.itemPrefab.SetActive(true);
+            interactBehaviour.SetCurrentEquippedItem(equipmentLibraryItem2);
 
 
             EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).FirstOrDefault();
@@ -389,6 +359,7 @@ public class Palette : MonoBehaviour
 
         // 4. Équiper maintenant
         EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
+        interactBehaviour.SetCurrentEquippedItem(libItem);
         PlayerStats.instance.equipmentToEquip = libItem;
 
         StartCoroutine(EquipAfterDesequip(itemToEquip.handWeaponType, 0.01f));

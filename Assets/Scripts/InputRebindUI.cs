@@ -88,7 +88,6 @@ public class InputRebindUI : MonoBehaviour
         InputBindingDisplay.UpdateDisplay(
         action,
         bindingIndex,
-        bindingText,
         iconField
     );
     }

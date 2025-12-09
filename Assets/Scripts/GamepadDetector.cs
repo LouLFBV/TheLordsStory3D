@@ -8,10 +8,26 @@ public enum GamepadType
     PlayStation,
     Switch
 }
-public enum DeviceType { Keyboard, Gamepad }
+
+public enum DeviceType
+{
+    Keyboard,
+    Gamepad
+}
 
 public static class GamepadDetector
 {
+    /// <summary>
+    /// Retourne TRUE si un gamepad est connecté et reconnu par le InputSystem.
+    /// </summary>
+    public static bool IsGamepadConnected()
+    {
+        return Gamepad.current != null;
+    }
+
+    /// <summary>
+    /// Retourne le type exact du gamepad connecté (Xbox, PS, Switch…)
+    /// </summary>
     public static GamepadType DetectCurrentGamepad()
     {
         if (Gamepad.current == null)
@@ -26,10 +42,18 @@ public static class GamepadDetector
         if (displayName.Contains("xbox") || layout.Contains("xinput"))
             return GamepadType.Xbox;
 
-        if (displayName.Contains("switch") || layout.Contains("nintendoswitch"))
+        if (displayName.Contains("switch") || displayName.Contains("nintendoswitch"))
             return GamepadType.Switch;
 
-        // fallback Xbox si inconnue
+        // fallback
         return GamepadType.PlayStation;
+    }
+
+    /// <summary>
+    /// Fournit directement le DeviceType (Keyboard ou Gamepad)
+    /// </summary>
+    public static DeviceType GetDeviceType()
+    {
+        return IsGamepadConnected() ? DeviceType.Gamepad : DeviceType.Keyboard;
     }
 }

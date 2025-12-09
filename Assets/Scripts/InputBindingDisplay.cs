@@ -8,7 +8,6 @@ public static class InputBindingDisplay
     public static void UpdateDisplay(
         InputAction action,
         int bindingIndex,
-        TextMeshProUGUI textField,
         Image iconField)
     {
         if (action == null || bindingIndex < 0 || bindingIndex >= action.bindings.Count)
@@ -22,7 +21,6 @@ public static class InputBindingDisplay
         // -------------------------
         if (string.IsNullOrEmpty(path))
         {
-            textField.text = "[No Binding]";
             iconField.enabled = false;
             return;
         }
@@ -36,7 +34,6 @@ public static class InputBindingDisplay
         {
             iconField.sprite = icon;
             iconField.enabled = true;
-            textField.text = ""; // on cache le texte si on a une icône
             return;
         }
 
@@ -44,6 +41,5 @@ public static class InputBindingDisplay
         // 3. Aucun icône ? on affiche du texte
         // -------------------------
         iconField.enabled = false;
-        textField.text = action.GetBindingDisplayString(bindingIndex);
     }
 }
