@@ -6,7 +6,7 @@ public interface IInteractable
     /// Appelé quand le joueur se rapproche ou regarde l'objet
     /// </summary>
     /// <param name="isTargeted">true si ciblé, false si plus ciblé</param>
-    void SetTargeted(bool isTargeted);
+    void SetTargeted(bool isTargeted, Transform player);
 
     /// <summary>
     /// Appelé quand le joueur appuie sur la touche d'interaction

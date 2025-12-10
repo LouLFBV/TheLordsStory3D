@@ -11,9 +11,16 @@ public class InteractableIconUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Image icone;
 
+    [Header("Icon Positioning")]
+    public float distanceFromObject = 0.6f;
+    public float heightOffset = 1.8f;
+
     private Vector3 baseScale;
     private bool isVisible = false;
     private DeviceType currentDevice;
+
+    private Transform interactableTarget;
+    private Transform playerRef;
 
     private void Awake()
     {
@@ -25,39 +32,63 @@ public class InteractableIconUI : MonoBehaviour
 
         currentDevice = GamepadDetector.GetDeviceType();
         UpdateIcon();
-
-        // S’abonner au changement de device
-        InputSystem.onDeviceChange += OnDeviceChanged;
     }
 
-    private void OnDestroy()
+    private void OnEnable()
     {
-        // Désabonnement obligatoire sinon erreurs
-        InputSystem.onDeviceChange -= OnDeviceChanged;
+        if (DeviceWatcher.Instance != null)
+            DeviceWatcher.Instance.OnDeviceChanged += UpdateDevice;
     }
 
-    private void OnDeviceChanged(InputDevice device, InputDeviceChange change)
+
+    private void OnDisable()
     {
-        if (change == InputDeviceChange.Added ||
-            change == InputDeviceChange.Enabled ||
-            change == InputDeviceChange.Disconnected ||
-            change == InputDeviceChange.Reconnected)
-        {
-            DeviceType newDevice = GamepadDetector.GetDeviceType();
-            if (newDevice != currentDevice)
-            {
-                currentDevice = newDevice;
-                UpdateIcon();
-            }
-        }
+        if (DeviceWatcher.Instance != null)
+            DeviceWatcher.Instance.OnDeviceChanged -= UpdateDevice;
+    }
+
+
+    private void UpdateDevice(DeviceType device)
+    {
+        currentDevice = device;
+        UpdateIcon();
     }
 
     private void LateUpdate()
     {
-        if (Camera.main == null) return;
+        if (interactableTarget == null || playerRef == null || Camera.main == null)
+            return;
 
+        UpdateWorldPosition();
+
+        // Toujours regarder la caméra
         transform.LookAt(Camera.main.transform);
         transform.Rotate(0, 180f, 0);
+    }
+
+    /// <summary>
+    /// Positionne l’icône du côté du joueur
+    /// </summary>
+    private void UpdateWorldPosition()
+    {
+        Vector3 objectPos = interactableTarget.position;
+        Vector3 dir = (playerRef.position - objectPos).normalized;
+
+        Vector3 iconPos =
+            objectPos +
+            dir * distanceFromObject +
+            Vector3.up * heightOffset;
+
+        transform.position = iconPos;
+    }
+
+    /// <summary>
+    /// Appelé depuis InteractBehaviour pour donner les références
+    /// </summary>
+    public void Initialize(Transform interactable, Transform player)
+    {
+        interactableTarget = interactable;
+        playerRef = player;
     }
 
     private void UpdateIcon()
@@ -77,7 +108,7 @@ public class InteractableIconUI : MonoBehaviour
         if (isVisible) return;
         isVisible = true;
 
-        enabled = true; // <-- RÉACTIVE les updates
+        enabled = true;
 
         StopAllCoroutines();
         StartCoroutine(PopAnimation(baseScale));
@@ -90,9 +121,6 @@ public class InteractableIconUI : MonoBehaviour
 
         StopAllCoroutines();
         StartCoroutine(ScaleDownAnimation());
-
-        // Désactive ce script après disparition pour éviter UpdateIcon()
-        // si l'objet est détruit juste après
         Invoke(nameof(DisableSelf), scaleDuration + 0.05f);
     }
 

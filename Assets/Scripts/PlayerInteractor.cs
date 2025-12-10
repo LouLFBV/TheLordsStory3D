@@ -10,6 +10,7 @@ public class PlayerInteractor : MonoBehaviour
     [SerializeField] private LayerMask interactableMask;
 
     [HideInInspector] public IInteractable currentTarget;
+    [SerializeField] private Transform playerTransform;
 
     #region Player Input
     [SerializeField] private PlayerInput playerInput;
@@ -51,14 +52,14 @@ public class PlayerInteractor : MonoBehaviour
             var interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable != currentTarget)
             {
-                currentTarget?.SetTargeted(false);
+                currentTarget?.SetTargeted(false, playerTransform);
                 currentTarget = interactable;
-                currentTarget?.SetTargeted(true);
+                currentTarget?.SetTargeted(true, playerTransform);
             }
         }
         else
         {
-            currentTarget?.SetTargeted(false);
+            currentTarget?.SetTargeted(false, playerTransform);
             currentTarget = null;
         }
     }

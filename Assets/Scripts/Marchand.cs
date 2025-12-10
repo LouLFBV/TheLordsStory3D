@@ -2,8 +2,10 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using System;
 
-public class Marchand : MonoBehaviour, IDialogue
+public class Marchand : InteractableBase, IDialogue
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -31,31 +33,29 @@ public class Marchand : MonoBehaviour, IDialogue
     [HideInInspector] public float inputCooldown = 0.2f; // Temps d'attente après lancement du dialogue
     [HideInInspector] public float dialogueStartTime, dialogueEndTime;
 
-    private PlayerControls controls;
 
     [SerializeField] private UINavigationManager navManager;
-    private void Awake()
-    {
-        controls = new PlayerControls();
-    }
-    private void OnEnable() => controls.Enable();
-    private void OnDisable() => controls.Disable();
 
     private void Start()
     {
+       
         animator = GetComponent<Animator>();
         uIManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
         uIManager.AddPanel(isActive);
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
     }
-
-    private void Update()
+    public override void OnInteract(PlayerInteractor player)
     {
-        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
-        { 
+        Debug.Log("Interact Marchand");
+        if (isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
+        }
+        else if (!isOnDial)
+        {
+            StartDialogue(sentences);
         }
     }
 
@@ -273,5 +273,5 @@ public class Marchand : MonoBehaviour, IDialogue
             return false; // Item is already equipped in armor slots
         }
         return true; // Item is not in the inventory
-    }
+    }    
 }

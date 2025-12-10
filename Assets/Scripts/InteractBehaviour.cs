@@ -171,7 +171,7 @@ public class InteractBehaviour : MonoBehaviour
         audioSource.PlayOneShot(pickUpSound);
 
         var interact = currentItem.GetComponent<IInteractable>();
-        interact?.SetTargeted(false);
+        interact?.SetTargeted(false, player.transform);
         Destroy(currentItem.gameObject);
 
         RespawnObject(currentItem.transform);

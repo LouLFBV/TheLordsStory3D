@@ -108,6 +108,9 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].Enable();
         playerInput.actions["Object2"].performed += OnObjectPerformed;
         playerInput.actions["Object2"].canceled += OnObjectCanceled;
+
+
+        DeviceWatcher.Instance.OnDeviceChanged += OnDeviceChanged;
     }
     void OnDisable()
     {
@@ -126,6 +129,8 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].Disable();
         playerInput.actions["Object2"].performed -= OnObjectPerformed;
         playerInput.actions["Object2"].canceled -= OnObjectCanceled;
+
+        DeviceWatcher.Instance.OnDeviceChanged -= OnDeviceChanged;
     }
 
     private void OnWeaponPerformed(InputAction.CallbackContext ctx)
@@ -268,18 +273,12 @@ public class Palette : MonoBehaviour
             takingObject2 = false;
         }
 
-        DeviceType newDevice = Keyboard.current != null && Keyboard.current.wasUpdatedThisFrame
-        ? DeviceType.Keyboard
-        : Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame
-            ? DeviceType.Gamepad
-            : currentDevice;
+    }
 
-        if (newDevice != currentDevice)
-        {
-            currentDevice = newDevice;
-            UpdateBindingDisplay();
-        }
-
+    private void OnDeviceChanged(DeviceType device)
+    {
+        currentDevice = device;
+        UpdateBindingDisplay();
     }
 
     private void UpdateBindingDisplay()

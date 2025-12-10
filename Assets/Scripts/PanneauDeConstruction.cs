@@ -29,7 +29,7 @@ public class PanneauDeConstruction : InteractableBase
             craftingSystem.UpdateDisplayRecipes();
             craftingSystem.textIsRecipeListEmpty.SetActive(false);
             craftPanel.SetActive(true);
-            SetTargeted(false);
+            SetTargeted(false,PlayerStats.instance.transform);
             if (craftingSystem.uiNavigationManager != null)
             {
                 craftingSystem.uiNavigationManager.onCancel = craftingSystem.ClosePanel;
