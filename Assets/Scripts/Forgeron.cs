@@ -10,13 +10,14 @@ public class Forgeron : PNJParent
     [SerializeField] private int upGradeAmount = 10;
     [SerializeField] private int upGradeAmountPourcentage = 5;
 
-    private void Update()
+    public override void OnInteract(PlayerInteractor player)
     {
-        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        if (isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
         }
+        StartDialogue(sentences);
     }
 
     // GESTION DU DIALOGUE

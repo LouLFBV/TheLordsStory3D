@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PNJ : MonoBehaviour, IDialogue
+public class PNJ : InteractableBase, IDialogue
 {
     [Header("Dialogue")]
     [SerializeField] private float distanceToInteract = 2f;
@@ -47,14 +47,7 @@ public class PNJ : MonoBehaviour, IDialogue
     public float dialogueEndTime;
     public float inputCooldown = 1f;
     private float dialogueStartTime;
-
-    private PlayerControls controls;
-    private void Awake()
-    {
-        controls = new PlayerControls();
-    }
-    private void OnEnable() => controls.Enable();
-    private void OnDisable() => controls.Disable();
+    private float inputCooldownEnding = 2f;
 
     private void Start()
     {
@@ -70,6 +63,18 @@ public class PNJ : MonoBehaviour, IDialogue
         canWanderOnStart = canWander;
     }
 
+
+    public override void OnInteract(PlayerInteractor player)
+    {
+        Debug.Log("Interacting with PNJ: " + namePNJ);
+        if (isOnDial && Time.time - dialogueStartTime > inputCooldown)
+        {
+            if (!DialogueManager.instance.SkipOrFinish(currentSpeakerDisplaying) && !DialogueManager.instance.inDelay)
+                NextLine();
+        }
+        else if (!firstDialoguePnjDone && !isOnDial && Time.time - dialogueEndTime > inputCooldownEnding)
+            StartDialogue();
+    }
     private void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -79,17 +84,6 @@ public class PNJ : MonoBehaviour, IDialogue
         {
             agent.ResetPath();
             animator.SetFloat("Speed", 0f);
-
-            if (controls.Player.Interact.triggered)
-            {
-                if (isOnDial && Time.time - dialogueStartTime > inputCooldown)
-                {
-                    if (!DialogueManager.instance.SkipOrFinish(currentSpeakerDisplaying) && !DialogueManager.instance.inDelay)
-                    {
-                        NextLine();
-                    }
-                }
-            }
         }
 
         if (canWander && !isOnDial && !playerIsClose)
@@ -108,9 +102,8 @@ public class PNJ : MonoBehaviour, IDialogue
             {
                 Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
                 randomDirection += wanderCenter.position;
-                NavMeshHit hit;
 
-                if (NavMesh.SamplePosition(randomDirection, out hit, wanderRadius, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
                 {
                     targetPosition = hit.position;
                     agent.SetDestination(targetPosition);
@@ -183,21 +176,21 @@ public class PNJ : MonoBehaviour, IDialogue
         if (index >= currentDialogue.Length)
         {
             // Fin du dialogue
-            if (activeQuest != null && activeQuest.status == QuestStatus.NotStarted && currentDialogue != sentencesIfPlayerIsBad)
+            if(activeQuest != null)
             {
-                print("lol");
-                DialogueManager.instance.ShowQuestButtons(this);
-                animator.SetBool("isTalking", false);
-            }
-            else
-            {
-                if (activeQuest != null && activeQuest.status == QuestStatus.Completed)
+                if (activeQuest.status == QuestStatus.NotStarted && currentDialogue != sentencesIfPlayerIsBad)
+                {
+                    DialogueManager.instance.ShowQuestButtons(this);
+                    animator.SetBool("isTalking", false);
+                }
+                else if(activeQuest.status == QuestStatus.Completed)
                 {
                     QuestManager.instance.ApplyRewards(activeQuest.data.rewards);
                     activeQuest = null;
                 }
-                EndDialogue();
             }
+            else
+                EndDialogue();
             return;
         }
 
@@ -345,14 +338,10 @@ public class PNJ : MonoBehaviour, IDialogue
         firstDialoguePnjDone = false;
         dialogueEndTime = Time.time;
 
-        if (DialogueManager.instance.dialoguePanel.transform.localScale.x > 0f &&
-        DialogueManager.instance.dialoguePanel.transform.localScale.y > 0f &&
-        DialogueManager.instance.dialoguePanel.transform.localScale.z > 0f)
+        if (DialogueManager.instance.dialoguePanel.transform.localScale.y > 0f)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
 
-        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.x > 0f &&
-        DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0f &&
-        DialogueManager.instance.dialoguePlayerPanel.transform.localScale.z > 0f)
+        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0f)
             DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
 
         animator.SetBool("isTalking", false);
@@ -397,4 +386,5 @@ public class PNJ : MonoBehaviour, IDialogue
             Gizmos.DrawWireSphere(wanderCenter.position, wanderRadius);
         }
     }
+
 }

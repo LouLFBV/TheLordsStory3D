@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public class PNJAcheteur : PNJParent
 {
@@ -17,17 +15,15 @@ public class PNJAcheteur : PNJParent
     [SerializeField] private int pointmaxReputationPourPerte;
     [SerializeField] private float pourcentagePerte;
 
-
-
-
-    private void Update()
+    public override void OnInteract(PlayerInteractor player)
     {
-        if (controls.Player.Interact.triggered && isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
+        if (isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
         }
-
+        else
+            StartDialogue(sentences);
     }
     // GESTION DU DIALOGUE
     public void StartDialogue(List<DialogueResponse> sentence)

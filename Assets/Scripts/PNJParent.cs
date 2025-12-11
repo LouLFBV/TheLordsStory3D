@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PNJParent : MonoBehaviour, IDialogue
+public class PNJParent : InteractableBase, IDialogue
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -31,18 +31,7 @@ public class PNJParent : MonoBehaviour, IDialogue
     protected float dialogueStartTime;
     [HideInInspector] public float dialogueEndTime;
 
-    protected PlayerControls controls;
-
     [SerializeField] protected UINavigationManager navManager;
-
-    private void Awake()
-    {
-        controls = new PlayerControls();
-    }
-
-    private void OnEnable()=>controls.Enable();
-    
-    private void OnDisable()=>controls.Disable();
     
     private void Start()
     {
@@ -53,6 +42,8 @@ public class PNJParent : MonoBehaviour, IDialogue
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
     }
+
+    public override void OnInteract(PlayerInteractor player){}
 
     public void EndCommerce()
     {
@@ -122,5 +113,4 @@ public class PNJParent : MonoBehaviour, IDialogue
     public bool IsOnDialogue() => isOnDial;
     public float LastDialogueTime() => dialogueEndTime;
     public float InputCooldown() => inputCooldown;
-
 }
