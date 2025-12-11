@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PNJParent : InteractableBase, IDialogue
+public class PNJParent : InteractableBase
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -109,8 +109,4 @@ public class PNJParent : InteractableBase, IDialogue
             navManager.onCancel = EndCommerce;
         }
     }
-
-    public bool IsOnDialogue() => isOnDial;
-    public float LastDialogueTime() => dialogueEndTime;
-    public float InputCooldown() => inputCooldown;
 }

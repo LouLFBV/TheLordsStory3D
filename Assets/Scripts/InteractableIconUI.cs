@@ -38,8 +38,10 @@ public class InteractableIconUI : MonoBehaviour
     {
         if (DeviceWatcher.Instance != null)
             DeviceWatcher.Instance.OnDeviceChanged += UpdateDevice;
-    }
 
+        // Met à jour l’icône au cas où on activerait le panel après un switch
+        UpdateDevice(DeviceWatcher.Instance.CurrentDevice);
+    }
 
     private void OnDisable()
     {
@@ -47,12 +49,12 @@ public class InteractableIconUI : MonoBehaviour
             DeviceWatcher.Instance.OnDeviceChanged -= UpdateDevice;
     }
 
-
     private void UpdateDevice(DeviceType device)
     {
         currentDevice = device;
-        UpdateIcon();
+        UpdateIcon(); // Ton UpdateIcon existant
     }
+
 
     private void LateUpdate()
     {

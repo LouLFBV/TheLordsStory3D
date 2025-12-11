@@ -53,26 +53,36 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void Update()
+    public void HandlePanelOpened()
     {
-        atLeashOnePanelOpened = UIPanels.Any(panel => panel != null && panel.activeSelf);
+        // Désactiver le contrôle du joueur
+        aimBehaviourBasic.enabled = false;
+        moveBehaviour.StopPlayer();
+        jumpBehaviour.canJump = false;
 
-        if (atLeashOnePanelOpened)
-        {
-            aimBehaviourBasic.enabled = false;
-            playerCamera.horizontalAimingSpeed = 0f;
-            playerCamera.verticalAimingSpeed = 0f;
-            Cursor.visible = true; // affiche le curseur
-            Cursor.lockState = CursorLockMode.None; // déverrouille le curseur
+        // Arrêter la caméra
+        playerCamera.horizontalAimingSpeed = 0f;
+        playerCamera.verticalAimingSpeed = 0f;
 
-        }
-        else
-        {
-            aimBehaviourBasic.enabled = true;
-            playerCamera.horizontalAimingSpeed = defaultHorizontalAimingSpeed;
-            playerCamera.verticalAimingSpeed = defaultVerticalAimingSpeed;
-            Cursor.visible = false; // cache le curseur
-            Cursor.lockState = CursorLockMode.Locked; // verrouille le curseur au centre de l'écran
-        }
+        // Afficher le curseur
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
+
+    public void HandlePanelClosed()
+    {
+        // Réactiver le contrôle du joueur
+        aimBehaviourBasic.enabled = true;
+        moveBehaviour.StartPlayer();
+        jumpBehaviour.canJump = true;
+
+        // Rétablir la caméra
+        playerCamera.horizontalAimingSpeed = defaultHorizontalAimingSpeed;
+        playerCamera.verticalAimingSpeed = defaultVerticalAimingSpeed;
+
+        // Masquer le curseur
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
 }

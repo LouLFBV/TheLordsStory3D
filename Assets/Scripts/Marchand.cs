@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System;
 
-public class Marchand : InteractableBase, IDialogue
+public class Marchand : InteractableBase
 {
     private UIManager uIManager;
     [Header("Panel")]
@@ -126,9 +126,6 @@ public class Marchand : InteractableBase, IDialogue
         }
     }
 
-    public bool IsOnDialogue() => isOnDial;
-    public float LastDialogueTime() => dialogueEndTime;
-    public float InputCooldown() => inputCooldown;
     public void EndCommerce()
     {
         isOnDial = false;

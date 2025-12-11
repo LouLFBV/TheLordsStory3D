@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PNJ : InteractableBase, IDialogue
+public class PNJ : InteractableBase
 {
     [Header("Dialogue")]
     [SerializeField] private float distanceToInteract = 2f;
@@ -369,12 +369,6 @@ public class PNJ : InteractableBase, IDialogue
             }
         }
     }
-
-    public bool IsOnDialogue() => isOnDial;
-    public float LastDialogueTime() => dialogueEndTime;
-    public float InputCooldown() => inputCooldown;
-
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -386,5 +380,4 @@ public class PNJ : InteractableBase, IDialogue
             Gizmos.DrawWireSphere(wanderCenter.position, wanderRadius);
         }
     }
-
 }
