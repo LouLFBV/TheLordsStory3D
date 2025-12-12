@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 using System;
+using System.Collections;
 
 public class DeviceWatcher : MonoBehaviour
 {
@@ -11,62 +11,48 @@ public class DeviceWatcher : MonoBehaviour
 
     public event Action<DeviceType> OnDeviceChanged;
 
+    [SerializeField] private PlayerInput playerInput;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+        else { Destroy(gameObject); return; }
 
-        // Device par défaut
         CurrentDevice = Gamepad.current != null ? DeviceType.Gamepad : DeviceType.Keyboard;
     }
 
     private void OnEnable()
     {
+        playerInput.onActionTriggered += OnActionTriggered;
         InputSystem.onDeviceChange += OnDeviceChange;
-        InputSystem.onEvent += OnInputEvent;
     }
 
     private void OnDisable()
     {
+        playerInput.onActionTriggered -= OnActionTriggered;
         InputSystem.onDeviceChange -= OnDeviceChange;
-        InputSystem.onEvent -= OnInputEvent;
     }
 
-    private void Update()
+    private void OnActionTriggered(InputAction.CallbackContext ctx)
     {
-        // Détecte automatiquement le device actuel même sans input
-        DeviceType detected = GamepadDetector.GetDeviceType();
-        if (detected != CurrentDevice)
-        {
-            SwitchTo(detected);
-        }
+        var dev = ctx.control.device;
+
+        if (dev is Gamepad)
+            SwitchTo(DeviceType.Gamepad);
+
+        else if (dev is Keyboard || dev is Mouse)
+            SwitchTo(DeviceType.Keyboard);
     }
 
     private void OnDeviceChange(InputDevice device, InputDeviceChange change)
     {
-        // Branche/débranche un gamepad
         if (device is Gamepad &&
-            (change == InputDeviceChange.Added || change == InputDeviceChange.Reconnected))
+           (change == InputDeviceChange.Added || change == InputDeviceChange.Reconnected))
         {
             SwitchTo(DeviceType.Gamepad);
         }
 
-        if (device is Gamepad &&
-            (change == InputDeviceChange.Disconnected))
-        {
-            SwitchTo(DeviceType.Keyboard);
-        }
-    }
-
-    private void OnInputEvent(InputEventPtr eventPtr, InputDevice device)
-    {   
-        if (device is Gamepad)
-            SwitchTo(DeviceType.Gamepad);
-        else if (device is Keyboard || device is Mouse)
+        if (device is Gamepad && change == InputDeviceChange.Disconnected)
             SwitchTo(DeviceType.Keyboard);
     }
 
@@ -77,10 +63,15 @@ public class DeviceWatcher : MonoBehaviour
 
         CurrentDevice = newDevice;
 
-        // Notifie tout le monde
         OnDeviceChanged?.Invoke(CurrentDevice);
 
-        // Mise à jour automatique des icônes
+        StartCoroutine(RefreshIcons());
+    }
+
+    private IEnumerator RefreshIcons()
+    {
+        yield return null;      // attendre 1 frame
+        yield return null;      // attendre une deuxième frame
         InputIconDatabase.instance.UpdateGamepadSet();
     }
 }
