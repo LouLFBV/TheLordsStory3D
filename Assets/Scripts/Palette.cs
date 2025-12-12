@@ -77,7 +77,6 @@ public class Palette : MonoBehaviour
     private bool takingWeapon2;
     private bool takingObject1;
     private bool takingObject2;
-    private DeviceType currentDevice;
     #endregion
 
     private void Awake()
@@ -91,6 +90,8 @@ public class Palette : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    #region PlayerInput Methods
     void OnEnable()
     {
         playerInput.actions["Weapon1"].Enable();
@@ -110,7 +111,7 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].canceled += OnObjectCanceled;
 
 
-        DeviceWatcher.Instance.OnDeviceChanged += OnDeviceChanged;
+        DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
     }
     void OnDisable()
     {
@@ -130,7 +131,7 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].performed -= OnObjectPerformed;
         playerInput.actions["Object2"].canceled -= OnObjectCanceled;
 
-        DeviceWatcher.Instance.OnDeviceChanged -= OnDeviceChanged;
+        DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
     }
 
     private void OnWeaponPerformed(InputAction.CallbackContext ctx)
@@ -157,13 +158,12 @@ public class Palette : MonoBehaviour
         else if (ctx.action.name == "Object2") takingObject2 = false;
     }
 
-
+    #endregion
 
     private void Start()
     {
         UpdateEquipmentsDesequipButtons();
-        currentDevice = Gamepad.current != null ? DeviceType.Gamepad : DeviceType.Keyboard;
-        UpdateBindingDisplay();
+        UpdateBindingDisplay(DeviceWatcher.Instance.CurrentDevice);
     }
 
     void Update()
@@ -275,13 +275,8 @@ public class Palette : MonoBehaviour
 
     }
 
-    private void OnDeviceChanged(DeviceType device)
-    {
-        currentDevice = device;
-        UpdateBindingDisplay();
-    }
 
-    private void UpdateBindingDisplay()
+    private void UpdateBindingDisplay(DeviceType currentDevice)
     {
         InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1, currentDevice);
         InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2, currentDevice);

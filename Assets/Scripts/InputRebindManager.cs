@@ -36,7 +36,9 @@ public static class InputRebindManager
         {
             binding = action.bindings.FirstOrDefault(b =>
                 !string.IsNullOrEmpty(b.effectivePath) &&
-                b.effectivePath.Contains("<Gamepad>")
+                b.effectivePath.Contains("<Gamepad>") ||
+                b.effectivePath.Contains("<DualShockGamepadHID>") ||
+                b.effectivePath.Contains("<DualSenseGamepadHID>")
             );
         }
         else // Keyboard + Mouse
@@ -59,7 +61,7 @@ public static class InputRebindManager
             }
         }
 
-        // Fallback sécurité
-        iconField.enabled = false;
+        //// Fallback sécurité
+        //iconField.enabled = false;
     }
 }

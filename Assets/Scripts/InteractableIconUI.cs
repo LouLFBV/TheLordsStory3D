@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
+using System.Collections;
 
 public class InteractableIconUI : MonoBehaviour
 {
@@ -29,19 +29,14 @@ public class InteractableIconUI : MonoBehaviour
 
         if (icone == null)
             icone = GetComponent<Image>();
-
-        currentDevice = GamepadDetector.GetDeviceType();
-        UpdateIcon();
     }
 
     private void OnEnable()
     {
-        if (DeviceWatcher.Instance != null)
-            DeviceWatcher.Instance.OnDeviceChanged += UpdateDevice;
-
-        // Met à jour l’icône au cas où on activerait le panel après un switch
-        UpdateDevice(DeviceWatcher.Instance.CurrentDevice);
+        StartCoroutine(InitializeDeviceWatcher());
+        StartCoroutine(UpdateIconWhenReady());
     }
+
 
     private void OnDisable()
     {
@@ -49,12 +44,32 @@ public class InteractableIconUI : MonoBehaviour
             DeviceWatcher.Instance.OnDeviceChanged -= UpdateDevice;
     }
 
+    private IEnumerator InitializeDeviceWatcher()
+    {
+        // Attend que DeviceWatcher soit prêt
+        while (DeviceWatcher.Instance == null)
+            yield return null;
+
+        DeviceWatcher.Instance.OnDeviceChanged += UpdateDevice;
+
+        currentDevice = DeviceWatcher.Instance.CurrentDevice;
+        UpdateIcon();
+    }
+
+    private IEnumerator UpdateIconWhenReady()
+    {
+        // Attend que InputProvider soit prêt
+        while (InputProvider.Instance == null)
+            yield return null;
+
+        UpdateIcon();
+    }
+
     private void UpdateDevice(DeviceType device)
     {
         currentDevice = device;
-        UpdateIcon(); // Ton UpdateIcon existant
+        StartCoroutine(UpdateIconWhenReady());
     }
-
 
     private void LateUpdate()
     {
@@ -63,30 +78,19 @@ public class InteractableIconUI : MonoBehaviour
 
         UpdateWorldPosition();
 
-        // Toujours regarder la caméra
         transform.LookAt(Camera.main.transform);
         transform.Rotate(0, 180f, 0);
     }
 
-    /// <summary>
-    /// Positionne l’icône du côté du joueur
-    /// </summary>
     private void UpdateWorldPosition()
     {
         Vector3 objectPos = interactableTarget.position;
         Vector3 dir = (playerRef.position - objectPos).normalized;
 
-        Vector3 iconPos =
-            objectPos +
-            dir * distanceFromObject +
-            Vector3.up * heightOffset;
-
+        Vector3 iconPos = objectPos + dir * distanceFromObject + Vector3.up * heightOffset;
         transform.position = iconPos;
     }
 
-    /// <summary>
-    /// Appelé depuis InteractBehaviour pour donner les références
-    /// </summary>
     public void Initialize(Transform interactable, Transform player)
     {
         interactableTarget = interactable;
@@ -95,8 +99,9 @@ public class InteractableIconUI : MonoBehaviour
 
     private void UpdateIcon()
     {
-        if (icone == null) return;
-        if (InputProvider.Instance == null) return;
+        if (icone == null || InputProvider.Instance == null)
+            return;
+
 
         InputRebindManager.UpdateBindingDisplayForAction(
             InputProvider.Instance.UIInput.actions["Interact"],
@@ -110,7 +115,8 @@ public class InteractableIconUI : MonoBehaviour
         if (isVisible) return;
         isVisible = true;
 
-        enabled = true;
+        if (icone != null)
+            icone.enabled = true;
 
         StopAllCoroutines();
         StartCoroutine(PopAnimation(baseScale));
@@ -126,9 +132,13 @@ public class InteractableIconUI : MonoBehaviour
         Invoke(nameof(DisableSelf), scaleDuration + 0.05f);
     }
 
-    private void DisableSelf() => enabled = false;
+    private void DisableSelf()
+    {
+        if (icone != null)
+            icone.enabled = false;
+    }
 
-    private System.Collections.IEnumerator PopAnimation(Vector3 targetScale)
+    private IEnumerator PopAnimation(Vector3 targetScale)
     {
         float timer = 0f;
         Vector3 startScale = Vector3.zero;
@@ -143,7 +153,7 @@ public class InteractableIconUI : MonoBehaviour
         transform.localScale = targetScale;
     }
 
-    private System.Collections.IEnumerator ScaleDownAnimation()
+    private IEnumerator ScaleDownAnimation()
     {
         float timer = 0f;
         Vector3 startScale = transform.localScale;

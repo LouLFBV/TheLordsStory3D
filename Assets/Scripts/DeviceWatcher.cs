@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using System;
 
 public class DeviceWatcher : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class DeviceWatcher : MonoBehaviour
 
     public DeviceType CurrentDevice { get; private set; }
 
-    public event System.Action<DeviceType> OnDeviceChanged;
+    public event Action<DeviceType> OnDeviceChanged;
 
     private void Awake()
     {
@@ -35,6 +36,16 @@ public class DeviceWatcher : MonoBehaviour
         InputSystem.onEvent -= OnInputEvent;
     }
 
+    private void Update()
+    {
+        // Détecte automatiquement le device actuel même sans input
+        DeviceType detected = GamepadDetector.GetDeviceType();
+        if (detected != CurrentDevice)
+        {
+            SwitchTo(detected);
+        }
+    }
+
     private void OnDeviceChange(InputDevice device, InputDeviceChange change)
     {
         // Branche/débranche un gamepad
@@ -52,12 +63,11 @@ public class DeviceWatcher : MonoBehaviour
     }
 
     private void OnInputEvent(InputEventPtr eventPtr, InputDevice device)
-    {
-        if (device is Keyboard || device is Mouse)
-            SwitchTo(DeviceType.Keyboard);
-
-        else if (device is Gamepad)
+    {   
+        if (device is Gamepad)
             SwitchTo(DeviceType.Gamepad);
+        else if (device is Keyboard || device is Mouse)
+            SwitchTo(DeviceType.Keyboard);
     }
 
     private void SwitchTo(DeviceType newDevice)
@@ -66,7 +76,6 @@ public class DeviceWatcher : MonoBehaviour
             return;
 
         CurrentDevice = newDevice;
-
 
         // Notifie tout le monde
         OnDeviceChanged?.Invoke(CurrentDevice);
