@@ -2,15 +2,17 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System;
 
 public static class InputRebindManager
 {
     private const string RebindsKey = "input_rebinds";
-
+    public static event Action OnRebindsChanged;
     public static void SaveRebinds(PlayerInput playerInput)
     {
         string json = playerInput.actions.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString(RebindsKey, json);
+        OnRebindsChanged?.Invoke();
     }
 
     public static void LoadRebinds(PlayerInput playerInput)

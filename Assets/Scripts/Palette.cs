@@ -4,7 +4,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine.InputSystem;
 using System.Collections;
-using UnityEditorInternal.VersionControl;
 
 public class Palette : MonoBehaviour
 {

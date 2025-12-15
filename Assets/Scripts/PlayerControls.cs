@@ -753,7 +753,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""dd571b66-81d7-4bec-ad94-728d41a7587f"",
-                    ""path"": ""<DualShockGamepad>/touchpadButton"",
+                    ""path"": ""<Gamepad>/select"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

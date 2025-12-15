@@ -64,9 +64,11 @@ public class Marchand : InteractableBase
     {
         if (!isOnDial)
         {
-            moveBehaviour.StopPlayer();
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            var uiManager = UIManager.instance;
+            if (uiManager != null)
+            {
+                uiManager.HandlePanelOpened();
+            }
             isOnDial = true;
 
             BasicBehaviour behaviourManager = playerTransform.GetComponent<BasicBehaviour>();
@@ -129,12 +131,14 @@ public class Marchand : InteractableBase
     public void EndCommerce()
     {
         isOnDial = false;
-        moveBehaviour.StartPlayer();
         dialogueEndTime = Time.time;
         animatorPanelProduits.SetBool("PanelIsOpen", false);
         isActive.SetActive(false);
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        var uiManager = UIManager.instance;
+        if (uiManager != null)
+        {
+            uiManager.HandlePanelClosed();
+        }
         if (navManager != null)
         {
             navManager.onCancel = null;

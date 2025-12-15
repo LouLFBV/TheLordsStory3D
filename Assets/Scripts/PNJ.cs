@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 public class PNJ : InteractableBase
 {
+    #region Champs/Paramètres
     [Header("Dialogue")]
     [SerializeField] private float distanceToInteract = 2f;
     public string namePNJ;
@@ -27,7 +28,6 @@ public class PNJ : InteractableBase
     [SerializeField] private float seuilDeReputationQuest = 0f;
 
 
-
     [Header("Wandering")]
     [SerializeField] private bool canWander = true;
     [SerializeField] private Transform wanderCenter;
@@ -39,6 +39,9 @@ public class PNJ : InteractableBase
 
     private Transform playerTransform;
     private MoveBehaviour moveBehaviour;
+    private JumpBehaviour jumpBehaviour;
+    private AimBehaviourBasic aimBehaviour;
+
     private Animator animator;
     private NavMeshAgent agent;
     private float vitesseDeRotation = 0.15f;
@@ -48,11 +51,14 @@ public class PNJ : InteractableBase
     public float inputCooldown = 1f;
     private float dialogueStartTime;
     private float inputCooldownEnding = 2f;
+    #endregion
 
     private void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
+        jumpBehaviour = playerTransform.GetComponent<JumpBehaviour>();
+        aimBehaviour = playerTransform.GetComponent<AimBehaviourBasic>();
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
 
@@ -113,8 +119,7 @@ public class PNJ : InteractableBase
             }
         }
     }
-
-
+    #region Start/End Dialogue
     public void StartDialogue()
     {
         moveBehaviour.StopPlayer();
@@ -122,6 +127,8 @@ public class PNJ : InteractableBase
         StartCoroutine(RotateTowardsToPlayer());
         animator.SetFloat("Speed", 0f);
         canWander = false;
+        aimBehaviour.enabled = false;
+        jumpBehaviour.canJump = false;
         isOnDial = true;
         agent.isStopped = true;
 
@@ -134,32 +141,59 @@ public class PNJ : InteractableBase
         AddEnemiesKilled();
 
         // Choix du dialogue initial
-        if (activeQuest != null && canGiveQuest && !isPnjInteraction)
+        if (canGiveQuest)
         {
-            if (activeQuest.status == QuestStatus.NotStarted)
-                currentDialogue = activeQuest.data.sentencesBeforeQuest;
-            else if (activeQuest.status == QuestStatus.InProgress)
+            if (activeQuest != null && !isPnjInteraction)
+            {
+                if (activeQuest.status == QuestStatus.NotStarted)
+                    currentDialogue = activeQuest.data.sentencesBeforeQuest;
+                else if (activeQuest.status == QuestStatus.InProgress)
                     if (QuestManager.instance.CanCompleteQuest(activeQuest))
                         CompleteQuest();
                     else
                         currentDialogue = activeQuest.data.sentencesQuestInProgress;
-            else
-                currentDialogue = activeQuest.data.sentencesQuestCompleted;
-        }
-        else if (questsDisponibles != null && currentQuestIndex < questsDisponibles.Length && canGiveQuest)
-        {
-            activeQuest = questsDisponibles[currentQuestIndex];
-            currentDialogue = activeQuest.data.sentencesBeforeQuest;
+                else
+                    currentDialogue = activeQuest.data.sentencesQuestCompleted;
+            }
+            else if (questsDisponibles != null && currentQuestIndex < questsDisponibles.Length)
+            {
+                activeQuest = questsDisponibles[currentQuestIndex];
+                currentDialogue = activeQuest.data.sentencesBeforeQuest;
+            }
         }
         else if (!isPnjInteraction)
         {
             currentDialogue = sentences;
+            activeQuest = null;
         }
-
         // Démarre la lecture
         NextLine();
     }
 
+    private void EndDialogue()
+    {
+        isOnDial = false;
+        index = 0;
+        sentenceIndex = 0;
+        firstDialoguePlayerDone = false;
+        firstDialoguePnjDone = false;
+        dialogueEndTime = Time.time;
+
+        if (DialogueManager.instance.dialoguePanel.transform.localScale.y > 0f)
+            DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
+
+        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0f)
+            DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
+
+        animator.SetBool("isTalking", false);
+        if (canWanderOnStart) canWander = true;
+        moveBehaviour.StartPlayer();
+        jumpBehaviour.canJump = true;
+        aimBehaviour.enabled = true;
+        agent.isStopped = false;
+        if (isPnjInteraction) isPnjInteraction = false;
+    }
+#endregion
     public void NextLine()
     {
         // Vérifie si le joueur a une mauvaise réputation
@@ -188,6 +222,8 @@ public class PNJ : InteractableBase
                     QuestManager.instance.ApplyRewards(activeQuest.data.rewards);
                     activeQuest = null;
                 }
+                else
+                    EndDialogue();
             }
             else
                 EndDialogue();
@@ -234,9 +270,7 @@ public class PNJ : InteractableBase
         }
     }
 
-
-
-
+    #region Accept/Refuse Quest
     public void AcceptQuest()
     {
         if (activeQuest == null) return;
@@ -262,7 +296,7 @@ public class PNJ : InteractableBase
         NextLine();
         activeQuest = null;
     }
-
+    #endregion
     private void CompleteQuest()
     {
         if (activeQuest == null) return;
@@ -329,27 +363,7 @@ public class PNJ : InteractableBase
         }
     }
 
-    private void EndDialogue()
-    {
-        isOnDial = false;
-        index = 0;
-        sentenceIndex = 0;
-        firstDialoguePlayerDone = false;
-        firstDialoguePnjDone = false;
-        dialogueEndTime = Time.time;
-
-        if (DialogueManager.instance.dialoguePanel.transform.localScale.y > 0f)
-            DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePanel);
-
-        if (DialogueManager.instance.dialoguePlayerPanel.transform.localScale.y > 0f)
-            DialogueManager.instance.ActiveDesactiveDialoguePanel(DialogueManager.instance.animatorDialoguePlayerPanel);
-
-        animator.SetBool("isTalking", false);
-        if (canWanderOnStart) canWander = true;
-        moveBehaviour.StartPlayer();
-        agent.isStopped = false;
-        if(isPnjInteraction) isPnjInteraction = false;
-    }
+    
 
     private IEnumerator RotateTowardsToPlayer()
     {

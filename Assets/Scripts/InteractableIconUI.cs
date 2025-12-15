@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class InteractableIconUI : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class InteractableIconUI : MonoBehaviour
     {
         StartCoroutine(InitializeDeviceWatcher());
         StartCoroutine(UpdateIconWhenReady());
+        InputRebindManager.OnRebindsChanged += OnRebindsChanged;
     }
 
 
@@ -42,6 +44,12 @@ public class InteractableIconUI : MonoBehaviour
     {
         if (DeviceWatcher.Instance != null)
             DeviceWatcher.Instance.OnDeviceChanged -= UpdateDevice;
+        InputRebindManager.OnRebindsChanged -= OnRebindsChanged;
+    }
+
+    private void OnRebindsChanged()
+    {
+        StartCoroutine(UpdateIconWhenReady());
     }
 
     private IEnumerator InitializeDeviceWatcher()

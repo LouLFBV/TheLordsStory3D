@@ -35,14 +35,23 @@ public class DeviceWatcher : MonoBehaviour
 
     private void OnActionTriggered(InputAction.CallbackContext ctx)
     {
-        var dev = ctx.control.device;
+        if (!ctx.performed)
+            return;
 
-        if (dev is Gamepad)
+        var control = ctx.action?.activeControl;
+        if (control == null)
+            return;
+
+        var device = control.device;
+        if (device == null)
+            return;
+
+        if (device is Gamepad)
             SwitchTo(DeviceType.Gamepad);
-
-        else if (dev is Keyboard || dev is Mouse)
+        else if (device is Keyboard || device is Mouse)
             SwitchTo(DeviceType.Keyboard);
     }
+
 
     private void OnDeviceChange(InputDevice device, InputDeviceChange change)
     {
