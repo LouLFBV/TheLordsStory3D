@@ -5,8 +5,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    [SerializeField]
-    private GameObject[] UIPanels;
 
     [SerializeField]
     private ThirdPersonOrbitCamBasic playerCamera;
@@ -39,19 +37,6 @@ public class UIManager : MonoBehaviour
         defaultVerticalAimingSpeed = playerCamera.verticalAimingSpeed;
     }
 
-    public void AddPanel( GameObject panel)
-    {
-        if (UIPanels == null || UIPanels.Length == 0)
-        {
-            UIPanels = new GameObject[] { panel };
-        }
-        else
-        {
-            var tempList = UIPanels.ToList();
-            tempList.Add(panel);
-            UIPanels = tempList.ToArray();
-        }
-    }
 
     public void HandlePanelOpened()
     {

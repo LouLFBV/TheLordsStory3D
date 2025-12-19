@@ -34,26 +34,6 @@ public class PlayerStats : MonoBehaviour
 
     [SerializeField] private float enduranceDecreaseRateForHungerAndThirst;
 
-    [Header("Hunger")]
-    [SerializeField]
-    private float maxHunger = 100f;
-    public float currentHunger;
-
-    [SerializeField]
-    private Image hungerBarFill;
-
-    [SerializeField]
-    private float hungerDecreaseRate;
-
-    [Header("Thirst")]
-    [SerializeField]
-    private float maxThirst = 100f;
-    public float currentThirst;
-
-    [SerializeField] private Image thirstBarFill;
-
-    [SerializeField] private float thirstDecreaseRate;
-
 
     [Header("Armor")]
     public float currentArmourPoints;
@@ -94,25 +74,18 @@ public class PlayerStats : MonoBehaviour
         instance = this;
         playerMovementScript = GetComponent<MoveBehaviour>();
         currentHealth = maxHealth;
-        currentHunger = maxHunger;
-        currentThirst = maxThirst;
         currentEndurance = maxEndurance;
     }
 
     void Update()
     {
-        UpdateHungerAndThirstBarFill();
-
-        bool isNotHungryOrThirsty = currentHunger >= 0 || currentThirst >= 0;
-        bool isHungryAndThirsty = currentHunger <= 0 && currentThirst <= 0;
-
         if (currentEndurance <= 0)
         {
             canRecoverEndurance = false;
             enduranceRecoveryTimer += Time.deltaTime;
 
-            // Après le délai, on peut régénérer si pas faim ni soif
-            if (enduranceRecoveryTimer >= enduranceRecoveryDelay && !isHungryAndThirsty)
+            // Après le délai, on peut régénérer 
+            if (enduranceRecoveryTimer >= enduranceRecoveryDelay)
             {
                 canRecoverEndurance = true;
                 enduranceRecoveryTimer = 0f;
@@ -125,14 +98,9 @@ public class PlayerStats : MonoBehaviour
             canRecoverEndurance = true;
         }
 
-        if (!playerMovementScript.isSprinting  && currentEndurance < maxEndurance && canRecoverEndurance && isNotHungryOrThirsty && !isHungryAndThirsty)
+        if (!playerMovementScript.isSprinting  && currentEndurance < maxEndurance && canRecoverEndurance)
         {
             UpdateEndurance(20f * Time.deltaTime); // regen endurance
-        }
-        else if (isHungryAndThirsty)
-        {
-            // endurance diminue passivement si faim ET soif
-            UpdateEndurance(-enduranceDecreaseRateForHungerAndThirst * Time.deltaTime);
         }
     }
 
@@ -187,9 +155,6 @@ public class PlayerStats : MonoBehaviour
         isDead = true;
         playerMovementScript.canMove = false;
 
-        hungerDecreaseRate = 0;
-        thirstDecreaseRate = 0;
-
         animator.SetTrigger("Die");
     }
 
@@ -198,17 +163,6 @@ public class PlayerStats : MonoBehaviour
         healthBarFill.fillAmount = currentHealth / maxHealth;
     }
 
-    private void UpdateHungerAndThirstBarFill()
-    {
-        currentHunger -= hungerDecreaseRate * Time.deltaTime;
-        currentThirst -= thirstDecreaseRate * Time.deltaTime;
-
-        currentHunger = currentHunger < 0 ? 0 : currentHunger;
-        currentThirst = currentThirst < 0 ? 0 : currentThirst;
-
-        hungerBarFill.fillAmount = currentHunger / maxHunger;
-        thirstBarFill.fillAmount = currentThirst / maxThirst;
-    }
 
     public void UpdateEndurance(float amount)
     {
@@ -216,13 +170,10 @@ public class PlayerStats : MonoBehaviour
         enduranceBarFill.fillAmount = currentEndurance / maxEndurance;
     }
 
-    public void ConsumeItem(float health, float hunger, float thirst)
+    public void ConsumeItem(float health)
     {
         currentHealth = Mathf.Min(currentHealth + health, maxHealth);
-        currentHunger = Mathf.Min(currentHunger + hunger, maxHunger);
-        currentThirst = Mathf.Min(currentThirst + thirst, maxThirst);
         UpdateHealthBar();
-        UpdateHungerAndThirstBarFill();
     }
 
     public void AddGold(int amount)
@@ -260,13 +211,7 @@ public class PlayerStats : MonoBehaviour
         equipmentToDesequip = null;
     }
 
-    public void ActiveIsEquiping()
-    {
-        isEquiping = true;
-    }
+    public void ActiveIsEquiping()=> isEquiping = true;
 
-    public void DesactiveIsEquiping()
-    {
-        isEquiping = false;
-    }
+    public void DesactiveIsEquiping() => isEquiping = false;
 }

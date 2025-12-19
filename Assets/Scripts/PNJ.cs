@@ -79,7 +79,10 @@ public class PNJ : InteractableBase
                 NextLine();
         }
         else if (!firstDialoguePnjDone && !isOnDial && Time.time - dialogueEndTime > inputCooldownEnding)
+        {
             StartDialogue();
+            SetTargeted(false, playerTransform);
+        }
     }
     private void Update()
     {

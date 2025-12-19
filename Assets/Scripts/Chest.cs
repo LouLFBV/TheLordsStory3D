@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
-using static NavigationController;
 
 public class Chest : InteractableBase
 {
@@ -53,7 +52,6 @@ public class Chest : InteractableBase
 
     private Animator playerAnimator;
     private PlayerInput playerInput;
-    private UIManager uiManager;
 
     // -------------------------------------------------------
     // INITIALISATION
@@ -77,10 +75,6 @@ public class Chest : InteractableBase
 
         
 
-
-        // --- UI Manager ---
-        uiManager = GameObject.FindWithTag("GameManager").GetComponent<UIManager>();
-        uiManager.AddPanel(descriptionPanel);
 
         // --- Chest Setup ---
         closedRotation = topChest.transform.rotation;
@@ -291,7 +285,7 @@ public class Chest : InteractableBase
 
     private void Update()
     {
-        if (!destroyed)
+        if (!destroyed && (goldVisual == null || !goldVisual.activeSelf))
         {
             MakeHarvestableIfOpen();
         }

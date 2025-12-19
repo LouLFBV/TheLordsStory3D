@@ -19,12 +19,9 @@ public class TPZone : MonoBehaviour
     [SerializeField] private GameObject canvas;
     [SerializeField] private Button yesButton, noButton;
     public bool isActive = true;
-    private UIManager uIManager;
 
     private void Start()
     {
-        uIManager = GameObject.FindWithTag("GameManager").GetComponent<UIManager>();
-        uIManager.AddPanel(canvas);
         if (ID.isTeleporting)
         {
             // On ignore le trigger pendant un court moment

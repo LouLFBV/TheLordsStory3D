@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PNJParent : InteractableBase
 {
-    private UIManager uIManager;
     [Header("Panel")]
     [SerializeField] protected GameObject parentsProduits;
     [SerializeField] protected Animator animatorPanelProduits;
@@ -37,8 +36,6 @@ public class PNJParent : InteractableBase
     {
         leghthSentences = sentences.Count;
         animator = GetComponent<Animator>();
-        uIManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
-        uIManager.AddPanel(isActive);
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
     }

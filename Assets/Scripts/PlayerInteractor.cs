@@ -9,8 +9,11 @@ public class PlayerInteractor : MonoBehaviour
     [SerializeField] private float interactRadius = 0.5f; // Largeur du SphereCast
     [SerializeField] private LayerMask interactableMask;
 
-    [HideInInspector] public IInteractable currentTarget;
+    [HideInInspector] public IInteractable currentTarget; 
+    
     [SerializeField] private Transform playerTransform;
+    public Transform PlayerTransform => playerTransform;
+
 
     #region Player Input
     [SerializeField] private PlayerInput playerInput;
@@ -52,14 +55,15 @@ public class PlayerInteractor : MonoBehaviour
             var interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable != currentTarget)
             {
-                currentTarget?.SetTargeted(false, playerTransform);
+                currentTarget?.SetTargeted(false, PlayerTransform);
                 currentTarget = interactable;
-                currentTarget?.SetTargeted(true, playerTransform);
+                currentTarget?.SetTargeted(true, PlayerTransform);
             }
+            Debug.Log($"Interactable detected: {hit.collider.name}");
         }
         else
         {
-            currentTarget?.SetTargeted(false, playerTransform);
+            currentTarget?.SetTargeted(false, PlayerTransform);
             currentTarget = null;
         }
     }

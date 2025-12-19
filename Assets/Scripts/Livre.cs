@@ -10,15 +10,10 @@ public class Livre :InteractableBase
 
     [SerializeField] private GameObject canvas;
     public bool isOpen = false;
-    public UIManager uIManager;
     [SerializeField] private AudioSource openSound;
-    [SerializeField] private MoveBehaviour moveBehaviour;
 
     void Start()
     {
-        moveBehaviour = GameObject.FindGameObjectWithTag("Player").GetComponent<MoveBehaviour>();
-        uIManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
-        uIManager.AddPanel(canvas);
         if (texteMPPage1 != null)
             texteMPPage1.text = textePage1;
         if (texteMPPage2 != null)
@@ -34,15 +29,14 @@ public class Livre :InteractableBase
             {
                 openSound.Play();
             }
+            SetTargeted(false, PlayerStats.instance.transform);
             canvas.SetActive(true);
             isOpen = true;
-            moveBehaviour.StopPlayer();
         }
         else
         {
             canvas.SetActive(false);
             isOpen = false;
-            moveBehaviour.StartPlayer();
         }
     }
 

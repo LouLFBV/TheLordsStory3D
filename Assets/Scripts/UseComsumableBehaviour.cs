@@ -41,7 +41,7 @@ public class UseComsumableBehaviour : MonoBehaviour
     {
         if (numberOfObject == 1)
         {
-            playerStats.ConsumeItem(palette.equipmentObject1Item.healthEffect, palette.equipmentObject1Item.hungerEffect, palette.equipmentObject1Item.thirstEffect);
+            playerStats.ConsumeItem(palette.equipmentObject1Item.healthEffect);
 
 
             ItemInInventory itemInInventory = palette.objects.Where(x=> x.itemData == palette.equipmentObject1Item).First();
@@ -61,7 +61,7 @@ public class UseComsumableBehaviour : MonoBehaviour
         }
         else
         {
-            playerStats.ConsumeItem(palette.equipmentObject2Item.healthEffect, palette.equipmentObject2Item.hungerEffect, palette.equipmentObject2Item.thirstEffect);
+            playerStats.ConsumeItem(palette.equipmentObject2Item.healthEffect);
             
 
 

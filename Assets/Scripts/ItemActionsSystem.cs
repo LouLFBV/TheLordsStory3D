@@ -96,7 +96,7 @@ public class ItemActionsSystem : MonoBehaviour
 
     public void UseActionButton()
     {
-        playerStats.ConsumeItem(itemCurrentlySelected.healthEffect, itemCurrentlySelected.hungerEffect, itemCurrentlySelected.thirstEffect);
+        playerStats.ConsumeItem(itemCurrentlySelected.healthEffect);
         Inventory.instance.RemoveItem(itemCurrentlySelected);
         CloseActionPanel();
     }

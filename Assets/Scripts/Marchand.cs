@@ -1,13 +1,9 @@
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using System;
 
 public class Marchand : InteractableBase
 {
-    private UIManager uIManager;
     [Header("Panel")]
     [SerializeField] private GameObject parentsProduits;
     [SerializeField] private GameObject panelProduits;
@@ -26,7 +22,6 @@ public class Marchand : InteractableBase
     private DialogueResponse[] currentDialogue; // tableau actif
     private bool firstDialoguePlayerDone = false, firstDialoguePnjDone = false;
     private Transform playerTransform;
-    private MoveBehaviour moveBehaviour;
     private Animator animator;
 
 
@@ -40,10 +35,7 @@ public class Marchand : InteractableBase
     {
        
         animator = GetComponent<Animator>();
-        uIManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<UIManager>();
-        uIManager.AddPanel(isActive);
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
     }
     public override void OnInteract(PlayerInteractor player)
     {

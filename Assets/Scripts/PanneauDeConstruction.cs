@@ -9,7 +9,6 @@ public class PanneauDeConstruction : InteractableBase
     [SerializeField] private GameObject craftPanel;
 
     [SerializeField] private RecipeData recetteDeLObject;
-    private UIManager uiManager;
 
     public override void OnInteract(PlayerInteractor player)
     {
@@ -18,11 +17,6 @@ public class PanneauDeConstruction : InteractableBase
 
     public void OpenPanel()
     {
-        if (uiManager == null)
-        {
-            uiManager = UIManager.instance;
-            uiManager.AddPanel(craftPanel);
-        }
         if (craftPanel != null && !craftPanel.activeInHierarchy)
         {
             craftingSystem.availableRecipes = new List<RecipeData> { recetteDeLObject };

@@ -23,7 +23,10 @@ public class PNJAcheteur : PNJParent
                 StartDialogue(sentences);
         }
         else
+        {
             StartDialogue(sentences);
+            SetTargeted(false, playerTransform);
+        }
     }
     // GESTION DU DIALOGUE
     public void StartDialogue(List<DialogueResponse> sentence)

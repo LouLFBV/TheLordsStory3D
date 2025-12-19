@@ -35,8 +35,6 @@ public class SaveSystem : MonoBehaviour
             equipmentLegsItem = equipmentSystem.equipmentLegsItem,
             equipmentFeetItem = equipmentSystem.equipmentFeetItem,
             currentHealth = playerStats.currentHealth,
-            currentHunger = playerStats.currentHunger,
-            currentThirst = playerStats.currentThirst,
         };
 
         string jsonData = JsonUtility.ToJson(saveData);
@@ -71,8 +69,6 @@ public class SaveSystem : MonoBehaviour
         Inventory.instance.LoadData(savedData.inventoryContent);
 
         playerStats.currentHealth = savedData.currentHealth;
-        playerStats.currentHunger = savedData.currentHunger;
-        playerStats.currentThirst = savedData.currentThirst;
         playerStats.UpdateHealthBar();
 
         Debug.Log("Data loaded successfully. Player position set to: " + playerTransform.position);

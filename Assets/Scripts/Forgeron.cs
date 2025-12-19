@@ -17,7 +17,11 @@ public class Forgeron : PNJParent
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
                 StartDialogue(sentences);
         }
-        StartDialogue(sentences);
+        else
+        {
+            SetTargeted(false, playerTransform);
+            StartDialogue(sentences);
+        }
     }
 
     // GESTION DU DIALOGUE
