@@ -8,7 +8,7 @@ public class ItemInteractable : InteractableBase
     {
         item = GetComponent<Item>();
         if (item == null)
-            Debug.LogError("ItemInteractable requires an Item component!");
+            Debug.LogError($"ItemInteractable requires an Item component! : {gameObject.name}");
     }
     public override void OnInteract(PlayerInteractor player)
     {

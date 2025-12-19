@@ -209,6 +209,8 @@ public class Chest : InteractableBase
         libItem?.itemPrefab.SetActive(false);
 
         palette.RemoveObject(slot);
+        palette.isEquippedObject1 = false;
+        palette.isEquippedObject2 = false;
         palette.UpdateImageSeleted();
         playerAnimator.SetBool("CarryingConsumable", false);
     }

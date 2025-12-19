@@ -19,6 +19,8 @@ public class InteractableIconUI : MonoBehaviour
     private Vector3 baseScale;
     private bool isVisible = false;
     private DeviceType currentDevice;
+    private Coroutine animationCoroutine;
+
 
     private Transform interactableTarget;
     private Transform playerRef;
@@ -120,31 +122,49 @@ public class InteractableIconUI : MonoBehaviour
 
     public void Show()
     {
-        if (isVisible) return;
+        // IMPORTANT : annule toute disparition programmée
+        CancelInvoke(nameof(DisableSelf));
+
+        if (isVisible)
+            return;
+
         isVisible = true;
 
         if (icone != null)
             icone.enabled = true;
 
-        StopAllCoroutines();
-        StartCoroutine(PopAnimation(baseScale));
+        if (animationCoroutine != null)
+            StopCoroutine(animationCoroutine);
+
+        animationCoroutine = StartCoroutine(PopAnimation(baseScale));
     }
+
 
     public void Hide()
     {
-        if (!isVisible) return;
+        if (!isVisible)
+            return;
+
         isVisible = false;
 
-        StopAllCoroutines();
-        StartCoroutine(ScaleDownAnimation());
+        if (animationCoroutine != null)
+            StopCoroutine(animationCoroutine);
+
+        animationCoroutine = StartCoroutine(ScaleDownAnimation());
+
         Invoke(nameof(DisableSelf), scaleDuration + 0.05f);
     }
 
+
     private void DisableSelf()
     {
+        if (isVisible)
+            return; // sécurité ultime
+
         if (icone != null)
             icone.enabled = false;
     }
+
 
     private IEnumerator PopAnimation(Vector3 targetScale)
     {
