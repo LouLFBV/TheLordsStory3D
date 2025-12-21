@@ -52,6 +52,15 @@ public class Door : InteractableBase
                 animator = player.GetComponent<Animator>();
             }
         }
+        if (isLocked)
+        {
+            if (IsUnlockable)
+                objectType = InteractableObjectType.Key;
+            else
+                objectType = InteractableObjectType.Locked;
+        }
+            objectType = InteractableObjectType.Door;
+        interactUI.SetInteractable(this);
     }
     public void OpenAndCloseDoor()
     {
@@ -181,6 +190,8 @@ public class Door : InteractableBase
         isLocked = false;
         unlockedDoorSound.PlayOneShot(unlockedDoorSound.clip);
         OpenAndCloseDoor();
+        objectType = InteractableObjectType.Door;
+        interactUI.SetInteractable(this);
     }
 
     public override void OnInteract(PlayerInteractor player)

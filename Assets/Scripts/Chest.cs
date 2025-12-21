@@ -86,6 +86,12 @@ public class Chest : InteractableBase
             palette = Palette.instance;
         if (equipmentLibrary == null)
             equipmentLibrary = GameObject.FindWithTag("GameManager").GetComponent<EquipmentLibrary>();
+
+        if (isLocked)
+            objectType = InteractableObjectType.Key;        
+        else
+            objectType = InteractableObjectType.Chest;
+        interactUI.SetInteractable(this);
     }
 
 

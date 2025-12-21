@@ -15,8 +15,8 @@ public class InteractableIconUI : MonoBehaviour
 
 
     [Header("Icon Positioning")]
-    public float distanceFromObject = 0.6f;
-    public float heightOffset = 1.8f;
+    public float distanceFromObject = 0.2f;
+    public float heightOffset = 0.5f;
 
     private Vector3 baseScale;
     private bool isVisible = false;

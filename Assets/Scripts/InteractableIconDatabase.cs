@@ -31,7 +31,7 @@ public enum InteractableObjectType
     Key,
     Axe,
     Door,
-    NPC,
+    PNJ,
     Gold,
     Pickaxe,
     Hand
