@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System;
 
 public class InteractableIconUI : MonoBehaviour
 {
@@ -11,6 +10,9 @@ public class InteractableIconUI : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Image icone;
+    [SerializeField] private Image iconeObject;
+    [SerializeField] private InteractableIconDatabase iconDatabase;
+
 
     [Header("Icon Positioning")]
     public float distanceFromObject = 0.6f;
@@ -31,7 +33,11 @@ public class InteractableIconUI : MonoBehaviour
         transform.localScale = Vector3.zero;
 
         if (icone == null)
-            icone = GetComponent<Image>();
+            icone = transform.GetChild(0).GetComponent<Image>();
+
+        if (iconeObject == null)
+            iconeObject = transform.GetChild(1).GetComponent<Image>();
+
     }
 
     private void OnEnable()
@@ -163,9 +169,12 @@ public class InteractableIconUI : MonoBehaviour
 
         if (icone != null)
             icone.enabled = false;
+        if (iconeObject != null)
+            iconeObject.enabled = false;
+
     }
 
-
+    #region IEnumerators
     private IEnumerator PopAnimation(Vector3 targetScale)
     {
         float timer = 0f;
@@ -194,5 +203,20 @@ public class InteractableIconUI : MonoBehaviour
         }
 
         transform.localScale = Vector3.zero;
+    }
+    #endregion
+    public void SetInteractable(InteractableBase interactable)
+    {
+        if (interactable == null)
+            return;
+
+        Sprite sprite = iconDatabase.Get(interactable.objectType);
+        if (sprite == null)
+        {
+            iconeObject.enabled = false;
+            return;
+        }
+        iconeObject.sprite = sprite;
+        iconeObject.enabled = sprite != null;
     }
 }

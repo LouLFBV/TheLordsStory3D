@@ -73,7 +73,7 @@ public class Chest : InteractableBase
             Debug.LogError("[CHEST] Player introuvable !");
         }
 
-        
+
 
 
         // --- Chest Setup ---
@@ -225,7 +225,6 @@ public class Chest : InteractableBase
         isOpen = true;
 
         openSound.Play();
-        GetComponent<Collider>().enabled = false;
 
         // Reward immédiat
         if (rewardItem == null && goldAmount > 0)
@@ -302,9 +301,11 @@ public class Chest : InteractableBase
         if (isOpen)
         {
             destroyed = true;
+            objectType = InteractableObjectType.Axe;
+            interactUI.SetInteractable(this);
 
-            bottomChest.layer = LayerMask.NameToLayer("Harvestable");
-            bottomChest.tag = "Harvestable";
+            gameObject.layer = LayerMask.NameToLayer("Harvestable");
+            gameObject.tag = "Harvestable";
             bottomChest.GetComponent<Harvestable>().enabled = true;
         }
     }

@@ -103,12 +103,6 @@ public class Equipment : MonoBehaviour
             case DamageType.Foudre:
                 playerStats.currentArmourPointsElectric -= itemToDisable.armorPoints;
                 break;
-            case DamageType.Magie:
-                playerStats.currentArmourPointsMagic -= itemToDisable.armorPoints;
-                break;
-            case DamageType.Classique:
-                playerStats.currentArmourPoints -= itemToDisable.armorPoints;
-                break;
         }
         if (itemToDisable.equipmentType == EquipmentType.Arrow)
         {
@@ -206,12 +200,6 @@ public class Equipment : MonoBehaviour
                     break;
                 case DamageType.Foudre:
                     playerStats.currentArmourPointsElectric -= currentItem.armorPoints;
-                    break;
-                case DamageType.Magie:
-                    playerStats.currentArmourPointsMagic -= currentItem.armorPoints;
-                    break;
-                case DamageType.Classique:
-                    playerStats.currentArmourPoints -= currentItem.armorPoints;
                     break;
             }
             playerStats.UpddateArmorText();
@@ -390,12 +378,6 @@ public class Equipment : MonoBehaviour
                 break;
             case DamageType.Foudre:
                 playerStats.currentArmourPointsElectric += produit.armorPoints;
-                break;
-            case DamageType.Magie:
-                playerStats.currentArmourPointsMagic += produit.armorPoints;
-                break;
-            case DamageType.Classique:
-                playerStats.currentArmourPoints += produit.armorPoints;
                 break;
         }
         playerStats.UpddateArmorText();

@@ -36,23 +36,19 @@ public class PlayerStats : MonoBehaviour
 
 
     [Header("Armor")]
-    public float currentArmourPoints;
     public float currentArmourPointsPercant;
     public float currentArmourPointsContendant;
     public float currentArmourPointsTranchant;
     public float currentArmourPointsFire;
     public float currentArmourPointsIce;
     public float currentArmourPointsElectric;
-    public float currentArmourPointsMagic;
 
-    [SerializeField] private TextMeshProUGUI armorText;
     [SerializeField] private TextMeshProUGUI armorPercantText;
     [SerializeField] private TextMeshProUGUI armorContendantText;
     [SerializeField] private TextMeshProUGUI armorTranchantText;
     [SerializeField] private TextMeshProUGUI armorFireText;
     [SerializeField] private TextMeshProUGUI armorIceText;
     [SerializeField] private TextMeshProUGUI armorElectricText;
-    [SerializeField] private TextMeshProUGUI armorMagicText;
 
 
     [Header("Gold")]
@@ -133,12 +129,6 @@ public class PlayerStats : MonoBehaviour
                 case DamageType.Foudre:
                     damage -= (currentArmourPointsElectric / 100);
                     break;
-                case DamageType.Magie:
-                    damage -= (currentArmourPointsMagic / 100);
-                    break;
-                case DamageType.Classique:
-                    damage -= (currentArmourPoints / 100);
-                    break;
             }
             currentHealth -= damage;
         }
@@ -190,14 +180,12 @@ public class PlayerStats : MonoBehaviour
 
     public void UpddateArmorText()
     {
-        armorText.text = currentArmourPoints.ToString() + "%";
         armorPercantText.text = currentArmourPointsPercant.ToString() + "%";
         armorContendantText.text = currentArmourPointsContendant.ToString() + "%";
         armorTranchantText.text = currentArmourPointsTranchant.ToString() + "%";
         armorFireText.text = currentArmourPointsFire.ToString() + "%";
         armorIceText.text = currentArmourPointsIce.ToString() + "%";
         armorElectricText.text = currentArmourPointsElectric.ToString() + "%";
-        armorMagicText.text = currentArmourPointsMagic.ToString() + "%";
     }
 
     public void EquipAndActiveItem()
