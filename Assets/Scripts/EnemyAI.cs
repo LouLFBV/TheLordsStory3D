@@ -178,23 +178,23 @@ public class EnemyAI : EnemyParent
         IsDead = true;
 
         vie.SetActive(false);
-        if (enemyData.enemyType == EnemyType.Squelette)
+        if (enemyData.enemyType == EnemyType.Squelette || enemyData.enemyType == EnemyType.Zombie)
         {
             agent.isStopped = true;
-            Rigidbody rb = gameObject.GetComponent<Rigidbody>();
-            rb.isKinematic = true;
+            if(gameObject.TryGetComponent<Rigidbody>(out var rb))
+                rb.isKinematic = true;
         }
         else
             agent.enabled = false;
         grognemment.Stop();
         if (boxCollider != null) boxCollider.enabled = false;
         if (boxColliderOfDeath != null) boxColliderOfDeath.enabled = true;
-        if (enemyData.enemyType == EnemyType.Zombie)
-        {
-            agent.enabled = false;
-            Rigidbody rb = gameObject.GetComponent<Rigidbody>();
-            rb.isKinematic = false;
-        }
+        //if (enemyData.enemyType == EnemyType.Zombie)
+        //{
+        //    agent.enabled = false;
+        //    Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        //    rb.isKinematic = false;
+        //}
         QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 

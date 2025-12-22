@@ -53,6 +53,11 @@ public class PNJParent : InteractableBase
         animator.SetBool("isTalking", false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        var uiManager = UIManager.instance;
+        if (uiManager != null)
+        {
+            uiManager.HandlePanelClosed();
+        }
         if (navManager != null)
         {
             navManager.onCancel = null;

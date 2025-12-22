@@ -68,6 +68,12 @@ public class PNJAcheteur : PNJParent
             index = 0;
             dialogueStartTime = Time.time; // Enregistrer le temps de début du dialogue
             currentDialogue = sentence;
+
+            var uiManager = UIManager.instance;
+            if (uiManager != null)
+            {
+                uiManager.HandlePanelOpened();
+            }
         }
         else if (!animatorPanelProduits.GetBool("PanelIsOpen") && index >= sentences.Count)
         {

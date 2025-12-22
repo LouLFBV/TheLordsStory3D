@@ -66,6 +66,12 @@ public class Forgeron : PNJParent
             index = 0;
             dialogueStartTime = Time.time; // Enregistrer le temps de début du dialogue
             currentDialogue = sentence;
+
+            var uiManager = UIManager.instance;
+            if (uiManager != null)
+            {
+                uiManager.HandlePanelOpened();
+            }
         }
         if (index >= currentDialogue.Count && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
@@ -178,11 +184,16 @@ public class Forgeron : PNJParent
                 {
                     button.interactable = false;
                     button.GetComponent<Image>().color = Color.red;
+                    
                 }
                 else
                 {
                     button.interactable = true;
-                    button.GetComponent<Image>().color = Color.green;
+                    button.GetComponent<Image>().color = Color.green; 
+                    if (button.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
+                    {
+                        navManager.elements.Add(uiSelectable);
+                    }
                 }
             }
 
@@ -267,6 +278,10 @@ public class Forgeron : PNJParent
                     UpdateText(item);
                     RefreshProduits();
                 });
+                if (resetButton.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
+                {
+                    navManager.elements.Add(uiSelectable);
+                }
             }
             else
                 resetButton.gameObject.SetActive(false);

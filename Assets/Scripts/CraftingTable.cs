@@ -9,9 +9,8 @@ public class CraftingTable : CraftingTableParent
     [Header("Others")]
     [SerializeField] private GameObject craftPanel;
     public bool isCrafting, isCooking;
-    public CraftingTableParent craftingTableParent;
 
-    public void OpenCraftingTablePanel(/*List<RecipeData> list*/)
+    public override void OnInteract(PlayerInteractor player)
     {
         if (craftPanel != null && !craftPanel.activeInHierarchy)
         {

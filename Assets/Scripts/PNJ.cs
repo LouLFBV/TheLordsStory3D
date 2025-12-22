@@ -143,6 +143,13 @@ public class PNJ : InteractableBase
         VerifObjectsInInventory();
         AddEnemiesKilled();
 
+
+        var uiManager = UIManager.instance;
+        if (uiManager != null)
+        {
+            uiManager.HandlePanelOpened();
+        }
+
         // Choix du dialogue initial
         if (canGiveQuest)
         {
@@ -195,6 +202,11 @@ public class PNJ : InteractableBase
         aimBehaviour.enabled = true;
         agent.isStopped = false;
         if (isPnjInteraction) isPnjInteraction = false;
+        var uiManager = UIManager.instance;
+        if (uiManager != null)
+        {
+            uiManager.HandlePanelClosed();
+        }
     }
 #endregion
     public void NextLine()

@@ -59,6 +59,7 @@ public class Door : InteractableBase
             else
                 objectType = InteractableObjectType.Locked;
         }
+        else
             objectType = InteractableObjectType.Door;
         interactUI.SetInteractable(this);
     }

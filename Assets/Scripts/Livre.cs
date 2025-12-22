@@ -29,7 +29,6 @@ public class Livre :InteractableBase
             {
                 openSound.Play();
             }
-            SetTargeted(false, PlayerStats.instance.transform);
             canvas.SetActive(true);
             isOpen = true;
         }

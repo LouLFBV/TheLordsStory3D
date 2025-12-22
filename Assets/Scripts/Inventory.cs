@@ -18,9 +18,6 @@ public class Inventory : MonoBehaviour
     [SerializeField]
     private ItemActionsSystem itemActionsSystem;
 
-    [SerializeField]
-    private CraftingSystem craftingSystem;
-
     [Header("Inventory System Variables")]
 
     [SerializeField]

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PersonalChest : MonoBehaviour
+public class PersonalChest : InteractableBase
 {
 
     [Header("Chest Parts")]
@@ -21,6 +21,7 @@ public class PersonalChest : MonoBehaviour
 
 
     [SerializeField] private GameObject chestPanel;
+    [SerializeField] private UINavigationManager uiNavigationManager;
 
 
     private void Start()
@@ -28,40 +29,33 @@ public class PersonalChest : MonoBehaviour
         closedRotation = topChest.transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
     }
-    private void Update()
+    public override void OnInteract(PlayerInteractor player)
     {
-        if(isOpen && !chestPanel.activeSelf)
+        Debug.Log("Interacted with chest");
+        if (!chestPanel.activeSelf && !isOpen)
         {
             OpenAndClose();
         }
+        else
+            Debug.Log("Toggling chest");
     }
 
     public void OpenAndClose()
     {
-        if (isOpen)
+        if (uiNavigationManager != null)
         {
-            if (chestPanel != null)
-            {
-                chestPanel.SetActive(false);
-            }
-            chestInventory.content = chestInventory.RefreshItems(chestInventory.content);
-            chestInventory.contentChest = chestInventory.RefreshItems(chestInventory.contentChest);
-            Inventory.instance.SetContent(chestInventory.content);
-            Inventory.instance.RefreshContent();
-            StartCoroutine(CloseChest());
+            uiNavigationManager.onCancel = CloseChestButton; 
         }
-        else
+        if (chestPanel != null)
         {
-            if (chestPanel != null)
-            {
-                chestPanel.SetActive(true);
-            }
-            chestInventory.content = chestInventory.RefreshItems(chestInventory.content);
-            chestInventory.contentChest = chestInventory.RefreshItems(chestInventory.contentChest);
-            chestInventory.RefreshContentChestInventory();
-            chestInventory.RefreshContentInventory();
-            StartCoroutine(OpenChest());
+            Debug.Log("Activating chest panel");
+            chestPanel.SetActive(true);
         }
+        chestInventory.content = chestInventory.RefreshItems(chestInventory.content);
+        chestInventory.contentChest = chestInventory.RefreshItems(chestInventory.contentChest);
+        chestInventory.RefreshContentChestInventory();
+        chestInventory.RefreshContentInventory();
+        StartCoroutine(OpenChest());
     }
 
     private IEnumerator OpenChest()
@@ -86,11 +80,36 @@ public class PersonalChest : MonoBehaviour
         isAnimating = false;
     }
 
+    public void CloseChestButton()
+    {
+        if (!isOpen || isAnimating)
+            return;
+
+        StartCoroutine(CloseChest());
+    }
+
+
     private IEnumerator CloseChest()
     {
-        if (isAnimating || !isOpen) yield break;
+        if (isAnimating || !isOpen)
+            yield break;
+
         isAnimating = true;
+
+        if (uiNavigationManager != null)
+            uiNavigationManager.onCancel = null;
+
+        if (chestPanel != null)
+            chestPanel.SetActive(false);
+
         isOpen = false;
+
+        chestInventory.content = chestInventory.RefreshItems(chestInventory.content);
+        chestInventory.contentChest = chestInventory.RefreshItems(chestInventory.contentChest);
+
+        Inventory.instance.SetContent(chestInventory.content);
+        Inventory.instance.RefreshContent();
+
         while (Quaternion.Angle(topChest.transform.rotation, closedRotation) > 0.1f)
         {
             topChest.transform.rotation = Quaternion.Slerp(
@@ -100,9 +119,10 @@ public class PersonalChest : MonoBehaviour
             );
             yield return null;
         }
-        // S’assure que la rotation est précise à la fin
+
         topChest.transform.rotation = closedRotation;
         transform.GetComponent<BoxCollider>().enabled = true;
         isAnimating = false;
     }
+
 }
