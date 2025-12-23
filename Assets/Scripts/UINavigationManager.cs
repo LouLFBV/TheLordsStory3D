@@ -10,8 +10,9 @@ public class UINavigationManager : MonoBehaviour
 {
     public List<UISelectable> elements;
     public int currentIndex = 0;
+    [SerializeField] private float offset = 40f;
 
-    [Tooltip("Nombre de colonnes pour la grille de navigation")]
+   [Tooltip("Nombre de colonnes pour la grille de navigation")]
     public int columns = 4;
 
     [SerializeField] private float moveCooldown = 0.2f;
@@ -253,32 +254,76 @@ public class UINavigationManager : MonoBehaviour
 
     #endregion
 
-    public IEnumerator SmoothScrollTo(Selectable selectable, float duration = 0.2f, float offset = 40f)
+    public IEnumerator SmoothScrollTo(Selectable selectable, float duration = 0.2f)
     {
-        if (scrollRect == null || selectable == null) yield break;
+        if (scrollRect == null || selectable == null)
+            yield break;
+
+        Canvas.ForceUpdateCanvases();
 
         RectTransform content = scrollRect.content;
-        RectTransform selectableRect = selectable.GetComponent<RectTransform>();
-        Vector2 localPosition = content.InverseTransformPoint(selectableRect.position);
+        RectTransform viewport = scrollRect.viewport;
+        RectTransform item = selectable.GetComponent<RectTransform>();
 
-        float viewportHeight = scrollRect.viewport.rect.height;
+        Vector3[] viewportCorners = new Vector3[4];
+        Vector3[] itemCorners = new Vector3[4];
+
+        viewport.GetWorldCorners(viewportCorners);
+        item.GetWorldCorners(itemCorners);
+
+        float viewportTop = viewportCorners[1].y;
+        float viewportBottom = viewportCorners[0].y;
+
+        float itemTop = itemCorners[1].y;
+        float itemBottom = itemCorners[0].y;
+
+        float delta = 0f;
+
+        // Item au-dessus du viewport
+        if (itemTop > viewportTop)
+        {
+            delta = itemTop - viewportTop + offset;
+        }
+        // Item en dessous du viewport
+        else if (itemBottom < viewportBottom)
+        {
+            delta = itemBottom - viewportBottom - offset;
+        }
+        else
+        {
+            yield break; // déjà visible
+        }
+
         float contentHeight = content.rect.height;
+        float viewportHeight = viewport.rect.height;
 
-        // On ajoute l'offset pour que le scroll soit plus prononcé
-        float targetPos = Mathf.Clamp01((localPosition.y + selectableRect.rect.height / 2 + offset) / (contentHeight - viewportHeight));
+        float normalizedDelta = delta / (contentHeight - viewportHeight);
 
         float startPos = scrollRect.verticalNormalizedPosition;
+        float targetPos = Mathf.Clamp01(startPos + normalizedDelta);
+
+        Debug.Log(
+            $"[SmoothScrollTo FIX]\n" +
+            $"Delta pixels: {delta}\n" +
+            $"Normalized delta: {normalizedDelta}\n" +
+            $"Start: {startPos} -> Target: {targetPos}"
+        );
+
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
-            scrollRect.verticalNormalizedPosition = Mathf.Lerp(startPos, targetPos, elapsed / duration);
+            scrollRect.verticalNormalizedPosition =
+                Mathf.Lerp(startPos, targetPos, elapsed / duration);
+
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 
         scrollRect.verticalNormalizedPosition = targetPos;
     }
+
+
 
     private bool IsVisible(RectTransform item)
     {

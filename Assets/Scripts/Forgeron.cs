@@ -190,10 +190,11 @@ public class Forgeron : PNJParent
                 {
                     button.interactable = true;
                     button.GetComponent<Image>().color = Color.green; 
-                    if (button.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
-                    {
-                        navManager.elements.Add(uiSelectable);
-                    }
+                    
+                }
+                if (button.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
+                {
+                    navManager.elements.Add(uiSelectable);
                 }
             }
 
