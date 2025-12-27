@@ -14,7 +14,7 @@ public class AttackBehaviour : MonoBehaviour
     [SerializeField] private EquipmentLibrary equipmentLibrary;
     [SerializeField] private BowBehaviour bowBehaviour;
 
-    private bool isAttacking = false;
+    public bool isAttacking = false;
     public bool canAttack;
     private ItemData weaponActive;
 
@@ -72,9 +72,14 @@ public class AttackBehaviour : MonoBehaviour
     {
         return (palette.isEquippedWeapon1 || palette.isEquippedWeapon2) && !isAttacking && !uiManager.atLeashOnePanelOpened && !interactBehaviour.isBusy && !playerStats.isDead && canAttack;
     }
+
+    public void EnableRootMotion() => animator.applyRootMotion = true;
+    
     public void AttackFinished()
     {
+        Debug.Log("Attack Finished");
         isAttacking = false;
+        animator.applyRootMotion = false;
     }
 
     public void AttackEnable()

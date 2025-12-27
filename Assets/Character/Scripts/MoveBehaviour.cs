@@ -136,15 +136,15 @@ public class MoveBehaviour : GenericBehaviour
         float normalizedSpeed = runSpeed > 0f ? speed / runSpeed : 0f;
         bool bowCharging = BowBehaviour.instance != null && BowBehaviour.instance.chargeBow;
 
-        bool useRootMotion =
-            !behaviourManager.GetAnim.GetBool("Jump") &&
-            (normalizedSpeed < 0.7f || aimBehaviour.IsAiming || bowCharging);
+        //bool useRootMotion =
+        //    !behaviourManager.GetAnim.GetBool("Jump") &&
+        //    (normalizedSpeed < 0.7f || aimBehaviour.IsAiming || bowCharging);
 
-        behaviourManager.GetAnim.applyRootMotion = useRootMotion;
+        //behaviourManager.GetAnim.applyRootMotion = useRootMotion;
     }
     private void HandleMovement(float horizontal, float vertical)
     {
-        if (!canMove || aimBehaviour.IsAiming)
+        if (!canMove || aimBehaviour.IsAiming || attackBehaviour.isAttacking)
         { 
             isSprinting = false;
             return;
