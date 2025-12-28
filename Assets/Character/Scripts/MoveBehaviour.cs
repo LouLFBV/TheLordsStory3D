@@ -89,6 +89,19 @@ public class MoveBehaviour : GenericBehaviour
     }
     #endregion
 
+    void OnAnimatorMove()
+    {
+        if (!behaviourManager.GetAnim.applyRootMotion)
+            return;
+
+        if (rb != null)
+        {
+            rb.MovePosition(rb.position + behaviourManager.GetAnim.deltaPosition);
+            rb.MoveRotation(rb.rotation * behaviourManager.GetAnim.deltaRotation);
+        }
+    }
+
+
     void Start()
     {
         behaviourManager.SubscribeBehaviour(this);
@@ -126,6 +139,9 @@ public class MoveBehaviour : GenericBehaviour
 
     public override void LocalFixedUpdate()
     {
+        if (behaviourManager.GetAnim.applyRootMotion)
+            return; 
+
         HandleMovement(moveInput.x, moveInput.y);
     }
 
@@ -144,7 +160,7 @@ public class MoveBehaviour : GenericBehaviour
     }
     private void HandleMovement(float horizontal, float vertical)
     {
-        if (!canMove || aimBehaviour.IsAiming || attackBehaviour.isAttacking)
+        if (!canMove || aimBehaviour.IsAiming)
         { 
             isSprinting = false;
             return;

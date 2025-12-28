@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Linq;
 using UnityEngine.InputSystem;
+using System;
 
 public class AttackBehaviour : MonoBehaviour
 {
@@ -22,23 +23,38 @@ public class AttackBehaviour : MonoBehaviour
     [Header("Input")]
     [SerializeField] private PlayerInput playerInput;
     private bool attackInput = false;
+    private bool attackSpecialInput = false;
     #endregion
 
+    private void Start()
+    {
 
+        animator.applyRootMotion = false;
+    }
     void Update()
     {
-        if (attackInput && CanAttack() && !bowBehaviour.chargeBow)
+        if (CanAttack() && !bowBehaviour.chargeBow)
         {
             weaponActive = palette.isEquippedWeapon1 ? palette.equipmentWeapon1Item : palette.equipmentWeapon2Item;
-
-            if (weaponActive.handWeaponType == HandWeapon.Bow && bowBehaviour.VerifIfCanShoot())
+            if (attackInput)
             {
-                bowBehaviour.PrepareArrow();
+                if (weaponActive.handWeaponType == HandWeapon.Bow && bowBehaviour.VerifIfCanShoot())
+                {
+                    bowBehaviour.PrepareArrow();
+                }
+                else if (weaponActive.handWeaponType != HandWeapon.Bow)
+                {
+                    isAttacking = true;
+                    animator.SetTrigger("Attack");
+                }
             }
-            else if(weaponActive.handWeaponType != HandWeapon.Bow)
+            else if (attackSpecialInput)
             {
-                isAttacking = true;
-                animator.SetTrigger("Attack");
+                if (weaponActive.handWeaponType != HandWeapon.Bow)
+                {
+                    isAttacking = true;
+                    animator.SetTrigger("AttackSpecial");
+                }
             }
         }
         else if (!attackInput && bowBehaviour.chargeBow && CanAttack() && bowBehaviour.canShoot)
@@ -49,21 +65,34 @@ public class AttackBehaviour : MonoBehaviour
     private void OnEnable()
     {
         playerInput.actions["Attack"].performed += OnAttackPerformed;
-        playerInput.actions["Attack"].canceled += OnAttackCanceled;
+        playerInput.actions["Attack"].canceled += OnAttackCanceled; 
+        playerInput.actions["AttackSpecial"].performed += OnAttackSpecialPerformed;
+        playerInput.actions["AttackSpecial"].canceled += OnAttackSpecialCanceled;
     }
+
+   
 
     private void OnDisable()
     {
-        playerInput.actions["Attack"].performed -= OnAttackPerformed;
+        playerInput.actions["Attack"].performed -= OnAttackSpecialPerformed;
         playerInput.actions["Attack"].canceled -= OnAttackCanceled;
+        playerInput.actions["AttackSpecial"].performed -= OnAttackSpecialPerformed;
+        playerInput.actions["AttackSpecial"].canceled -= OnAttackSpecialCanceled;
     }
 
 
+    private void OnAttackSpecialPerformed(InputAction.CallbackContext ctx)
+    {
+        attackSpecialInput = true;
+    }
+    private void OnAttackSpecialCanceled(InputAction.CallbackContext context)
+    {
+        attackSpecialInput = false;
+    }
     private void OnAttackPerformed(InputAction.CallbackContext ctx)
     {
         attackInput = true;
     }
-
     private void OnAttackCanceled(InputAction.CallbackContext ctx)
     {
         attackInput = false;

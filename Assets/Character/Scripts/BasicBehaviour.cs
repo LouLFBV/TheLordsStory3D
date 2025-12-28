@@ -290,4 +290,6 @@ public abstract class GenericBehaviour : MonoBehaviour
 
     // Vérifie si le sprint est autorisé pour ce comportement.
     public bool AllowSprint() => canSprint;
+
+
 }

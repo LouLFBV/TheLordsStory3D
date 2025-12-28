@@ -129,6 +129,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""AttackSpecial"",
+                    ""type"": ""Button"",
+                    ""id"": ""62763476-b8a4-413a-80f7-927277078733"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Crounch"",
                     ""type"": ""Button"",
                     ""id"": ""844aa2ad-c198-465a-b484-da03787231ec"",
@@ -348,7 +357,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""9d076c5c-9690-4b83-8641-62ca4356a8d9"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -529,6 +538,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dodge"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e5ac10f-6435-4795-94ec-945c97d04114"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttackSpecial"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a04bd5d-de00-4a24-bfe4-26b5ae2e8563"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AttackSpecial"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1036,6 +1067,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+        m_Player_AttackSpecial = m_Player.FindAction("AttackSpecial", throwIfNotFound: true);
         m_Player_Crounch = m_Player.FindAction("Crounch", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
@@ -1143,6 +1175,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Attack;
+    private readonly InputAction m_Player_AttackSpecial;
     private readonly InputAction m_Player_Crounch;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Interact;
@@ -1178,6 +1211,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Attack".
         /// </summary>
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/AttackSpecial".
+        /// </summary>
+        public InputAction @AttackSpecial => m_Wrapper.m_Player_AttackSpecial;
         /// <summary>
         /// Provides access to the underlying input action "Player/Crounch".
         /// </summary>
@@ -1248,6 +1285,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Attack.started += instance.OnAttack;
             @Attack.performed += instance.OnAttack;
             @Attack.canceled += instance.OnAttack;
+            @AttackSpecial.started += instance.OnAttackSpecial;
+            @AttackSpecial.performed += instance.OnAttackSpecial;
+            @AttackSpecial.canceled += instance.OnAttackSpecial;
             @Crounch.started += instance.OnCrounch;
             @Crounch.performed += instance.OnCrounch;
             @Crounch.canceled += instance.OnCrounch;
@@ -1295,6 +1335,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Attack.started -= instance.OnAttack;
             @Attack.performed -= instance.OnAttack;
             @Attack.canceled -= instance.OnAttack;
+            @AttackSpecial.started -= instance.OnAttackSpecial;
+            @AttackSpecial.performed -= instance.OnAttackSpecial;
+            @AttackSpecial.canceled -= instance.OnAttackSpecial;
             @Crounch.started -= instance.OnCrounch;
             @Crounch.performed -= instance.OnCrounch;
             @Crounch.canceled -= instance.OnCrounch;
@@ -1656,6 +1699,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAttack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AttackSpecial" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAttackSpecial(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Crounch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
