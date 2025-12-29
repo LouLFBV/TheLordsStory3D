@@ -1,9 +1,9 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-public class CraftingTable : CraftingTableParent
+public class CraftingTable : InteractableBase
 {
     [Header("References")]
+    [SerializeField] private AllRecipeData allRecipeData;
     [SerializeField] private CraftingSystem craftingSystem;
 
     [Header("Others")]
@@ -14,9 +14,22 @@ public class CraftingTable : CraftingTableParent
     {
         if (craftPanel != null && !craftPanel.activeInHierarchy)
         {
-            //craftingSystem.availableRecipes = list;
+            RefreshDisplay();
             craftPanel.SetActive(true);
             craftingSystem.textIsRecipeListEmpty.SetActive(craftingSystem.availableRecipes.Count == 0);
         }
+    }
+
+    private void RefreshDisplay()
+    {
+        if (isCooking)
+        {
+            craftingSystem.availableRecipes = allRecipeData.recetteDeLObjectCooking;
+        }
+        else if (isCrafting)
+        {
+            craftingSystem.availableRecipes = allRecipeData.recetteDeLObjectCrafting;
+        }
+        craftingSystem.UpdateDisplayRecipes();
     }
 }

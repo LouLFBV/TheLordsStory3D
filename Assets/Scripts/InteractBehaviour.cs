@@ -1,10 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 
 public class InteractBehaviour : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private CraftingTableParent craftingTableParent;
+    [SerializeField] private AllRecipeData allRecipeData;
     [SerializeField] private MoveBehaviour player;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private Inventory inventory;
@@ -71,7 +71,7 @@ public class InteractBehaviour : MonoBehaviour
         player.canMove = false;
     }
 
-    //Coroutine appelé depuis l'animation "Haversitng"
+    //Coroutine appelÃ© depuis l'animation "Haversitng"
     public IEnumerator BreakHarvestable()
     {
         Harvestable currentlyHarveting = currentHarvestable;
@@ -91,17 +91,17 @@ public class InteractBehaviour : MonoBehaviour
             {
                 GameObject instantiatedRessource = Instantiate(ressource.itemData.prefab);
 
-                // Rayon max du décalage (à ajuster)
+                // Rayon max du dÃ©calage (Ã  ajuster)
                 float spawnRadius = 0.2f;
 
-                // Génère un décalage aléatoire dans un petit rayon (sur le sol uniquement, Y = 0)
+                // GÃ©nÃ¨re un dÃ©calage alÃ©atoire dans un petit rayon (sur le sol uniquement, Y = 0)
                 Vector3 randomOffset = new Vector3(
                     Random.Range(-spawnRadius, spawnRadius),
                     0f,
                     Random.Range(-spawnRadius, spawnRadius)
                 );
 
-                // Position finale = position du harvesting + offset initial + petit décalage aléatoire
+                // Position finale = position du harvesting + offset initial + petit dÃ©calage alÃ©atoire
                 instantiatedRessource.transform.position = currentlyHarveting.transform.position + spawnItemOffset + randomOffset;
             }
         }
@@ -124,7 +124,9 @@ public class InteractBehaviour : MonoBehaviour
     public void EnableTwoHand()
     {
         if (equipmentToDesactiveAndActive == null) return;
-        if (playerAnimator == null) return; // <- protection supplémentaire
+        if (playerAnimator == null) return; // <- protection supplÃ©mentaire
+        if (equipmentToDesactiveAndActive.itemData == null)return;
+        
         if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
 
         if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
@@ -135,7 +137,8 @@ public class InteractBehaviour : MonoBehaviour
     public void DisableTwoHand()
     {
         if (equipmentToDesactiveAndActive == null) return;
-        if (playerAnimator == null) return; // <- protection supplémentaire
+        if (playerAnimator == null) return; // <- protection supplÃ©mentaire
+        if (equipmentToDesactiveAndActive.itemData == null) return;
         if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
         if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
 
@@ -148,9 +151,9 @@ public class InteractBehaviour : MonoBehaviour
         {
             currentItem.GetComponent<BookRecipe>().OpenCanvasRecipeBook();
             if (currentItem.itemData.recipe.craftableItem.itemType == ItemType.Consumable)
-                craftingTableParent.recetteDeLObjectCooking.Add(currentItem.itemData.recipe);
+                allRecipeData.recetteDeLObjectCooking.Add(currentItem.itemData.recipe);
             else
-                craftingTableParent.recetteDeLObjectCrafting.Add(currentItem.itemData.recipe);
+                allRecipeData.recetteDeLObjectCrafting.Add(currentItem.itemData.recipe);
         }
         else if (currentItem.itemData.itemType == ItemType.Map)
         {
