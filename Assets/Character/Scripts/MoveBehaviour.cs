@@ -94,12 +94,13 @@ public class MoveBehaviour : GenericBehaviour
         if (!behaviourManager.GetAnim.applyRootMotion)
             return;
 
-        if (rb != null)
-        {
-            rb.MovePosition(rb.position + behaviourManager.GetAnim.deltaPosition);
-            rb.MoveRotation(rb.rotation * behaviourManager.GetAnim.deltaRotation);
-        }
+        if (rb == null)
+            return;
+
+        rb.MovePosition(rb.position + behaviourManager.GetAnim.deltaPosition);
+        rb.MoveRotation(rb.rotation * behaviourManager.GetAnim.deltaRotation);
     }
+
 
 
     void Start()
@@ -131,33 +132,17 @@ public class MoveBehaviour : GenericBehaviour
         // --- SPRINT ---
         if (PlayerStats.instance != null && PlayerStats.instance.currentEndurance <= 0f)
             isSprinting = false;
-
-
-        // --- ROOT MOTION ---
-        HandleRootMotion();
     }
 
     public override void LocalFixedUpdate()
     {
-        if (behaviourManager.GetAnim.applyRootMotion)
-            return; 
+        //if (behaviourManager.GetAnim.applyRootMotion)
+        //    return; 
 
         HandleMovement(moveInput.x, moveInput.y);
     }
 
 
-    private void HandleRootMotion()
-    {
-        // Sécurisation pour éviter division par zéro
-        float normalizedSpeed = runSpeed > 0f ? speed / runSpeed : 0f;
-        bool bowCharging = BowBehaviour.instance != null && BowBehaviour.instance.chargeBow;
-
-        //bool useRootMotion =
-        //    !behaviourManager.GetAnim.GetBool("Jump") &&
-        //    (normalizedSpeed < 0.7f || aimBehaviour.IsAiming || bowCharging);
-
-        //behaviourManager.GetAnim.applyRootMotion = useRootMotion;
-    }
     private void HandleMovement(float horizontal, float vertical)
     {
         if (!canMove || aimBehaviour.IsAiming)
@@ -198,8 +183,9 @@ public class MoveBehaviour : GenericBehaviour
         Vector3 moveDir = GetMoveDirection(horizontal, vertical);
 
         // Déplacement physique
-        if (behaviourManager.IsGrounded() && !jumpBehaviour.jump)
+        if (jumpBehaviour.jump )
         {
+
             Vector3 velocity = moveDir * speed;
             velocity.y = rb.linearVelocity.y; // conserve la gravité
             rb.linearVelocity = velocity;
@@ -230,13 +216,11 @@ public class MoveBehaviour : GenericBehaviour
             && moveInput.magnitude > 0.1f
             && sprintInput
             && PlayerStats.instance.currentEndurance > 0f
-            && !attackBehaviour.CanAttack(); // ou !attackBehaviour.isAttacking ?
+            && !attackBehaviour.isAttacking; 
     }
 
-    // Vérifie si le joueur se déplace horizontalement.
     public bool IsHorizontalMoving() => moveInput.x != 0;
 
-    // Vérifie si le joueur se déplace (horizontalement ou verticalement).
     public bool IsMoving() => (moveInput.x != 0) || (moveInput.y != 0);
 
     private Vector3 GetMoveDirection(float horizontal, float vertical)
@@ -286,11 +270,10 @@ public class MoveBehaviour : GenericBehaviour
         Debug.Log("Stopping player movement.");
         canMove = false;
         attackBehaviour.canAttack = false;
-
         speed = 0;
-        rb.linearVelocity = Vector3.zero;
 
-        behaviourManager.GetAnim.SetFloat("Speed", 0f);
+        behaviourManager.GetAnim.SetFloat("Speed",0);
+        rb.linearVelocity = Vector3.zero;
     }
 
 

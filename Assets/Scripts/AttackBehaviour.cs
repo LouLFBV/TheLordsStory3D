@@ -26,11 +26,6 @@ public class AttackBehaviour : MonoBehaviour
     private bool attackSpecialInput = false;
     #endregion
 
-    private void Start()
-    {
-
-        animator.applyRootMotion = false;
-    }
     void Update()
     {
         if (CanAttack() && !bowBehaviour.chargeBow)
@@ -108,7 +103,7 @@ public class AttackBehaviour : MonoBehaviour
     {
         Debug.Log("Attack Finished");
         isAttacking = false;
-        animator.applyRootMotion = false;
+       //animator.applyRootMotion = false;
     }
 
     public void AttackEnable()

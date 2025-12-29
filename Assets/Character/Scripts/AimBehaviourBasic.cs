@@ -138,7 +138,6 @@ public class AimBehaviourBasic : GenericBehaviour
     // Coroutine pour activer le mode visée avec un léger délai.
     private IEnumerator ToggleAimOn()
     {
-        behaviourManager.GetAnim.applyRootMotion = true;
         if (moveBehaviour.changedFOV)
         {
             camScript.ResetFOV();
@@ -166,7 +165,6 @@ public class AimBehaviourBasic : GenericBehaviour
     // Coroutine pour désactiver le mode visée avec un léger délai.
     private IEnumerator ToggleAimOff()
     {
-        behaviourManager.GetAnim.applyRootMotion = false;
         aim = false;
         yield return new WaitForSeconds(0.3f);
         behaviourManager.GetCamScript.ResetTargetOffsets();
@@ -186,7 +184,7 @@ public class AimBehaviourBasic : GenericBehaviour
     // LocalLateUpdate : le gestionnaire est appelé ici pour appliquer la rotation du joueur après la rotation de la caméra, afin d’éviter les scintillements.
     public override void LocalLateUpdate()
     {
-        if (aim || Palette.instance.IfPlayerHasWeaponEquipped())
+        if (aim /*|| Palette.instance.IfPlayerHasWeaponEquipped()*/)
         {
             AimManagement(); // Gère la rotation pendant la visée.
         }
