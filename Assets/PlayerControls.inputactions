@@ -52,7 +52,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Crounch",
+                    "name": "Crouch",
                     "type": "Button",
                     "id": "844aa2ad-c198-465a-b484-da03787231ec",
                     "expectedControlType": "",
@@ -242,7 +242,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Crounch",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -253,7 +253,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Crounch",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

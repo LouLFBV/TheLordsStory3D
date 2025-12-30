@@ -57,6 +57,9 @@ public class MoveBehaviour : GenericBehaviour
 
         playerInput.actions["Sprint"].performed += OnSprint;
         playerInput.actions["Sprint"].canceled += OnSprintCanceled;
+
+        playerInput.actions["Crouch"].performed += OnCrouch;
+
     }
 
     private void OnDisable()
@@ -66,6 +69,9 @@ public class MoveBehaviour : GenericBehaviour
 
         playerInput.actions["Sprint"].performed -= OnSprint;
         playerInput.actions["Sprint"].canceled -= OnSprintCanceled;
+
+
+        playerInput.actions["Crouch"].performed -= OnCrouch;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -87,6 +93,12 @@ public class MoveBehaviour : GenericBehaviour
     {
         sprintInput = false;
     }
+
+    private void OnCrouch(InputAction.CallbackContext ctx)
+    {
+        behaviourManager.GetAnim.SetBool("IsCrouched", !behaviourManager.GetAnim.GetBool("IsCrouched"));
+    }
+
     #endregion
 
     void OnAnimatorMove()
@@ -183,9 +195,10 @@ public class MoveBehaviour : GenericBehaviour
         Vector3 moveDir = GetMoveDirection(horizontal, vertical);
 
         // Déplacement physique
-        if (jumpBehaviour.jump )
+        if (!behaviourManager.IsGrounded())
         {
 
+            behaviourManager.GetAnim.SetBool("IsCrouched", false);
             Vector3 velocity = moveDir * speed;
             velocity.y = rb.linearVelocity.y; // conserve la gravité
             rb.linearVelocity = velocity;
@@ -216,7 +229,8 @@ public class MoveBehaviour : GenericBehaviour
             && moveInput.magnitude > 0.1f
             && sprintInput
             && PlayerStats.instance.currentEndurance > 0f
-            && !attackBehaviour.isAttacking; 
+            && !attackBehaviour.isAttacking
+            && !behaviourManager.GetAnim.GetBool("IsCrouched"); 
     }
 
     public bool IsHorizontalMoving() => moveInput.x != 0;

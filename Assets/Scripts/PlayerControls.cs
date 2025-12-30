@@ -138,7 +138,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Crounch"",
+                    ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""844aa2ad-c198-465a-b484-da03787231ec"",
                     ""expectedControlType"": """",
@@ -328,7 +328,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Crounch"",
+                    ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -339,7 +339,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Crounch"",
+                    ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1068,7 +1068,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
         m_Player_AttackSpecial = m_Player.FindAction("AttackSpecial", throwIfNotFound: true);
-        m_Player_Crounch = m_Player.FindAction("Crounch", throwIfNotFound: true);
+        m_Player_Crouch = m_Player.FindAction("Crouch", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
@@ -1176,7 +1176,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Attack;
     private readonly InputAction m_Player_AttackSpecial;
-    private readonly InputAction m_Player_Crounch;
+    private readonly InputAction m_Player_Crouch;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_LookMouse;
@@ -1216,9 +1216,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @AttackSpecial => m_Wrapper.m_Player_AttackSpecial;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Crounch".
+        /// Provides access to the underlying input action "Player/Crouch".
         /// </summary>
-        public InputAction @Crounch => m_Wrapper.m_Player_Crounch;
+        public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         /// <summary>
         /// Provides access to the underlying input action "Player/Aim".
         /// </summary>
@@ -1288,9 +1288,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @AttackSpecial.started += instance.OnAttackSpecial;
             @AttackSpecial.performed += instance.OnAttackSpecial;
             @AttackSpecial.canceled += instance.OnAttackSpecial;
-            @Crounch.started += instance.OnCrounch;
-            @Crounch.performed += instance.OnCrounch;
-            @Crounch.canceled += instance.OnCrounch;
+            @Crouch.started += instance.OnCrouch;
+            @Crouch.performed += instance.OnCrouch;
+            @Crouch.canceled += instance.OnCrouch;
             @Aim.started += instance.OnAim;
             @Aim.performed += instance.OnAim;
             @Aim.canceled += instance.OnAim;
@@ -1338,9 +1338,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @AttackSpecial.started -= instance.OnAttackSpecial;
             @AttackSpecial.performed -= instance.OnAttackSpecial;
             @AttackSpecial.canceled -= instance.OnAttackSpecial;
-            @Crounch.started -= instance.OnCrounch;
-            @Crounch.performed -= instance.OnCrounch;
-            @Crounch.canceled -= instance.OnCrounch;
+            @Crouch.started -= instance.OnCrouch;
+            @Crouch.performed -= instance.OnCrouch;
+            @Crouch.canceled -= instance.OnCrouch;
             @Aim.started -= instance.OnAim;
             @Aim.performed -= instance.OnAim;
             @Aim.canceled -= instance.OnAim;
@@ -1707,12 +1707,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAttackSpecial(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Crounch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Crouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCrounch(InputAction.CallbackContext context);
+        void OnCrouch(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Aim" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
