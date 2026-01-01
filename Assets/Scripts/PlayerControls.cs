@@ -208,6 +208,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ForwardRool"",
+                    ""type"": ""Button"",
+                    ""id"": ""6fbfdc24-b80e-4dd5-baf7-97c176ec3122"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -560,6 +569,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""AttackSpecial"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""36d4c312-c6b8-400c-8f41-3e203c6eae23"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForwardRool"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""850b4bba-13cb-4654-bc4a-9a8e6e035298"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForwardRool"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1076,6 +1107,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Shoulder = m_Player.FindAction("Shoulder", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
         m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
+        m_Player_ForwardRool = m_Player.FindAction("ForwardRool", throwIfNotFound: true);
         // Palette
         m_Palette = asset.FindActionMap("Palette", throwIfNotFound: true);
         m_Palette_Weapon1 = m_Palette.FindAction("Weapon1", throwIfNotFound: true);
@@ -1184,6 +1216,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Shoulder;
     private readonly InputAction m_Player_Emote;
     private readonly InputAction m_Player_Dodge;
+    private readonly InputAction m_Player_ForwardRool;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1247,6 +1280,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Dodge".
         /// </summary>
         public InputAction @Dodge => m_Wrapper.m_Player_Dodge;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ForwardRool".
+        /// </summary>
+        public InputAction @ForwardRool => m_Wrapper.m_Player_ForwardRool;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1312,6 +1349,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dodge.started += instance.OnDodge;
             @Dodge.performed += instance.OnDodge;
             @Dodge.canceled += instance.OnDodge;
+            @ForwardRool.started += instance.OnForwardRool;
+            @ForwardRool.performed += instance.OnForwardRool;
+            @ForwardRool.canceled += instance.OnForwardRool;
         }
 
         /// <summary>
@@ -1362,6 +1402,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dodge.started -= instance.OnDodge;
             @Dodge.performed -= instance.OnDodge;
             @Dodge.canceled -= instance.OnDodge;
+            @ForwardRool.started -= instance.OnForwardRool;
+            @ForwardRool.performed -= instance.OnForwardRool;
+            @ForwardRool.canceled -= instance.OnForwardRool;
         }
 
         /// <summary>
@@ -1762,6 +1805,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDodge(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ForwardRool" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnForwardRool(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Palette" which allows adding and removing callbacks.

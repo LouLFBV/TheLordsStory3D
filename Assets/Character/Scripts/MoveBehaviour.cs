@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 // MoveBehaviour hérite de GenericBehaviour. Ce script gère le déplacement du joueur sans Root Motion.
@@ -33,9 +31,15 @@ public class MoveBehaviour : GenericBehaviour
 
     private AttackBehaviour attackBehaviour;
     private AimBehaviourBasic aimBehaviour;
-    private JumpBehaviour jumpBehaviour;
     private Rigidbody rb;
 
+    [Header("Roll Collider Settings")]
+    [SerializeField] private CapsuleCollider capsule;
+    [SerializeField] private float rollHeightMultiplier = 0.5f;
+    [SerializeField] private float rollCenterYOffset = -0.4f;
+
+    private float originalCapsuleHeight;
+    private Vector3 originalCapsuleCenter;
 
     //Nouveau système Input
     [SerializeField] private PlayerInput playerInput;
@@ -60,6 +64,7 @@ public class MoveBehaviour : GenericBehaviour
 
         playerInput.actions["Crouch"].performed += OnCrouch;
 
+        playerInput.actions["ForwardRool"].performed += OnForwarRool;
     }
 
     private void OnDisable()
@@ -99,6 +104,13 @@ public class MoveBehaviour : GenericBehaviour
         behaviourManager.GetAnim.SetBool("IsCrouched", !behaviourManager.GetAnim.GetBool("IsCrouched"));
     }
 
+    private void OnForwarRool(InputAction.CallbackContext ctx)
+    {
+        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking)
+            return;
+        attackBehaviour.isAttacking = true;
+        behaviourManager.GetAnim.SetTrigger("ForwardRoll");
+    }
     #endregion
 
     void OnAnimatorMove()
@@ -126,9 +138,16 @@ public class MoveBehaviour : GenericBehaviour
         hFloat = Animator.StringToHash("H");
         vFloat = Animator.StringToHash("V");
 
+        capsule = GetComponent<CapsuleCollider>();
+
+        if (capsule != null)
+        {
+            originalCapsuleHeight = capsule.height;
+            originalCapsuleCenter = capsule.center;
+        }
+
         attackBehaviour = GetComponent<AttackBehaviour>();
         aimBehaviour = GetComponent<AimBehaviourBasic>();
-        jumpBehaviour = GetComponent<JumpBehaviour>();
     }
 
     void Update()
@@ -144,6 +163,22 @@ public class MoveBehaviour : GenericBehaviour
         // --- SPRINT ---
         if (PlayerStats.instance != null && PlayerStats.instance.currentEndurance <= 0f)
             isSprinting = false;
+    }
+
+    public void StartRollCollider()
+    {
+        if (capsule == null) return;
+
+        capsule.height = originalCapsuleHeight * rollHeightMultiplier;
+        capsule.center = originalCapsuleCenter + Vector3.up * rollCenterYOffset;
+    }
+
+    public void EndRollCollider()
+    {
+        if (capsule == null) return;
+
+        capsule.height = originalCapsuleHeight;
+        capsule.center = originalCapsuleCenter;
     }
 
     public override void LocalFixedUpdate()
