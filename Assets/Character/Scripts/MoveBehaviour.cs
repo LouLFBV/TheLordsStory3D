@@ -75,8 +75,10 @@ public class MoveBehaviour : GenericBehaviour
         playerInput.actions["Sprint"].performed -= OnSprint;
         playerInput.actions["Sprint"].canceled -= OnSprintCanceled;
 
-
         playerInput.actions["Crouch"].performed -= OnCrouch;
+
+
+        playerInput.actions["ForwardRool"].performed -= OnForwarRool;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)

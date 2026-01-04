@@ -82,9 +82,11 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(ItemData item)
     {
+        Debug.Log("Adding item: " + item.itemName);
         if (equipment.arrowItemInInventory.itemData != null)
         {
-            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType)
+            Debug.Log("Checking for arrow stacking.");
+            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType & item.equipmentType == EquipmentType.Arrow)
             {
                 equipment.arrowItemInInventory.count++;
                 equipment.UpdateArrowsText();
@@ -98,6 +100,7 @@ public class Inventory : MonoBehaviour
 
         if (itemInInventory.Length > 0 && item.stackable)
         {
+            Debug.Log("Item already in inventory, trying to stack.");
             for (int i = 0; i < itemInInventory.Length; i++)
             {
                 if (itemInInventory[i].count < item.maxStack)
@@ -110,6 +113,7 @@ public class Inventory : MonoBehaviour
 
             if (!itemAdded)
             {
+                Debug.Log("All stacks full, adding new stack.");
                 content.Add(
                     new ItemInInventory
                     {
@@ -121,6 +125,7 @@ public class Inventory : MonoBehaviour
         }
         else
         {
+            Debug.Log("Item not in inventory, adding new item.");
             content.Add(
                     new ItemInInventory
                     {
