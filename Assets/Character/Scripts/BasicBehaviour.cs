@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 // Cette classe gère quel comportement du joueur est actif ou prioritaire, 
 // et appelle ses fonctions locales.
@@ -31,6 +32,8 @@ public class BasicBehaviour : MonoBehaviour
     public Animator GetAnim => anim;                      // Retourne l’Animator du joueur.
     public int GetDefaultBehaviour => defaultBehaviour;   // Retourne le comportement par défaut.
 
+    [Header("Transition Arrivée")]
+    [SerializeField] private Animator animator;
     void Awake()
     {
         // Initialisation des références.
@@ -42,8 +45,26 @@ public class BasicBehaviour : MonoBehaviour
         // Variables pour la détection du sol.
         groundedBool = Animator.StringToHash("Grounded");
         colExtents = GetComponent<Collider>().bounds.extents;
+       // SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    // SECURITE SI DOUBLON
+    //private void OnDestroy()
+    //{
+    //    SceneManager.sceneLoaded -= OnSceneLoaded;
+    //}
+
+    //private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    //{
+    //    animator.SetTrigger("Open");
+    //    Debug.Log("Début du jeu - Animation d'ouverture déclenchée.");
+    //}
+
+    private void Start()
+    {
+        animator.SetTrigger("Open");
+        Debug.Log("Début du jeu - Animation d'ouverture déclenchée.");
+    }
     void Update()
     {
         // Informe l’Animator si le joueur est au sol.

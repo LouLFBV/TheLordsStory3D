@@ -52,6 +52,7 @@ public class MoveBehaviour : GenericBehaviour
     {
         if (playerInput == null)
             playerInput = GetComponent<PlayerInput>();
+        canMove = true;
     }
     #region PlayerInput Méthodes
     private void OnEnable()
@@ -108,7 +109,7 @@ public class MoveBehaviour : GenericBehaviour
 
     private void OnForwarRool(InputAction.CallbackContext ctx)
     {
-        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking)
+        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded())
             return;
         attackBehaviour.isAttacking = true;
         behaviourManager.GetAnim.SetTrigger("ForwardRoll");

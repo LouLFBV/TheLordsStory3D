@@ -195,10 +195,14 @@ public class EnemyAI : EnemyParent
         //    Rigidbody rb = gameObject.GetComponent<Rigidbody>();
         //    rb.isKinematic = false;
         //}
+        if (itemToDrop != null)
+        {
+            itemToDrop.SetActive(true);
+        }
         QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 
-
+    #region Déplacement
 
     private void Wander()
     {
@@ -230,6 +234,7 @@ public class EnemyAI : EnemyParent
         hasDestination = false;
     }
 
+    #endregion
     public override void UpdateSpeedWitchCoefficient(float speedCoefficient)
     {
         walkSpeed *= speedCoefficient;

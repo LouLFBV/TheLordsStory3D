@@ -19,6 +19,7 @@ public abstract class EnemyParent : MonoBehaviour
     protected Transform player;
     protected PlayerStats playerStats;
 
+    [SerializeField] protected GameObject itemToDrop;
 
     protected bool playerInSight = false;
 

@@ -25,6 +25,10 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     private float targetMaxVerticalAngle;                              // Angle vertical maximum personnalisé.
     private bool isCustomOffset;                                       // Indique si un décalage personnalisé est utilisé.
 
+    [Header("Camera Lock")]
+    private bool isLocked = false;
+    public bool IsLocked => isLocked;
+
     // Retourne l’angle horizontal actuel.
     public float GetH => angleH;
 
@@ -43,6 +47,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     void Awake()
     {
+        isLocked = false;
         controls = new PlayerControls();
         // Souris
         controls.Player.LookMouse.performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
@@ -79,6 +84,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     void Update()
     {
+        if (isLocked) return;
         // Récupère le mouvement de la souris pour faire tourner la caméra autour du joueur.
         Vector2 mouse = mouseLook * mouseSensitivity;
         Vector2 pad = gamepadSensitivity * Time.deltaTime * gamepadLook;
@@ -121,6 +127,17 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         smoothCamOffset = Vector3.Lerp(smoothCamOffset, customOffsetCollision ? Vector3.zero : noCollisionOffset, smooth * Time.deltaTime);
 
         cam.position = player.position + camYRotation * smoothPivotOffset + aimRotation * smoothCamOffset;
+    }
+
+    public void LockCamera()
+    {
+        Debug.Log("Camera Locked");
+        isLocked = true;
+    }
+
+    public void UnlockCamera()
+    {
+        isLocked = false;
     }
 
     void OnEnable() => controls.Enable();
