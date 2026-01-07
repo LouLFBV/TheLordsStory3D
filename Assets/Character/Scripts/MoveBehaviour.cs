@@ -31,6 +31,7 @@ public class MoveBehaviour : GenericBehaviour
 
     private AttackBehaviour attackBehaviour;
     private AimBehaviourBasic aimBehaviour;
+    private JumpBehaviour jumpBehaviour;
     private Rigidbody rb;
 
     [Header("Roll Collider Settings")]
@@ -151,6 +152,7 @@ public class MoveBehaviour : GenericBehaviour
 
         attackBehaviour = GetComponent<AttackBehaviour>();
         aimBehaviour = GetComponent<AimBehaviourBasic>();
+        jumpBehaviour = GetComponent<JumpBehaviour>();
     }
 
     void Update()
@@ -322,6 +324,7 @@ public class MoveBehaviour : GenericBehaviour
         Debug.Log("Stopping player movement.");
         canMove = false;
         attackBehaviour.canAttack = false;
+        jumpBehaviour.canJump = false;
         speed = 0;
 
         behaviourManager.GetAnim.SetFloat("Speed",0);
@@ -334,5 +337,6 @@ public class MoveBehaviour : GenericBehaviour
         Debug.Log("Starting player movement.");
         canMove = true;
         attackBehaviour.canAttack = true;
+        jumpBehaviour.canJump = true;
     }
 }

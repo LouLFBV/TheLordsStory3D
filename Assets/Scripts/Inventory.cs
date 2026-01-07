@@ -208,6 +208,11 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < content.Count; i++)
         {
             Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
+            if (content[i].itemData == null)
+            {
+                RemoveItem(content[i].itemData);
+                continue;
+            }
             currentSlot.item = content[i].itemData;
             currentSlot.itemVisual.sprite = content[i].itemData.visual;
 
