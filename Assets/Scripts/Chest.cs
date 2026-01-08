@@ -81,6 +81,7 @@ public class Chest : InteractableBase
         openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
 
         bottomChest.GetComponent<Harvestable>().enabled = false;
+        bottomChest.GetComponent<HarvestableInteractable>().enabled = false;
 
         if (palette == null)
             palette = Palette.instance;
@@ -307,12 +308,14 @@ public class Chest : InteractableBase
         if (isOpen)
         {
             destroyed = true;
-            objectType = InteractableObjectType.Axe;
-            interactUI.SetInteractable(this);
 
-            gameObject.layer = LayerMask.NameToLayer("Harvestable");
-            gameObject.tag = "Harvestable";
+            gameObject.layer = LayerMask.NameToLayer("Default");
+            gameObject.tag = "Default";
+
+            bottomChest.layer = LayerMask.NameToLayer("Harvestable");
+            bottomChest.tag = "Harvestable";
             bottomChest.GetComponent<Harvestable>().enabled = true;
+            bottomChest.GetComponent<HarvestableInteractable>().enabled = true;
         }
     }
 }

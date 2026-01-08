@@ -46,7 +46,7 @@ public class FootstepController : MonoBehaviour
 
         audioSource.pitch = Random.Range(0.95f, 1.05f);
         audioSource.PlayOneShot(clip);
-        Debug.Log(clip.name + " played on " + surface.ToString() + " surface.");
+        //Debug.Log(clip.name + " played on " + surface.ToString() + " surface.");
     }
 
     private bool IsMoving()
