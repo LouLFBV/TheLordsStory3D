@@ -61,6 +61,11 @@ public class PlayerStats : MonoBehaviour
 
     [SerializeField] private AudioClip goldSound;
 
+    [Header("Panel de mort")]
+    [SerializeField] private GameObject deathPanel;
+    [SerializeField] private Animator deathAnimator;
+
+
 
     [HideInInspector] public bool isDead = false;
     [HideInInspector] public EquipmentLibraryItem equipmentToEquip, equipmentToDesequip;
@@ -146,6 +151,15 @@ public class PlayerStats : MonoBehaviour
         playerMovementScript.canMove = false;
 
         animator.SetTrigger("Die");
+        if(deathAnimator != null && deathAnimator != null)
+        {
+            deathPanel.SetActive(true);
+            deathAnimator.SetTrigger("Open");
+        }
+        else
+        {
+            Debug.LogWarning("Death animator or death panel is not assigned.");
+        }
     }
 
     public void UpdateHealthBar()
