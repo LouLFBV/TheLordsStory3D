@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 // MoveBehaviour hérite de GenericBehaviour. Ce script gère le déplacement du joueur sans Root Motion.
@@ -42,10 +43,12 @@ public class MoveBehaviour : GenericBehaviour
     private float originalCapsuleHeight;
     private Vector3 originalCapsuleCenter;
 
-    //Nouveau système Input
+    public event Action<bool> OnCrouchChanged;
+    #region PlayerInput
     [SerializeField] private PlayerInput playerInput;
     private Vector2 moveInput;
     private bool sprintInput;
+#endregion
 
     #endregion
 
@@ -105,8 +108,11 @@ public class MoveBehaviour : GenericBehaviour
 
     private void OnCrouch(InputAction.CallbackContext ctx)
     {
-        behaviourManager.GetAnim.SetBool("IsCrouched", !behaviourManager.GetAnim.GetBool("IsCrouched"));
+        bool newValue = !behaviourManager.GetAnim.GetBool("IsCrouched");
+        behaviourManager.GetAnim.SetBool("IsCrouched", newValue);
+        OnCrouchChanged?.Invoke(newValue);
     }
+
 
     private void OnForwarRool(InputAction.CallbackContext ctx)
     {

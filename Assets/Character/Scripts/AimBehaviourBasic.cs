@@ -19,6 +19,7 @@ public class AimBehaviourBasic : GenericBehaviour
     private PlayerStats playerStats;                     // Référence au script PlayerStats.
     private MoveBehaviour moveBehaviour;         // Référence au script MoveBehaviour.
     [SerializeField] private ThirdPersonOrbitCamBasic camScript;
+    public event Action<bool> OnAimStateChanged;
 
     #region PlayerInput
     [SerializeField] private PlayerInput playerInput;
@@ -69,11 +70,13 @@ public class AimBehaviourBasic : GenericBehaviour
     private void OnAimCanceled(InputAction.CallbackContext context)
     {
         aimInput = false;
+        OnAimStateChanged?.Invoke(aimInput);
     }
 
     private void OnAim(InputAction.CallbackContext context)
     {
         aimInput = true;
+        OnAimStateChanged?.Invoke(aimInput);
     }
     #endregion
 

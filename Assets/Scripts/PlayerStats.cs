@@ -151,15 +151,12 @@ public class PlayerStats : MonoBehaviour
         playerMovementScript.canMove = false;
 
         animator.SetTrigger("Die");
-        if(deathAnimator != null && deathAnimator != null)
-        {
-            deathPanel.SetActive(true);
-            deathAnimator.SetTrigger("Open");
-        }
-        else
-        {
-            Debug.LogWarning("Death animator or death panel is not assigned.");
-        }
+    }
+
+    public void OpenDeathPanel()
+    {
+        deathPanel.SetActive(true);
+        deathAnimator.SetTrigger("Open");
     }
 
     public void UpdateHealthBar()

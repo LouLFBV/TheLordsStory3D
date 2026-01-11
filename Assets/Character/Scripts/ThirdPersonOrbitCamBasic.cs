@@ -32,6 +32,10 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     // Retourne l’angle horizontal actuel.
     public float GetH => angleH;
 
+    [SerializeField] private MoveBehaviour playerMoveBehaviour;
+    [SerializeField] private AimBehaviourBasic playerAimBehaviour;
+    [SerializeField] private float camForCrouchYOffset = -0.3f;
+
     #region PlayerControls
 
     [Header("Sensibilités")]
@@ -75,6 +79,8 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         ResetTargetOffsets();
         ResetFOV();
         ResetMaxVerticalAngle();
+
+        playerMoveBehaviour = player.GetComponent<MoveBehaviour>();
 
         // Vérifie qu’aucun décalage vertical ne soit appliqué directement sur la caméra.
         if (camOffset.y > 0)
@@ -140,8 +146,26 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         isLocked = false;
     }
 
-    void OnEnable() => controls.Enable();
-    void OnDisable() => controls.Disable();
+    void OnEnable()
+    {
+        controls.Enable();
+        playerMoveBehaviour.OnCrouchChanged += HandleCrouch;
+    }
+
+    void OnDisable()
+    {
+        controls.Disable();
+        playerMoveBehaviour.OnCrouchChanged -= HandleCrouch;
+    }
+
+    private void HandleCrouch(bool isCrouched)
+    {
+        if (isCrouched)
+            SetYCamOffset(camForCrouchYOffset);
+        else
+            ResetYCamOffset();
+    }
+
 
     // Définit les décalages de caméra à des valeurs personnalisées.
     public void SetTargetOffsets(Vector3 newPivotOffset, Vector3 newCamOffset)
