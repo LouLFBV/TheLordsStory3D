@@ -97,15 +97,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Shoulder",
-                    "type": "Button",
-                    "id": "816e2e5e-cd09-4f95-89ea-727d54822326",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Emote",
                     "type": "Button",
                     "id": "1085722c-d6d8-4a9c-845f-1340162684ca",
@@ -397,28 +388,6 @@
                     "action": "LookGamepad",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "d8054c1d-9b9d-405e-9066-c5b3533f958e",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shoulder",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0afb67bd-e926-476a-98cd-a48e4a6c9a71",
-                    "path": "<Gamepad>/leftStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shoulder",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

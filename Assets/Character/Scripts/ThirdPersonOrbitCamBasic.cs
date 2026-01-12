@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 // Cette classe correspond aux fonctionnalités de la caméra à la troisième personne.
@@ -6,7 +7,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 {
     public Transform player;                                           // Référence du joueur.
     public Vector3 pivotOffset = new Vector3(0.0f, 1.7f, 0.0f);        // Décalage pour recentrer la caméra.
-    public Vector3 camOffset = new Vector3(0.0f, 0.0f, -3.0f);       // Décalage pour repositionner la caméra par rapport au joueur.
+    public readonly Vector3 camOffset = new Vector3(0.0f, 0.0f, -3.0f);       // Décalage pour repositionner la caméra par rapport au joueur.
     public float smooth = 10f;                                         // Vitesse de réactivité de la caméra.
     public float horizontalAimingSpeed = 6f;                           // Vitesse de rotation horizontale.
     public float verticalAimingSpeed = 6f;                             // Vitesse de rotation verticale.
@@ -34,7 +35,12 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     [SerializeField] private MoveBehaviour playerMoveBehaviour;
     [SerializeField] private AimBehaviourBasic playerAimBehaviour;
-    [SerializeField] private float camForCrouchYOffset = -0.3f;
+
+    [Header("Crouch/Aim Settings")]
+    [SerializeField] private Vector3 crouchOffset = new Vector3(0.0f, 1.7f, 0.0f);
+    [SerializeField] private Vector3 aimOffset = new Vector3(0.0f, 0.0f, -3.0f);     
+    private bool isCrouched = false;
+    private bool isAiming = false;
 
     #region PlayerControls
 
@@ -150,18 +156,35 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     {
         controls.Enable();
         playerMoveBehaviour.OnCrouchChanged += HandleCrouch;
+        playerAimBehaviour.OnAimStateChanged += OnAimChanged;
     }
 
     void OnDisable()
     {
         controls.Disable();
         playerMoveBehaviour.OnCrouchChanged -= HandleCrouch;
+        playerAimBehaviour.OnAimStateChanged -= OnAimChanged;
     }
 
-    private void HandleCrouch(bool isCrouched)
+    private void OnAimChanged(bool aiming)
     {
+        isAiming = aiming;
+
+        if (isAiming)
+        {
+            SetNewCamOffset(aimOffset);
+        }
+        else
+            ResetTargetOffsets();
+    }
+
+
+    private void HandleCrouch(bool crouched)
+    {
+        isCrouched = crouched;
+
         if (isCrouched)
-            SetYCamOffset(camForCrouchYOffset);
+            SetYCamOffset(crouchOffset.y);
         else
             ResetYCamOffset();
     }
@@ -199,6 +222,11 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     public void SetXCamOffset(float x)
     {
         targetCamOffset.x = x;
+    }
+
+    private void SetNewCamOffset(Vector3 newOffset)
+    {
+        targetCamOffset = newOffset;
     }
 
     // Définit un champ de vision personnalisé.

@@ -183,15 +183,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Shoulder"",
-                    ""type"": ""Button"",
-                    ""id"": ""816e2e5e-cd09-4f95-89ea-727d54822326"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Emote"",
                     ""type"": ""Button"",
                     ""id"": ""1085722c-d6d8-4a9c-845f-1340162684ca"",
@@ -483,28 +474,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""LookGamepad"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d8054c1d-9b9d-405e-9066-c5b3533f958e"",
-                    ""path"": ""<Keyboard>/f"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Shoulder"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0afb67bd-e926-476a-98cd-a48e4a6c9a71"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Shoulder"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
@@ -1104,7 +1073,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
         m_Player_LookGamepad = m_Player.FindAction("LookGamepad", throwIfNotFound: true);
-        m_Player_Shoulder = m_Player.FindAction("Shoulder", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
         m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
         m_Player_ForwardRool = m_Player.FindAction("ForwardRool", throwIfNotFound: true);
@@ -1213,7 +1181,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_LookMouse;
     private readonly InputAction m_Player_LookGamepad;
-    private readonly InputAction m_Player_Shoulder;
     private readonly InputAction m_Player_Emote;
     private readonly InputAction m_Player_Dodge;
     private readonly InputAction m_Player_ForwardRool;
@@ -1268,10 +1235,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/LookGamepad".
         /// </summary>
         public InputAction @LookGamepad => m_Wrapper.m_Player_LookGamepad;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Shoulder".
-        /// </summary>
-        public InputAction @Shoulder => m_Wrapper.m_Player_Shoulder;
         /// <summary>
         /// Provides access to the underlying input action "Player/Emote".
         /// </summary>
@@ -1340,9 +1303,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LookGamepad.started += instance.OnLookGamepad;
             @LookGamepad.performed += instance.OnLookGamepad;
             @LookGamepad.canceled += instance.OnLookGamepad;
-            @Shoulder.started += instance.OnShoulder;
-            @Shoulder.performed += instance.OnShoulder;
-            @Shoulder.canceled += instance.OnShoulder;
             @Emote.started += instance.OnEmote;
             @Emote.performed += instance.OnEmote;
             @Emote.canceled += instance.OnEmote;
@@ -1393,9 +1353,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LookGamepad.started -= instance.OnLookGamepad;
             @LookGamepad.performed -= instance.OnLookGamepad;
             @LookGamepad.canceled -= instance.OnLookGamepad;
-            @Shoulder.started -= instance.OnShoulder;
-            @Shoulder.performed -= instance.OnShoulder;
-            @Shoulder.canceled -= instance.OnShoulder;
             @Emote.started -= instance.OnEmote;
             @Emote.performed -= instance.OnEmote;
             @Emote.canceled -= instance.OnEmote;
@@ -1784,13 +1741,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLookGamepad(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Shoulder" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnShoulder(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Emote" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -9,22 +9,20 @@ public class AimBehaviourBasic : GenericBehaviour
 {
     public GameObject crosshair;                                          // Texture du réticule de visée.
     public float aimTurnSmoothing = 0.15f;                                // Vitesse de rotation du joueur pour correspondre à l’orientation de la caméra lors de la visée.
-    public Vector3 aimPivotOffset = new (0.5f, 1.2f, 0f);         // Décalage du pivot de la caméra lorsqu’on vise.
-    public Vector3 aimCamOffset = new (0f, 0.4f, -0.7f);         // Décalage de la caméra lorsqu’on vise.
+    //public Vector3 aimPivotOffset = new (0.5f, 1.2f, 0f);         // Décalage du pivot de la caméra lorsqu’on vise.
+    //public Vector3 aimCamOffset = new (0f, 0.4f, -0.7f);         // Décalage de la caméra lorsqu’on vise.
 
     private int aimBool;                                                  // Variable Animator liée à la visée.
     private bool aim;                                                     // Booléen indiquant si le joueur est en train de viser.
     public bool IsAiming => aim;
 
-    private PlayerStats playerStats;                     // Référence au script PlayerStats.
-    private MoveBehaviour moveBehaviour;         // Référence au script MoveBehaviour.
-    [SerializeField] private ThirdPersonOrbitCamBasic camScript;
+    private PlayerStats playerStats;                    
+    private MoveBehaviour moveBehaviour;         
     public event Action<bool> OnAimStateChanged;
 
     #region PlayerInput
     [SerializeField] private PlayerInput playerInput;
     private bool aimInput;
-    private bool shoulderInput;
     #endregion
 
     #region Méthodes PlayerInput 
@@ -40,9 +38,6 @@ public class AimBehaviourBasic : GenericBehaviour
         playerInput.actions["Aim"].performed += OnAim;
         playerInput.actions["Aim"].canceled += OnAimCanceled;
 
-        playerInput.actions["Shoulder"].Enable();
-        playerInput.actions["Shoulder"].performed += OnShoulder;
-        playerInput.actions["Shoulder"].canceled += OnShoulderCanceled;
     }
 
 
@@ -52,19 +47,6 @@ public class AimBehaviourBasic : GenericBehaviour
         playerInput.actions["Aim"].performed -= OnAim;
         playerInput.actions["Aim"].canceled -= OnAimCanceled;
 
-        playerInput.actions["Shoulder"].Disable();
-        playerInput.actions["Shoulder"].performed -= OnShoulder;
-        playerInput.actions["Shoulder"].canceled -= OnShoulderCanceled;
-    }
-
-    private void OnShoulderCanceled(InputAction.CallbackContext context)
-    {
-        shoulderInput = false;
-    }
-
-    private void OnShoulder(InputAction.CallbackContext context)
-    {
-        shoulderInput = true;
     }
 
     private void OnAimCanceled(InputAction.CallbackContext context)
@@ -95,12 +77,12 @@ public class AimBehaviourBasic : GenericBehaviour
         // Activer la visée tant que le bouton est tenu
         if (aimInput && !aim && !playerStats.isDead && behaviourManager.IsGrounded())
         {
-            StartCoroutine(ToggleAimOn());
+            ToggleAimOn();
         }
         // Désactiver la visée quand on relâche le bouton
         else if (!aimInput && aim)
         {
-            StartCoroutine(ToggleAimOff());
+            ToggleAimOff();
         }
 
         // 🔸 Forcer le comportement "strafe" même sans viser, si une arme est équipée.
@@ -118,19 +100,7 @@ public class AimBehaviourBasic : GenericBehaviour
         // Pas de sprint pendant la visée.
         canSprint = !aim;
 
-        // Change la position de la caméra (épaule gauche/droite).
-        if (shoulderInput)
-        {
-            shoulderInput = false;
-
-            if (aim)
-            {
-                aimCamOffset.x = -aimCamOffset.x;
-                aimPivotOffset.x = -aimPivotOffset.x;
-            }
-        }
-
-
+       
         // Définit le booléen de visée dans l’Animator Controller.
         behaviourManager.GetAnim.SetBool(aimBool, aim);
 
@@ -139,26 +109,22 @@ public class AimBehaviourBasic : GenericBehaviour
 
 
     // Coroutine pour activer le mode visée avec un léger délai.
-    private IEnumerator ToggleAimOn()
+    private void ToggleAimOn()
     {
         if (moveBehaviour.changedFOV)
         {
-            camScript.ResetFOV();
             moveBehaviour.changedFOV = false;
         }
-            yield return new WaitForSeconds(0.05f);
+            //yield return new WaitForSeconds(0.05f);
         // La visée n’est pas possible si un autre comportement verrouille temporairement le contrôle (ex : attaque, roulade).
-        if (behaviourManager.GetTempLockStatus(this.behaviourCode))
-            yield break;
+        //if (behaviourManager.GetTempLockStatus(this.behaviourCode))
+        //    yield break;
 
         // Active le mode visée.
         else
         {
             aim = true;
-            int signal = 1;
-            aimCamOffset.x = Mathf.Abs(aimCamOffset.x) * signal;
-            aimPivotOffset.x = Mathf.Abs(aimPivotOffset.x) * signal;
-            yield return new WaitForSeconds(0.1f);
+            OnAimStateChanged?.Invoke(aim);
             behaviourManager.GetAnim.SetFloat("Speed", 0);
             // Cet état remplace le comportement actif actuel.
             behaviourManager.OverrideWithBehaviour(this);
@@ -166,38 +132,21 @@ public class AimBehaviourBasic : GenericBehaviour
     }
 
     // Coroutine pour désactiver le mode visée avec un léger délai.
-    private IEnumerator ToggleAimOff()
+    private void ToggleAimOff()
     {
         aim = false;
-        yield return new WaitForSeconds(0.3f);
-        behaviourManager.GetCamScript.ResetTargetOffsets();
-        behaviourManager.GetCamScript.ResetMaxVerticalAngle();
-        yield return new WaitForSeconds(0.05f);
+        OnAimStateChanged?.Invoke(aim);
         behaviourManager.RevokeOverridingBehaviour(this);
     }
 
-    // LocalFixedUpdate remplace la fonction virtuelle de la classe de base.
-    public override void LocalFixedUpdate()
-    {
-        // Maintient les décalages caméra lorsqu’on vise.
-        if (aim)
-            behaviourManager.GetCamScript.SetTargetOffsets(aimPivotOffset, aimCamOffset);
-    }
 
     // LocalLateUpdate : le gestionnaire est appelé ici pour appliquer la rotation du joueur après la rotation de la caméra, afin d’éviter les scintillements.
     public override void LocalLateUpdate()
     {
-        if (aim /*|| Palette.instance.IfPlayerHasWeaponEquipped()*/)
+        if (aim)
         {
-            AimManagement(); // Gère la rotation pendant la visée.
+            Rotating();
         }
-    }
-
-    // Gère les paramètres de visée lorsque le mode visée est actif.
-    void AimManagement()
-    {
-        // Gère l’orientation du joueur pendant la visée.
-        Rotating();
     }
 
     // Fait pivoter le joueur pour correspondre à l’orientation correcte selon la caméra.
@@ -223,12 +172,12 @@ public class AimBehaviourBasic : GenericBehaviour
     {
         if (crosshair == null) return;
 
-        float mag = behaviourManager.GetCamScript.GetCurrentPivotMagnitude(aimPivotOffset);
+        //float mag = behaviourManager.GetCamScript.GetCurrentPivotMagnitude(aimPivotOffset);
 
-        // Affiche le réticule uniquement si on vise ET que la caméra est bien alignée.
-        bool shouldShow = aim && mag < 0.05f;
+        //// Affiche le réticule uniquement si on vise ET que la caméra est bien alignée.
+        //bool shouldShow = aim && mag < 0.05f;
 
-        if (crosshair.activeSelf != shouldShow)
-            crosshair.SetActive(shouldShow);
+        //if (crosshair.activeSelf != shouldShow)
+        //    crosshair.SetActive(shouldShow);
     }
 }
