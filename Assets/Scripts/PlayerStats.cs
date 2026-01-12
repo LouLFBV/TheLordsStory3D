@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,7 +66,9 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private GameObject deathPanel;
     [SerializeField] private Animator deathAnimator;
 
-
+    [Header("Camera Shake")]
+    [SerializeField] private float cameraShakeIntensity = 0.15f;
+    [SerializeField] private float cameraShakeDuration = 0.2f;
 
     [HideInInspector] public bool isDead = false;
     [HideInInspector] public EquipmentLibraryItem equipmentToEquip, equipmentToDesequip;
@@ -136,6 +139,7 @@ public class PlayerStats : MonoBehaviour
                     break;
             }
             currentHealth -= damage;
+            CameraEvents.OnCameraShake?.Invoke(cameraShakeIntensity, cameraShakeDuration);
         }
         if (currentHealth <= 0 && !isDead)
         {

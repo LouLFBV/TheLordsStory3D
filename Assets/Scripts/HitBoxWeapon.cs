@@ -12,7 +12,13 @@ public class HitBoxWeapon : MonoBehaviour
             if (other.TryGetComponent<EnemyParent>(out var enemyAI))
             {
                 if (itemData.equipmentType != EquipmentType.Arrow)
+                {
                     enemyAI.TakeDamage(itemData.attackPoints, itemData.damageType);
+                    CameraEvents.OnCameraShake?.Invoke(
+                        itemData.cameraShakeIntensity,
+                        itemData.cameraShakeDuration
+                    );
+                }
                 else
                     StartCoroutine(ApplyArrowEffect(enemyAI));
             }
@@ -67,6 +73,10 @@ public class HitBoxWeapon : MonoBehaviour
 
             default:
                 enemyAI.TakeDamage(itemData.attackPoints, itemData.damageType);
+                CameraEvents.OnCameraShake?.Invoke(
+                    itemData.cameraShakeIntensity,
+                    itemData.cameraShakeDuration
+                );
                 break;
         }
     }

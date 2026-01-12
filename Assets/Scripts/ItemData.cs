@@ -40,6 +40,9 @@ public class ItemData : ScriptableObject
     public ItemType itemType;
     public EquipmentType equipmentType;
 
+    [Header("Camera Shake")]
+    public float cameraShakeIntensity = 0.15f;
+    public float cameraShakeDuration = 0.2f;
 }
 
 public enum ItemType

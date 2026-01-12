@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,8 +7,6 @@ using UnityEngine.InputSystem;
 public class ThirdPersonOrbitCamBasic : MonoBehaviour
 {
     public Transform player;                                           // Référence du joueur.
-    public Vector3 pivotOffset = new Vector3(0.0f, 1.7f, 0.0f);        // Décalage pour recentrer la caméra.
-    public readonly Vector3 camOffset = new Vector3(0.0f, 0.0f, -3.0f);       // Décalage pour repositionner la caméra par rapport au joueur.
     public float smooth = 10f;                                         // Vitesse de réactivité de la caméra.
     public float horizontalAimingSpeed = 6f;                           // Vitesse de rotation horizontale.
     public float verticalAimingSpeed = 6f;                             // Vitesse de rotation verticale.
@@ -24,7 +23,10 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     private float defaultFOV;                                          // Champ de vision (Field of View) par défaut.
     private float targetFOV;                                           // Champ de vision cible.
     private float targetMaxVerticalAngle;                              // Angle vertical maximum personnalisé.
-    private bool isCustomOffset;                                       // Indique si un décalage personnalisé est utilisé.
+    private Camera camComponent;
+    private Coroutine shakeRoutine;
+    private Vector3 shakeOffset;
+
 
     [Header("Camera Lock")]
     private bool isLocked = false;
@@ -36,11 +38,17 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     [SerializeField] private MoveBehaviour playerMoveBehaviour;
     [SerializeField] private AimBehaviourBasic playerAimBehaviour;
 
-    [Header("Crouch/Aim Settings")]
-    [SerializeField] private Vector3 crouchOffset = new Vector3(0.0f, 1.7f, 0.0f);
-    [SerializeField] private Vector3 aimOffset = new Vector3(0.0f, 0.0f, -3.0f);     
-    private bool isCrouched = false;
-    private bool isAiming = false;
+    [Header("Base Offsets")]
+    [SerializeField] private Vector3 basePivotOffset = new Vector3(0f, 1.7f, 0f);
+    [SerializeField] private Vector3 baseCamOffset = new Vector3(0f, 0f, -3f);
+
+    [Header("Aim Offsets")]
+    [SerializeField] private Vector3 aimCamOffset = new Vector3(0.5f, 0f, -1.2f);
+    private Vector3 currentAimOffset;
+
+    [Header("Crouch Offsets")]
+    [SerializeField] private float crouchYOffset = -0.3f;
+    private float currentCrouchYOffset;
 
     #region PlayerControls
 
@@ -71,25 +79,31 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
         // Référence au transform de la caméra.
         cam = transform;
+        camComponent = cam.GetComponent<Camera>();
+
 
         // Position initiale de la caméra.
-        cam.position = player.position + Quaternion.identity * pivotOffset + Quaternion.identity * camOffset;
+        cam.position = player.position + Quaternion.identity * basePivotOffset + Quaternion.identity * baseCamOffset;
         cam.rotation = Quaternion.identity;
 
-        // Initialisation des références et valeurs par défaut.
-        smoothPivotOffset = pivotOffset;
-        smoothCamOffset = camOffset;
-        defaultFOV = cam.GetComponent<Camera>().fieldOfView;
+
+        smoothPivotOffset = basePivotOffset;
+        smoothCamOffset = baseCamOffset;
+
+        targetPivotOffset = basePivotOffset;
+        targetCamOffset = baseCamOffset;
+
+
+        defaultFOV = camComponent.fieldOfView;
         angleH = player.eulerAngles.y;
 
-        ResetTargetOffsets();
         ResetFOV();
         ResetMaxVerticalAngle();
 
         playerMoveBehaviour = player.GetComponent<MoveBehaviour>();
 
         // Vérifie qu’aucun décalage vertical ne soit appliqué directement sur la caméra.
-        if (camOffset.y > 0)
+        if (baseCamOffset.y > 0)
             Debug.LogWarning("Le décalage vertical (Y) de la caméra sera ignoré pendant les collisions !\n" +
                              "Il est recommandé d’appliquer tout décalage vertical via le Pivot Offset.");
     }
@@ -117,7 +131,18 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         cam.rotation = aimRotation;
 
         // Met à jour le champ de vision.
-        cam.GetComponent<Camera>().fieldOfView = Mathf.Lerp(cam.GetComponent<Camera>().fieldOfView, targetFOV, Time.deltaTime);
+        camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, targetFOV, Time.deltaTime);
+
+        targetPivotOffset = basePivotOffset;
+
+
+
+        // Offsets composés dynamiquement (base + aim + crouch)
+        targetCamOffset =
+            baseCamOffset +
+            currentAimOffset +
+            Vector3.up * currentCrouchYOffset;
+
 
         // Vérifie les collisions entre la caméra et l’environnement.
         Vector3 baseTempPosition = player.position + camYRotation * targetPivotOffset;
@@ -132,13 +157,17 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
             noCollisionOffset = Vector3.zero;
 
         // Si un décalage personnalisé est en collision, passe temporairement en “vue à la première personne”.
-        bool customOffsetCollision = isCustomOffset && noCollisionOffset.sqrMagnitude < targetCamOffset.sqrMagnitude;
+        bool customOffsetCollision = noCollisionOffset.sqrMagnitude < targetCamOffset.sqrMagnitude;
 
         // Repositionne la caméra.
-        smoothPivotOffset = Vector3.Lerp(smoothPivotOffset, customOffsetCollision ? pivotOffset : targetPivotOffset, smooth * Time.deltaTime);
+        smoothPivotOffset = Vector3.Lerp(smoothPivotOffset, customOffsetCollision ? basePivotOffset : targetPivotOffset, smooth * Time.deltaTime);
         smoothCamOffset = Vector3.Lerp(smoothCamOffset, customOffsetCollision ? Vector3.zero : noCollisionOffset, smooth * Time.deltaTime);
 
-        cam.position = player.position + camYRotation * smoothPivotOffset + aimRotation * smoothCamOffset;
+        cam.position =
+        player.position +
+        camYRotation * smoothPivotOffset +
+        aimRotation * (smoothCamOffset + shakeOffset);
+
     }
 
     public void LockCamera()
@@ -155,78 +184,69 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
-        playerMoveBehaviour.OnCrouchChanged += HandleCrouch;
-        playerAimBehaviour.OnAimStateChanged += OnAimChanged;
+
+        if (playerMoveBehaviour != null)
+            playerMoveBehaviour.OnCrouchChanged += HandleCrouch;
+
+        if (playerAimBehaviour != null)
+            playerAimBehaviour.OnAimStateChanged += OnAimChanged;
+
+
+        CameraEvents.OnCameraShake += PlayCameraShake;
     }
 
     void OnDisable()
     {
         controls.Disable();
-        playerMoveBehaviour.OnCrouchChanged -= HandleCrouch;
-        playerAimBehaviour.OnAimStateChanged -= OnAimChanged;
+
+        if (playerMoveBehaviour != null)
+            playerMoveBehaviour.OnCrouchChanged -= HandleCrouch;
+
+        if (playerAimBehaviour != null)
+            playerAimBehaviour.OnAimStateChanged -= OnAimChanged;
+
+
+        CameraEvents.OnCameraShake -= PlayCameraShake;
     }
+
 
     private void OnAimChanged(bool aiming)
     {
-        isAiming = aiming;
-
-        if (isAiming)
-        {
-            SetNewCamOffset(aimOffset);
-        }
-        else
-            ResetTargetOffsets();
+        currentAimOffset = aiming ? aimCamOffset : Vector3.zero;
     }
+
 
 
     private void HandleCrouch(bool crouched)
     {
-        isCrouched = crouched;
-
-        if (isCrouched)
-            SetYCamOffset(crouchOffset.y);
-        else
-            ResetYCamOffset();
+        currentCrouchYOffset = crouched ? crouchYOffset : 0f;
     }
 
 
-    // Définit les décalages de caméra à des valeurs personnalisées.
-    public void SetTargetOffsets(Vector3 newPivotOffset, Vector3 newCamOffset)
+    private void PlayCameraShake(float intensity, float duration)
     {
-        targetPivotOffset = newPivotOffset;
-        targetCamOffset = newCamOffset;
-        isCustomOffset = true;
+        if (shakeRoutine != null)
+            StopCoroutine(shakeRoutine);
+
+        shakeRoutine = StartCoroutine(CameraShake(intensity, duration));
     }
 
-    // Réinitialise les décalages de caméra à leurs valeurs par défaut.
-    public void ResetTargetOffsets()
+    private IEnumerator CameraShake(float intensity, float duration)
     {
-        targetPivotOffset = pivotOffset;
-        targetCamOffset = camOffset;
-        isCustomOffset = false;
-    }
+        float time = 0f;
 
-    // Réinitialise uniquement le décalage vertical de la caméra.
-    public void ResetYCamOffset()
-    {
-        targetCamOffset.y = camOffset.y;
-    }
+        while (time < duration)
+        {
+            time += Time.deltaTime;
 
-    // Définit un nouveau décalage vertical.
-    public void SetYCamOffset(float y)
-    {
-        targetCamOffset.y = y;
-    }
+            shakeOffset = UnityEngine.Random.insideUnitSphere * intensity;
+            shakeOffset = Vector3.ClampMagnitude(shakeOffset, intensity);
 
-    // Définit un nouveau décalage horizontal.
-    public void SetXCamOffset(float x)
-    {
-        targetCamOffset.x = x;
-    }
 
-    private void SetNewCamOffset(Vector3 newOffset)
-    {
-        targetCamOffset = newOffset;
+            yield return null;
+        }
+        shakeOffset = Vector3.zero;
+        shakeRoutine = null;
     }
 
     // Définit un champ de vision personnalisé.
@@ -262,7 +282,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     // Vérifie la collision de la caméra vers le joueur.
     bool ViewingPosCheck(Vector3 checkPos)
     {
-        Vector3 target = player.position + pivotOffset;
+        Vector3 target = player.position + basePivotOffset;
         Vector3 direction = target - checkPos;
 
         if (Physics.SphereCast(checkPos, 0.2f, direction, out RaycastHit hit, direction.magnitude))
@@ -278,7 +298,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     // Vérifie la collision du joueur vers la caméra.
     bool ReverseViewingPosCheck(Vector3 checkPos)
     {
-        Vector3 origin = player.position + pivotOffset;
+        Vector3 origin = player.position + basePivotOffset;
         Vector3 direction = checkPos - origin;
 
         if (Physics.SphereCast(origin, 0.2f, direction, out RaycastHit hit, direction.magnitude))
@@ -296,4 +316,10 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     {
         return Mathf.Abs((finalPivotOffset - smoothPivotOffset).magnitude);
     }
+}
+
+public static class CameraEvents
+{
+    public static Action<float, float> OnCameraShake;
+    // amplitude, duration
 }

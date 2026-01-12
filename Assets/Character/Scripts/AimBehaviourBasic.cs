@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.InputSystem;
-using System.Security.Claims;
 using System;
 
 // AimBehaviour hérite de GenericBehaviour. Cette classe correspond au comportement de visée et de déplacement latéral (strafe).
@@ -52,13 +50,11 @@ public class AimBehaviourBasic : GenericBehaviour
     private void OnAimCanceled(InputAction.CallbackContext context)
     {
         aimInput = false;
-        OnAimStateChanged?.Invoke(aimInput);
     }
 
     private void OnAim(InputAction.CallbackContext context)
     {
         aimInput = true;
-        OnAimStateChanged?.Invoke(aimInput);
     }
     #endregion
 
@@ -104,7 +100,6 @@ public class AimBehaviourBasic : GenericBehaviour
         // Définit le booléen de visée dans l’Animator Controller.
         behaviourManager.GetAnim.SetBool(aimBool, aim);
 
-        UpdateCrosshairVisibility();
     }
 
 
@@ -115,16 +110,13 @@ public class AimBehaviourBasic : GenericBehaviour
         {
             moveBehaviour.changedFOV = false;
         }
-            //yield return new WaitForSeconds(0.05f);
-        // La visée n’est pas possible si un autre comportement verrouille temporairement le contrôle (ex : attaque, roulade).
-        //if (behaviourManager.GetTempLockStatus(this.behaviourCode))
-        //    yield break;
 
         // Active le mode visée.
         else
         {
             aim = true;
             OnAimStateChanged?.Invoke(aim);
+            crosshair.SetActive(aim);
             behaviourManager.GetAnim.SetFloat("Speed", 0);
             // Cet état remplace le comportement actif actuel.
             behaviourManager.OverrideWithBehaviour(this);
@@ -136,6 +128,7 @@ public class AimBehaviourBasic : GenericBehaviour
     {
         aim = false;
         OnAimStateChanged?.Invoke(aim);
+        crosshair.SetActive(aim);
         behaviourManager.RevokeOverridingBehaviour(this);
     }
 
@@ -167,17 +160,4 @@ public class AimBehaviourBasic : GenericBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, minSpeed * Time.deltaTime);
     }
 
-    // Affiche ou masque le réticule de visée.
-    private void UpdateCrosshairVisibility()
-    {
-        if (crosshair == null) return;
-
-        //float mag = behaviourManager.GetCamScript.GetCurrentPivotMagnitude(aimPivotOffset);
-
-        //// Affiche le réticule uniquement si on vise ET que la caméra est bien alignée.
-        //bool shouldShow = aim && mag < 0.05f;
-
-        //if (crosshair.activeSelf != shouldShow)
-        //    crosshair.SetActive(shouldShow);
-    }
 }
