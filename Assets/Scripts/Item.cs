@@ -7,7 +7,7 @@ public class Item : MonoBehaviour
     public int amount = 1;
 
     [Header("Visual Floating")]
-    public bool enableFloating = true;
+    public bool enableFloating = false;
     [SerializeField] private float floatAmplitude = 0.25f;
     [SerializeField] private float floatSpeed = 2f;
     [SerializeField] private float rotationSpeed = 60f;

@@ -33,6 +33,7 @@ public class MoveBehaviour : GenericBehaviour
     private AttackBehaviour attackBehaviour;
     private AimBehaviourBasic aimBehaviour;
     private JumpBehaviour jumpBehaviour;
+    private BowBehaviour bowBehaviour;
     private Rigidbody rb;
 
     [Header("Roll Collider Settings")]
@@ -98,6 +99,8 @@ public class MoveBehaviour : GenericBehaviour
 
     private void OnSprint(InputAction.CallbackContext ctx)
     {
+        if(bowBehaviour != null && bowBehaviour.chargeBow)
+            return;
         sprintInput = true;
     }
 
@@ -159,6 +162,7 @@ public class MoveBehaviour : GenericBehaviour
         attackBehaviour = GetComponent<AttackBehaviour>();
         aimBehaviour = GetComponent<AimBehaviourBasic>();
         jumpBehaviour = GetComponent<JumpBehaviour>();
+        bowBehaviour = GetComponent<BowBehaviour>();
     }
 
     void Update()

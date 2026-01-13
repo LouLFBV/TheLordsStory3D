@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BowBehaviour : MonoBehaviour
@@ -13,10 +13,14 @@ public class BowBehaviour : MonoBehaviour
 
     public bool canShoot = false;
     public bool chargeBow;
+    private float charge01;
     private GameObject arrow;
     private ItemData weaponActive;
     private ItemInInventory arrowItem;
     [SerializeField] private Quaternion initialFlecheRotation;
+
+    public event Action<float> OnBowChargeProgress;
+    public event Action<bool> OnBowChargeStateChanged;
 
 
     [SerializeField] private GameObject[] quiverArrows = new GameObject[10];
@@ -96,12 +100,18 @@ public class BowBehaviour : MonoBehaviour
         float startPower = weaponActive.rangeMin;
         float endPower = weaponActive.rangeMax;
 
+        OnBowChargeStateChanged?.Invoke(true);
+
         while (chargeBow && currentChargeTime < chargeDuration)
         {
             currentChargeTime += Time.deltaTime;
             float t = Mathf.Pow(currentChargeTime / chargeDuration, 2f);
+            float easedT = t * t; // ton easing actuel
             weaponActive.range = Mathf.Lerp(startPower, endPower, t);
             weaponActive.damage = Mathf.Lerp(weaponActive.damageMin, weaponActive.damageMax, t);
+
+            charge01 = easedT;
+            OnBowChargeProgress?.Invoke(charge01);
 
             yield return null;
         }
@@ -123,6 +133,8 @@ public class BowBehaviour : MonoBehaviour
 
         arrow.GetComponent<Rigidbody>().AddForce(arrowSpawnPoint.forward * weaponActive.range, ForceMode.Impulse);
         chargeBow = false;
+        OnBowChargeStateChanged?.Invoke(false);
+        OnBowChargeProgress?.Invoke(0f);
         changeLine = false;
 
         animator.SetBool("ChargeBow", false);

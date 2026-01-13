@@ -37,10 +37,18 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     [SerializeField] private MoveBehaviour playerMoveBehaviour;
     [SerializeField] private AimBehaviourBasic playerAimBehaviour;
+    [SerializeField] private BowBehaviour bowBehaviour;
+
+    [SerializeField] private float fovLerpSpeed = 8f;
+
 
     [Header("Base Offsets")]
     [SerializeField] private Vector3 basePivotOffset = new Vector3(0f, 1.7f, 0f);
     [SerializeField] private Vector3 baseCamOffset = new Vector3(0f, 0f, -3f);
+
+    [Header("Camera Collision")]
+    [SerializeField] private float minCameraDistance = 0.6f;
+    [SerializeField] private float collisionLerpSpeed = 12f;
 
     [Header("Aim Offsets")]
     [SerializeField] private Vector3 aimCamOffset = new Vector3(0.5f, 0f, -1.2f);
@@ -49,6 +57,14 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     [Header("Crouch Offsets")]
     [SerializeField] private float crouchYOffset = -0.3f;
     private float currentCrouchYOffset;
+
+    [Header("Bow Charge Zoom")]
+    [SerializeField] private float bowZoomDistance = 0.6f;
+    [SerializeField] private AnimationCurve bowZoomCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private float bowChargeFOV = 55f;
+    private float bowCharge01;
+    private bool isBowCharging;
+
 
     #region PlayerControls
 
@@ -76,7 +92,6 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         controls.Player.LookGamepad.canceled += _ => gamepadLook = Vector2.zero;
 
 
-
         // Référence au transform de la caméra.
         cam = transform;
         camComponent = cam.GetComponent<Camera>();
@@ -101,6 +116,8 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         ResetMaxVerticalAngle();
 
         playerMoveBehaviour = player.GetComponent<MoveBehaviour>();
+        bowBehaviour = player.GetComponent<BowBehaviour>();
+        playerAimBehaviour = player.GetComponent<AimBehaviourBasic>();
 
         // Vérifie qu’aucun décalage vertical ne soit appliqué directement sur la caméra.
         if (baseCamOffset.y > 0)
@@ -131,7 +148,8 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         cam.rotation = aimRotation;
 
         // Met à jour le champ de vision.
-        camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, targetFOV, Time.deltaTime);
+        camComponent.fieldOfView = Mathf.Lerp(camComponent.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
+
 
         targetPivotOffset = basePivotOffset;
 
@@ -143,6 +161,11 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
             currentAimOffset +
             Vector3.up * currentCrouchYOffset;
 
+        // Ajoute le zoom de l’arc si nécessaire.
+        float zoomT = bowZoomCurve.Evaluate(bowCharge01);
+        Vector3 bowZoomOffset = Vector3.forward * (zoomT * bowZoomDistance);
+
+        targetCamOffset += bowZoomOffset;
 
         // Vérifie les collisions entre la caméra et l’environnement.
         Vector3 baseTempPosition = player.position + camYRotation * targetPivotOffset;
@@ -157,11 +180,27 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
             noCollisionOffset = Vector3.zero;
 
         // Si un décalage personnalisé est en collision, passe temporairement en “vue à la première personne”.
-        bool customOffsetCollision = noCollisionOffset.sqrMagnitude < targetCamOffset.sqrMagnitude;
+        float desiredDistance = noCollisionOffset.magnitude;
 
-        // Repositionne la caméra.
-        smoothPivotOffset = Vector3.Lerp(smoothPivotOffset, customOffsetCollision ? basePivotOffset : targetPivotOffset, smooth * Time.deltaTime);
-        smoothCamOffset = Vector3.Lerp(smoothCamOffset, customOffsetCollision ? Vector3.zero : noCollisionOffset, smooth * Time.deltaTime);
+        // Clamp pour éviter la first-person trop rapide
+        desiredDistance = Mathf.Max(desiredDistance, minCameraDistance);
+
+        // Direction caméra → joueur conservée
+        Vector3 desiredCamOffset =
+            noCollisionOffset.normalized * desiredDistance;
+
+        smoothPivotOffset = Vector3.Lerp(
+            smoothPivotOffset,
+            targetPivotOffset,
+            smooth * Time.deltaTime
+        );
+
+        smoothCamOffset = Vector3.Lerp(
+            smoothCamOffset,
+            desiredCamOffset,
+            collisionLerpSpeed * Time.deltaTime
+        );
+
 
         cam.position =
         player.position +
@@ -191,6 +230,12 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         if (playerAimBehaviour != null)
             playerAimBehaviour.OnAimStateChanged += OnAimChanged;
 
+        if (bowBehaviour != null)
+        {
+            bowBehaviour.OnBowChargeProgress += OnBowChargeProgress;
+            bowBehaviour.OnBowChargeStateChanged += OnBowChargeStateChanged;
+        }
+
 
         CameraEvents.OnCameraShake += PlayCameraShake;
     }
@@ -205,14 +250,42 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         if (playerAimBehaviour != null)
             playerAimBehaviour.OnAimStateChanged -= OnAimChanged;
 
+        if (bowBehaviour != null)
+        {
+            bowBehaviour.OnBowChargeProgress -= OnBowChargeProgress;
+            bowBehaviour.OnBowChargeStateChanged -= OnBowChargeStateChanged;
+        }
+
 
         CameraEvents.OnCameraShake -= PlayCameraShake;
     }
+
+    private void OnBowChargeProgress(float value)
+    {
+        if (!isBowCharging) return;
+
+        bowCharge01 = value;
+        targetFOV = Mathf.Lerp(defaultFOV, bowChargeFOV, bowCharge01);
+    }
+
+
+    private void OnBowChargeStateChanged(bool charging)
+    {
+        isBowCharging = charging;
+
+        if (!charging)
+        {
+            bowCharge01 = 0f;
+            ResetFOV();
+        }
+    }
+
 
 
     private void OnAimChanged(bool aiming)
     {
         currentAimOffset = aiming ? aimCamOffset : Vector3.zero;
+        ResetFOV();
     }
 
 

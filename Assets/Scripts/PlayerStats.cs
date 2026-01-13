@@ -16,10 +16,9 @@ public class PlayerStats : MonoBehaviour
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
     public float currentHealth;
-
     [SerializeField] private Image healthBarFill;
-
     [SerializeField] private float healthDecreaseRateForHungerAndThirst;
+    [SerializeField] private ParticleSystem healthEffect;
 
     [Header("Endurance")]
 
@@ -177,6 +176,8 @@ public class PlayerStats : MonoBehaviour
 
     public void ConsumeItem(float health)
     {
+        if (currentHealth != maxHealth)
+            healthEffect.Play();
         currentHealth = Mathf.Min(currentHealth + health, maxHealth);
         UpdateHealthBar();
     }
