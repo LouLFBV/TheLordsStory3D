@@ -21,7 +21,7 @@ public class UINavigationManager : MonoBehaviour
     [Header("Enfant/ Parent")]
     [SerializeField] private GameObject childToDisableWhenActive;
 
-    [SerializeField] private PlayerInput playerInput;
+    public PlayerInput playerInput;
     private Vector2 navigationInput;
     private bool isSubmitting = false;
     public System.Action onCancel;

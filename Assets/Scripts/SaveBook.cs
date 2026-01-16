@@ -13,8 +13,9 @@ public class SaveBook : InteractableBase
     private Rigidbody rb;
 
     [Header("Save Panel")]
-    private GameObject savePanel; // Reference to the save panel UI
-    private bool isSavePanelOpen = false;
+    [SerializeField] private GameObject savePanel;
+
+    [SerializeField] private UINavigationManager navManager;
 
     private void Awake()
     {
@@ -30,6 +31,10 @@ public class SaveBook : InteractableBase
         {
             rb.isKinematic = enableFloating;
             rb.useGravity = !enableFloating;
+        }
+        if (navManager != null)
+        {
+            navManager.onCancel = ClosePanel;
         }
     }
 
@@ -50,10 +55,15 @@ public class SaveBook : InteractableBase
 
     private void OpenPanel()
     {
-        if (savePanel != null && !isSavePanelOpen)
-        {
+        if (!savePanel.activeSelf)
             savePanel.SetActive(true);
-            isSavePanelOpen = true;
-        }
+    }
+    public void ClosePanel()=>
+        savePanel.SetActive(false);
+
+    public void SaveGame()
+    {
+        Debug.Log("Game Saved!");
+        // Implémentez ici la logique de sauvegarde de la partie
     }
 }
