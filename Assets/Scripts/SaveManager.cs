@@ -39,6 +39,7 @@ public class SaveManager : MonoBehaviour
 
         SaveData data = new SaveData();
         data.playerStats = PlayerStats.instance.GetSaveData();
+        data.inventory = Inventory.instance.GetSaveData();
         data.sceneName = SceneManager.GetActiveScene().name;
 
         string json = JsonUtility.ToJson(data, true);
@@ -71,6 +72,9 @@ public class SaveManager : MonoBehaviour
         yield return null;
 
         PlayerStats.instance.LoadSaveData(data.playerStats);
+        if (data.inventory != null)
+            Inventory.instance.LoadSaveData(data.inventory);
+
 
         Debug.Log("Game Loaded");
     }
@@ -84,7 +88,7 @@ public class SaveData
     public PlayerStatsSaveData playerStats;
 
     // À venir :
-    // public InventorySaveData inventory;
+    public InventorySaveData inventory;
     // public QuestSaveData quests;
     // public WorldStateSaveData world;
 

@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.InputSystem;
 
@@ -8,6 +7,8 @@ public class Inventory : MonoBehaviour
 {
 
     public static Inventory instance;
+
+    public ItemDataDatabase itemDatabase;
 
 
     [Header("Other scripts References")]
@@ -86,7 +87,7 @@ public class Inventory : MonoBehaviour
         if (equipment.arrowItemInInventory.itemData != null)
         {
             Debug.Log("Checking for arrow stacking.");
-            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType & item.equipmentType == EquipmentType.Arrow)
+            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType && item.equipmentType == EquipmentType.Arrow)
             {
                 equipment.arrowItemInInventory.count++;
                 equipment.UpdateArrowsText();
@@ -230,16 +231,54 @@ public class Inventory : MonoBehaviour
         return content.Count == InventorySize;
     }
 
-    public void LoadData(List<ItemInInventory> loadedContent)
-    {
-        content = loadedContent;
-        RefreshContent();
-    }
-
     public void ClearContent()
     {
         content.Clear();
     }
+
+    public InventorySaveData GetSaveData()
+    {
+        InventorySaveData data = new InventorySaveData();
+        data.content = new List<ItemInInventorySave>();
+
+        foreach (var item in content)
+        {
+            data.content.Add(new ItemInInventorySave
+            {
+                itemID = item.itemData.itemID,
+                count = item.count
+            });
+        }
+
+        return data;
+    }
+
+
+    public void LoadSaveData(InventorySaveData data)
+    {
+        if (data == null || data.content == null)
+        {
+            Debug.LogWarning("InventorySaveData is null");
+            return;
+        }
+
+        content.Clear();
+
+        foreach (var savedItem in data.content)
+        {
+            ItemData itemData = itemDatabase.GetItemByID(savedItem.itemID);
+            if (itemData == null) continue;
+
+            content.Add(new ItemInInventory
+            {
+                itemData = itemData,
+                count = savedItem.count
+            });
+        }
+
+        RefreshContent();
+    }
+
 }
 
 [System.Serializable]
@@ -247,4 +286,17 @@ public class ItemInInventory
 {
     public ItemData itemData;
     public int count;
+}
+
+[System.Serializable]
+public class ItemInInventorySave
+{
+    public string itemID;
+    public int count;
+}
+
+[System.Serializable]
+public class InventorySaveData
+{
+    public List<ItemInInventorySave> content;
 }
