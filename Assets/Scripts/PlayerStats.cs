@@ -76,9 +76,14 @@ public class PlayerStats : MonoBehaviour
     {
         instance = this;
         playerMovementScript = GetComponent<MoveBehaviour>();
-        currentHealth = maxHealth;
-        currentEndurance = maxEndurance;
+
+        if (currentHealth <= 0)
+            currentHealth = maxHealth;
+
+        if (currentEndurance <= 0)
+            currentEndurance = maxEndurance;
     }
+
 
     void Update()
     {
@@ -218,4 +223,62 @@ public class PlayerStats : MonoBehaviour
     public void ActiveIsEquiping()=> isEquiping = true;
 
     public void DesactiveIsEquiping() => isEquiping = false;
+
+    public PlayerStatsSaveData GetSaveData()
+    {
+        return new PlayerStatsSaveData
+        {
+            currentHealth = currentHealth,
+            currentEndurance = currentEndurance,
+            gold = goldAmount,
+
+            position = transform.position,
+
+            armourPercant = currentArmourPointsPercant,
+            armourContendant = currentArmourPointsContendant,
+            armourTranchant = currentArmourPointsTranchant,
+            armourFire = currentArmourPointsFire,
+            armourIce = currentArmourPointsIce,
+            armourElectric = currentArmourPointsElectric
+        };
+    }
+
+    public void LoadSaveData(PlayerStatsSaveData data)
+    {
+        currentHealth = data.currentHealth;
+        currentEndurance = data.currentEndurance;
+        goldAmount = data.gold;
+
+        currentArmourPointsPercant = data.armourPercant;
+        currentArmourPointsContendant = data.armourContendant;
+        currentArmourPointsTranchant = data.armourTranchant;
+        currentArmourPointsFire = data.armourFire;
+        currentArmourPointsIce = data.armourIce;
+        currentArmourPointsElectric = data.armourElectric;
+
+        transform.position = data.position;
+
+        UpdateHealthBar();
+        UpdateEndurance(0);
+        UpdateGoldText();
+        UpddateArmorText();
+    }
+
+}
+
+[System.Serializable]
+public class PlayerStatsSaveData
+{
+    public float currentHealth;
+    public float currentEndurance;
+    public int gold;
+
+    public Vector3 position;
+
+    public float armourPercant;
+    public float armourContendant;
+    public float armourTranchant;
+    public float armourFire;
+    public float armourIce;
+    public float armourElectric;
 }

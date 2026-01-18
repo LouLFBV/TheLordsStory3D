@@ -63,7 +63,7 @@ public class SaveBook : InteractableBase
 
     public void SaveGame()
     {
-        Debug.Log("Game Saved!");
-        // Implémentez ici la logique de sauvegarde de la partie
+        SaveManager.Instance.SaveGame();
     }
+
 }

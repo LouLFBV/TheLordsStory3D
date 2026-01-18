@@ -15,7 +15,7 @@ public class DestroyAllDontDestroyOnLoad : MonoBehaviour
         foreach (GameObject obj in allObjects)
         {
             // Vérifier si l'objet appartient à la scène de "DontDestroyOnLoad"
-            if (obj.scene.name == null || obj.scene.name == "DontDestroyOnLoad")
+            if (obj.scene.name == null || obj.scene.name == "DontDestroyOnLoad" && obj.gameObject.name != "SaveManager")
             {
                 Destroy(obj);
             }

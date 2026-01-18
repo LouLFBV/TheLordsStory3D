@@ -44,12 +44,12 @@ public class Menu : MonoBehaviour
         volumeSlider.value = soundValueForSlider;
 
         // Initialisation du bouton de chargement de données
-        bool saveFileExist = (System.IO.File.Exists(Application.persistentDataPath + "/SaveData.json"));
-        if (loadGameButton != null)
-        {
-            loadGameButton.interactable = saveFileExist;
-        }
-        clearSavedDataButton.interactable = saveFileExist;
+        //bool saveFileExist = (System.IO.File.Exists(Application.persistentDataPath + "/SaveData.json"));
+        //if (loadGameButton != null)
+        //{
+        //    loadGameButton.interactable = saveFileExist;
+        //}
+        //clearSavedDataButton.interactable = saveFileExist;
 
         // Initialisation des qualités graphiques
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1, true);
@@ -156,4 +156,16 @@ public class Menu : MonoBehaviour
     {
         optionsPanel.SetActive(!optionsPanel.activeSelf);
     }
+
+    public void NewGame(int slot)
+    {
+        SaveManager.Instance.SetCurrentSlot(slot);
+        SceneManager.LoadScene("Donjon");
+    }
+
+    public void LoadGame(int slot)
+    {
+        SaveManager.Instance.LoadGame(slot);
+    }
+
 }
