@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    public Button loadGameButton;
+    public List<Button> newGameButtons;
+    public List<Button> loadGameButtons;
 
-    public static bool loadSaveData;
 
-    public Button clearSavedDataButton;
+    public List<Button> clearSavedDataButtons;
 
     [SerializeField]
     private Dropdown resolutionDropdown;
@@ -43,13 +43,34 @@ public class Menu : MonoBehaviour
         audioMixer.GetFloat("Volume", out float soundValueForSlider);
         volumeSlider.value = soundValueForSlider;
 
-        // Initialisation du bouton de chargement de données
-        //bool saveFileExist = (System.IO.File.Exists(Application.persistentDataPath + "/SaveData.json"));
-        //if (loadGameButton != null)
-        //{
-        //    loadGameButton.interactable = saveFileExist;
-        //}
-        //clearSavedDataButton.interactable = saveFileExist;
+
+        // Désactivation des boutons de chargement et de suppression si pas de sauvegarde
+        foreach (Button loadButton in loadGameButtons)
+        {
+            int slotIndex = loadGameButtons.IndexOf(loadButton) + 1;
+            Debug.Log("Vérification de la sauvegarde pour le slot " + slotIndex);
+            if (!SaveManager.Instance.HasSave(slotIndex))
+            {
+                Debug.Log("Désactivation du bouton de chargement pour le slot " + slotIndex);
+                loadButton.interactable = false;
+            }
+        }
+        foreach (Button clearButton in clearSavedDataButtons)
+        {
+            int slotIndex = clearSavedDataButtons.IndexOf(clearButton) + 1;
+            if (!SaveManager.Instance.HasSave(slotIndex))
+            {
+                clearButton.interactable = false;
+            }
+        }
+        foreach (Button newGameButton in newGameButtons)
+        {
+            int slotIndex = clearSavedDataButtons.IndexOf(newGameButton) + 1;
+            if (SaveManager.Instance.HasSave(slotIndex))
+            {
+                newGameButton.interactable = false;
+            }
+        }
 
         // Initialisation des qualités graphiques
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1, true);
@@ -96,18 +117,10 @@ public class Menu : MonoBehaviour
 
         Time.timeScale = 1f; // Assurez-vous que le temps est normalisé au démarrage du menu
     }
-    public void LoadScene(string sceneName)
+    public void LoadScene(string scene)
     {
-        loadSaveData = false;
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(scene);
     }
-
-    public void LoadDataScene(string sceneName)
-    {
-        loadSaveData = true;
-        SceneManager.LoadScene(sceneName);
-    }
-
     public void Quit()
     {
         Application.Quit();
@@ -133,29 +146,13 @@ public class Menu : MonoBehaviour
         audioMixer.SetFloat("Volume", volume);
     }
 
-    public void ClearSavedData()
-    {
-        string filePath = Application.persistentDataPath + "/SaveData.json";
-        if (System.IO.File.Exists(filePath))
-        {
-            System.IO.File.Delete(filePath);
-            Debug.Log("Saved data cleared successfully.");
-            if (loadGameButton != null)
-            {
-                loadGameButton.interactable = false;
-            }
-            clearSavedDataButton.interactable = false;
-        }
-        else
-        {
-            Debug.LogWarning("No saved data found to clear.");
-        }
-    }
 
     public void EnableDisableOptionsPanel()
     {
         optionsPanel.SetActive(!optionsPanel.activeSelf);
     }
+
+    #region Save System
 
     public void NewGame(int slot)
     {
@@ -168,4 +165,31 @@ public class Menu : MonoBehaviour
         SaveManager.Instance.LoadGame(slot);
     }
 
+    private void DisableSlotUI(int slot)
+    {
+        int index = slot - 1;
+
+        if (index < 0) return;
+
+        if (index < loadGameButtons.Count)
+            loadGameButtons[index].interactable = false;
+
+        if (index < clearSavedDataButtons.Count)
+            clearSavedDataButtons[index].interactable = false;
+    }
+
+    public void OnDeleteSlot(int slot)
+    {
+        SaveManager.Instance.DeleteSave(slot);
+        DisableSlotUI(slot);
+    }
+
+
+    public void ConfirmDeleteSlot(int slot)
+    {
+        // ouvrir un popup "Êtes-vous sûr ?"
+    }
+
+
+    #endregion
 }

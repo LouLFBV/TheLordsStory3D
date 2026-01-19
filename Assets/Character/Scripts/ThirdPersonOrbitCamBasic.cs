@@ -161,9 +161,13 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
             currentAimOffset +
             Vector3.up * currentCrouchYOffset;
 
+
+
         // Ajoute le zoom de l’arc si nécessaire.
         float zoomT = bowZoomCurve.Evaluate(bowCharge01);
         Vector3 bowZoomOffset = Vector3.forward * (zoomT * bowZoomDistance);
+
+
 
         targetCamOffset += bowZoomOffset;
 
@@ -179,11 +183,17 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         if (noCollisionOffset.magnitude < 0.2f)
             noCollisionOffset = Vector3.zero;
 
+
+
         // Si un décalage personnalisé est en collision, passe temporairement en “vue à la première personne”.
         float desiredDistance = noCollisionOffset.magnitude;
 
+
+
         // Clamp pour éviter la first-person trop rapide
         desiredDistance = Mathf.Max(desiredDistance, minCameraDistance);
+
+
 
         // Direction caméra → joueur conservée
         Vector3 desiredCamOffset =

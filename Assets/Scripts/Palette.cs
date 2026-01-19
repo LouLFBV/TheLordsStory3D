@@ -542,6 +542,7 @@ public class Palette : MonoBehaviour
     private void AddToSlot(int slotIndex, ItemData item)
     {
         var inventoryItem = objects[slotIndex];
+        Debug.Log("Current item in slot " + slotIndex + ": " + (inventoryItem.itemData != null ? inventoryItem.itemData.name : "null"));
         if (inventoryItem.itemData == null)
         {
             Debug.Log("Creating new ItemInInventory for slot " + slotIndex);
@@ -717,4 +718,146 @@ public class Palette : MonoBehaviour
         PlayEquipAnimation(type);
     }
 
+    public PaletteSaveData GetSaveData()
+    {
+        return new PaletteSaveData
+        {
+            weapon1 = CreateSlotSave(equipmentWeapon1Item, weapons[0], isEquippedWeapon1),
+            weapon2 = CreateSlotSave(equipmentWeapon2Item, weapons[1], isEquippedWeapon2),
+
+            object1 = CreateSlotSave(equipmentObject1Item, objects[0], isEquippedObject1),
+            object2 = CreateSlotSave(equipmentObject2Item, objects[1], isEquippedObject2),
+        };
+    }
+
+    private PaletteSlotSave CreateSlotSave(ItemData item, ItemInInventory slot, bool equipped)
+    {
+        if (item == null)
+            return null;
+
+        return new PaletteSlotSave
+        {
+            itemID = item.itemID,
+            count = slot.count,
+            isEquipped = equipped
+        };
+    }
+
+
+
+    public void LoadSaveData(PaletteSaveData data)
+    {
+        ClearPalette();
+
+        LoadWeaponSlot(1, data.weapon1);
+        LoadWeaponSlot(2, data.weapon2);
+
+        LoadObjectSlot(1, data.object1);
+        LoadObjectSlot(2, data.object2);
+
+        RefreshAffichage();
+        UpdateImageSeleted();
+    }
+
+    private void ClearPalette()
+    {
+        equipmentWeapon1Item = null;
+        equipmentWeapon2Item = null;
+        equipmentObject1Item = null;
+        equipmentObject2Item = null;
+
+        isEquippedWeapon1 = false;
+        isEquippedWeapon2 = false;
+        isEquippedObject1 = false;
+        isEquippedObject2 = false;
+
+        weapons = new ItemInInventory[2]
+        {
+        new ItemInInventory(),
+        new ItemInInventory()
+        };
+
+        objects = new ItemInInventory[2]
+        {
+        new ItemInInventory(),
+        new ItemInInventory()
+        };
+    }
+
+
+    private void LoadWeaponSlot(int slot, PaletteSlotSave save)
+    {
+        if (save == null) return;
+
+        ItemData item = Inventory.instance.itemDatabase.GetItemByID(save.itemID);
+        if (item == null) return;
+
+        int index = slot - 1;
+
+        weapons[index] = new ItemInInventory
+        {
+            itemData = item,
+            count = save.count
+        };
+
+        if (slot == 1)
+        {
+            equipmentWeapon1Item = item;
+            isEquippedWeapon1 = save.isEquipped;
+        }
+        else
+        {
+            equipmentWeapon2Item = item;
+            isEquippedWeapon2 = save.isEquipped;
+        }
+    }
+
+
+    private void LoadObjectSlot(int slot, PaletteSlotSave save)
+    {
+        if (save == null) return;
+
+        ItemData item = Inventory.instance.itemDatabase.GetItemByID(save.itemID);
+        if (item == null) return;
+
+        int index = slot - 1;
+
+        objects[index] = new ItemInInventory
+        {
+            itemData = item,
+            count = save.count
+        };
+
+        if (slot == 1)
+        {
+            equipmentObject1Item = item;
+            isEquippedObject1 = save.isEquipped;
+        }
+        else
+        {
+            equipmentObject2Item = item;
+            isEquippedObject2 = save.isEquipped;
+        }
+    }
+
+
+
+}
+
+[System.Serializable]
+public class PaletteSaveData
+{
+    public PaletteSlotSave weapon1;
+    public PaletteSlotSave weapon2;
+
+    public PaletteSlotSave object1;
+    public PaletteSlotSave object2;
+}
+
+[System.Serializable]
+public class PaletteSlotSave
+{
+    public string itemID;
+    public int count;
+    public bool isEquipped;
 }
