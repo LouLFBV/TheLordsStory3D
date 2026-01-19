@@ -838,10 +838,8 @@ public class Palette : MonoBehaviour
             equipmentObject2Item = item;
             isEquippedObject2 = save.isEquipped;
         }
+        UpdateSlotUI(index, save.count);
     }
-
-
-
 }
 
 [System.Serializable]

@@ -45,32 +45,24 @@ public class Menu : MonoBehaviour
 
 
         // Désactivation des boutons de chargement et de suppression si pas de sauvegarde
-        foreach (Button loadButton in loadGameButtons)
+        for (int i = 0; i < loadGameButtons.Count; i++)
         {
-            int slotIndex = loadGameButtons.IndexOf(loadButton) + 1;
-            Debug.Log("Vérification de la sauvegarde pour le slot " + slotIndex);
-            if (!SaveManager.Instance.HasSave(slotIndex))
-            {
-                Debug.Log("Désactivation du bouton de chargement pour le slot " + slotIndex);
-                loadButton.interactable = false;
-            }
+            int slot = i + 1;
+            loadGameButtons[i].interactable = SaveManager.Instance.HasSave(slot);
         }
-        foreach (Button clearButton in clearSavedDataButtons)
+
+        for (int i = 0; i < clearSavedDataButtons.Count; i++)
         {
-            int slotIndex = clearSavedDataButtons.IndexOf(clearButton) + 1;
-            if (!SaveManager.Instance.HasSave(slotIndex))
-            {
-                clearButton.interactable = false;
-            }
+            int slot = i + 1;
+            clearSavedDataButtons[i].interactable = SaveManager.Instance.HasSave(slot);
         }
-        foreach (Button newGameButton in newGameButtons)
+
+        for (int i = 0; i < newGameButtons.Count; i++)
         {
-            int slotIndex = clearSavedDataButtons.IndexOf(newGameButton) + 1;
-            if (SaveManager.Instance.HasSave(slotIndex))
-            {
-                newGameButton.interactable = false;
-            }
+            int slot = i + 1;
+            newGameButtons[i].interactable = !SaveManager.Instance.HasSave(slot);
         }
+
 
         // Initialisation des qualités graphiques
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1, true);
@@ -176,6 +168,9 @@ public class Menu : MonoBehaviour
 
         if (index < clearSavedDataButtons.Count)
             clearSavedDataButtons[index].interactable = false;
+
+        if (index < newGameButtons.Count)
+            newGameButtons[index].interactable = true;
     }
 
     public void OnDeleteSlot(int slot)
