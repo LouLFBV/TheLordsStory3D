@@ -1,16 +1,16 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public class Menu : MonoBehaviour
 {
     public List<Button> newGameButtons;
     public List<Button> loadGameButtons;
-
-
     public List<Button> clearSavedDataButtons;
+    [SerializeField] private Animator animatorPanelChargerPartie;
 
     [SerializeField]
     private Dropdown resolutionDropdown;
@@ -30,7 +30,19 @@ public class Menu : MonoBehaviour
     [SerializeField]
     private GameObject optionsPanel;
 
-    [SerializeField] private bool isMainMenu = false;  
+    [SerializeField] private bool isMainMenu = false;
+
+
+    private int pendingSlot;
+    private bool isNewGame;
+    private bool isTransitioning = false;
+
+    public static Menu Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -44,7 +56,7 @@ public class Menu : MonoBehaviour
         volumeSlider.value = soundValueForSlider;
 
 
-        // Désactivation des boutons de chargement et de suppression si pas de sauvegarde
+        // DÃ©sactivation des boutons de chargement et de suppression si pas de sauvegarde
         for (int i = 0; i < loadGameButtons.Count; i++)
         {
             int slot = i + 1;
@@ -64,7 +76,7 @@ public class Menu : MonoBehaviour
         }
 
 
-        // Initialisation des qualités graphiques
+        // Initialisation des qualitÃ©s graphiques
         QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1, true);
 
         string[] qualities = QualitySettings.names;
@@ -78,12 +90,12 @@ public class Menu : MonoBehaviour
 
         qualitiesDropdown.AddOptions(qualityOptions);
 
-        // Synchronisation du dropdown avec la qualité réelle
+        // Synchronisation du dropdown avec la qualitÃ© rÃ©elle
         qualitiesDropdown.value = QualitySettings.GetQualityLevel();
         qualitiesDropdown.RefreshShownValue();
 
 
-        // Initialisation des différentes résolutions
+        // Initialisation des diffÃ©rentes rÃ©solutions
         Resolution[] resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
 
@@ -104,10 +116,10 @@ public class Menu : MonoBehaviour
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
 
-        // Initialisation du mode plein écran
+        // Initialisation du mode plein Ã©cran
         fullScreenToggle.isOn = Screen.fullScreen;
 
-        Time.timeScale = 1f; // Assurez-vous que le temps est normalisé au démarrage du menu
+        Time.timeScale = 1f; // Assurez-vous que le temps est normalisÃ© au dÃ©marrage du menu
     }
     public void LoadScene(string scene)
     {
@@ -146,16 +158,39 @@ public class Menu : MonoBehaviour
 
     #region Save System
 
+
     public void NewGame(int slot)
     {
-        SaveManager.Instance.SetCurrentSlot(slot);
-        SceneManager.LoadScene("Donjon");
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        pendingSlot = slot;
+        isNewGame = true;
+        animatorPanelChargerPartie.SetTrigger("Open");
     }
+
 
     public void LoadGame(int slot)
     {
-        SaveManager.Instance.LoadGame(slot);
+        pendingSlot = slot;
+        isNewGame = false;
+        animatorPanelChargerPartie.SetTrigger("Open");
     }
+
+    //  AppelÃ© par l'Animation Event
+    public void OnOpenAnimationFinished()
+    {
+        if (isNewGame)
+        {
+            SaveManager.Instance.SetCurrentSlot(pendingSlot);
+            SceneManager.LoadScene("Donjon");
+        }
+        else
+        {
+            SaveManager.Instance.LoadGame(pendingSlot);
+        }
+    }
+
 
     private void DisableSlotUI(int slot)
     {
@@ -182,7 +217,7 @@ public class Menu : MonoBehaviour
 
     public void ConfirmDeleteSlot(int slot)
     {
-        // ouvrir un popup "Êtes-vous sûr ?"
+        // ouvrir un popup "ÃŠtes-vous sÃ»r ?"
     }
 
 

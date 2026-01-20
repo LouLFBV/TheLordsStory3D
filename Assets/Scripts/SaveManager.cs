@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SaveManager : MonoBehaviour
 {
@@ -41,6 +42,7 @@ public class SaveManager : MonoBehaviour
         data.playerStats = PlayerStats.instance.GetSaveData();
         data.inventory = Inventory.instance.GetSaveData();
         data.palette = Palette.instance.GetSaveData();
+        data.world = WorldStateManager.Instance.GetSaveData();
         data.sceneName = SceneManager.GetActiveScene().name;
 
         string json = JsonUtility.ToJson(data, true);
@@ -77,6 +79,8 @@ public class SaveManager : MonoBehaviour
             Inventory.instance.LoadSaveData(data.inventory);
         if (data.palette != null)
             Palette.instance.LoadSaveData(data.palette);
+        if (data.world != null)
+            WorldStateManager.Instance.LoadSaveData(data.world);
 
 
 
@@ -114,8 +118,14 @@ public class SaveData
     public InventorySaveData inventory;
     public PaletteSaveData palette;
     // public QuestSaveData quests;
-    // public WorldStateSaveData world;
+    public WorldStateSaveData world;
 
     public string sceneName;
     public int saveVersion = 1;
+}
+
+[System.Serializable]
+public class WorldStateSaveData
+{
+    public List<string> collectedObjectIDs = new List<string>();
 }

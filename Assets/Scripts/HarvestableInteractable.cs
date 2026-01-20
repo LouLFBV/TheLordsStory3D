@@ -9,6 +9,7 @@ public class HarvestableInteractable : InteractableBase
         harvestable = GetComponent<Harvestable>();
     }
 
+
     public override void OnInteract(PlayerInteractor player)
     {
         Debug.Log("Interacting with Harvestable");

@@ -14,6 +14,8 @@ public class SaveBook : InteractableBase
 
     [Header("Save Panel")]
     [SerializeField] private GameObject savePanel;
+    [SerializeField] private GameObject fondNoirPanel;
+    [SerializeField] private Animator fondNoirAnimator;
 
     [SerializeField] private UINavigationManager navManager;
 
@@ -63,7 +65,7 @@ public class SaveBook : InteractableBase
 
     public void SaveGame()
     {
+        fondNoirAnimator.SetTrigger("Open");
         SaveManager.Instance.SaveGame();
     }
-
 }

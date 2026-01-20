@@ -106,6 +106,11 @@ public class InteractBehaviour : MonoBehaviour
             }
         }
         Debug.Log("Harvested: " + currentlyHarveting.name);
+        if (currentlyHarveting.TryGetComponent<WorldObjectID>(out var worldID))
+        {
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+        }
+
         Destroy(currentlyHarveting.gameObject);
         RespawnObject(currentlyHarveting.transform);
     }
@@ -175,6 +180,11 @@ public class InteractBehaviour : MonoBehaviour
 
         var interact = currentItem.GetComponent<IInteractable>();
         interact?.SetTargeted(false, player.transform);
+        if (currentItem.TryGetComponent<WorldObjectID>(out var id))
+        {
+            WorldStateManager.Instance.RegisterCollectedObject(id.uniqueID);
+        }
+
         Destroy(currentItem.gameObject);
 
         RespawnObject(currentItem.transform);

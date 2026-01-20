@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Chest : InteractableBase
 {
+    #region Champs
     [Header("References")]
     [SerializeField] private Palette palette;
     [SerializeField] private EquipmentLibrary equipmentLibrary;
@@ -53,12 +54,26 @@ public class Chest : InteractableBase
     private Animator playerAnimator;
     private PlayerInput playerInput;
 
+    #endregion 
     // -------------------------------------------------------
     // INITIALISATION
     // -------------------------------------------------------
 
     private void Start()
     {
+
+        // --- Chest Setup ---
+        closedRotation = topChest.transform.rotation;
+        openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
+
+        if (TryGetComponent<WorldObjectID>(out var worldID))
+        {
+            if (WorldStateManager.Instance.IsCollected(worldID.uniqueID))
+            {
+                RestoreOpenedState();
+                return;
+            }
+        }
         Debug.Log("<color=cyan>[CHEST] Initialisation du coffre…</color>");
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -76,9 +91,6 @@ public class Chest : InteractableBase
 
 
 
-        // --- Chest Setup ---
-        closedRotation = topChest.transform.rotation;
-        openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
 
         bottomChest.GetComponent<Harvestable>().enabled = false;
         bottomChest.GetComponent<HarvestableInteractable>().enabled = false;
@@ -160,8 +172,10 @@ public class Chest : InteractableBase
 
     public override void OnInteract(PlayerInteractor player)
     {
+        if (isAnimating || isOpen) return;
         TryOpenChest();
     }
+
 
     private void TryOpenChest()
     {
@@ -261,7 +275,36 @@ public class Chest : InteractableBase
 
         topChest.transform.rotation = openRotation;
         isAnimating = false;
+
+        // fin de OpenChest()
+        MakeHarvestableIfOpen();
+
+        if (TryGetComponent<WorldObjectID>(out var worldID))
+        {
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+        }
     }
+
+    private void RestoreOpenedState()
+    {
+        isOpen = true;
+        isLocked = false;
+        isAnimating = false;
+
+        // Visuel
+        topChest.transform.rotation = openRotation;
+
+        // Pas de récompense
+        descriptionPanel?.SetActive(false);
+
+        // Physique déjà déverrouillée
+        if (topLock != null) topLock.isKinematic = false;
+        if (bottomLock != null) bottomLock.isKinematic = false;
+
+        // Rendre harvestable immédiatement
+        MakeHarvestableIfOpen();
+    }
+
 
     // -------------------------------------------------------
     // REWARD UI
@@ -291,17 +334,6 @@ public class Chest : InteractableBase
     // HARVESTABLE STATE
     // -------------------------------------------------------
 
-    private void Update()
-    {
-        if (!destroyed && (goldVisual == null || !goldVisual.activeSelf))
-        {
-            MakeHarvestableIfOpen();
-        }
-        else if (bottomChest == null && topChest != null)
-        {
-            Destroy(topChest);
-        }
-    }
 
     private void MakeHarvestableIfOpen()
     {
