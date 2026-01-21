@@ -1,0 +1,11 @@
+Model Information:
+* title:	Castanea - The Last Remnant
+* source:	https://sketchfab.com/3d-models/castanea-the-last-remnant-7c0f255b82cb4466adac6e50285c0791
+* author:	Catholomew (https://sketchfab.com/Catholomew)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Castanea - The Last Remnant" (https://sketchfab.com/3d-models/castanea-the-last-remnant-7c0f255b82cb4466adac6e50285c0791) by Catholomew (https://sketchfab.com/Catholomew) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
