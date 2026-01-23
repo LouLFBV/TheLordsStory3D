@@ -48,7 +48,6 @@ public class Chest : InteractableBase
 
     private bool isOpen = false;
     private bool isAnimating = false;
-    private bool destroyed = false; 
     private bool isAlive = true;
 
     private Animator playerAnimator;
@@ -274,10 +273,6 @@ public class Chest : InteractableBase
         }
 
         topChest.transform.rotation = openRotation;
-        isAnimating = false;
-
-        // fin de OpenChest()
-        MakeHarvestableIfOpen();
 
         if (TryGetComponent<WorldObjectID>(out var worldID))
         {
@@ -300,9 +295,6 @@ public class Chest : InteractableBase
         // Physique déjà déverrouillée
         if (topLock != null) topLock.isKinematic = false;
         if (bottomLock != null) bottomLock.isKinematic = false;
-
-        // Rendre harvestable immédiatement
-        MakeHarvestableIfOpen();
     }
 
 
@@ -327,27 +319,6 @@ public class Chest : InteractableBase
         {
             amountText.text = "";
             Inventory.instance.AddItem(rewardItem);
-        }
-    }
-
-    // -------------------------------------------------------
-    // HARVESTABLE STATE
-    // -------------------------------------------------------
-
-
-    private void MakeHarvestableIfOpen()
-    {
-        if (isOpen)
-        {
-            destroyed = true;
-
-            gameObject.layer = LayerMask.NameToLayer("Default");
-            gameObject.tag = "Default";
-
-            bottomChest.layer = LayerMask.NameToLayer("Harvestable");
-            bottomChest.tag = "Harvestable";
-            bottomChest.GetComponent<Harvestable>().enabled = true;
-            bottomChest.GetComponent<HarvestableInteractable>().enabled = true;
         }
     }
 }

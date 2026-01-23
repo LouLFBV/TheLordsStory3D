@@ -28,6 +28,10 @@ public class BowBehaviour : MonoBehaviour
     [SerializeField] private bool changeLine;
     public BowstringBehaviour bowstringBehaviour;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip bowChargeSound, bowShootSound;
+
     private void Awake()
     {
         if (instance == null)
@@ -101,6 +105,8 @@ public class BowBehaviour : MonoBehaviour
         float endPower = weaponActive.rangeMax;
 
         OnBowChargeStateChanged?.Invoke(true);
+        audioSource.PlayOneShot(bowChargeSound);
+
 
         while (chargeBow && currentChargeTime < chargeDuration)
         {
@@ -130,7 +136,7 @@ public class BowBehaviour : MonoBehaviour
         arrow.GetComponent<HitBoxWeapon>().itemData.attackPoints = weaponActive.damage;
 
         AlignArrowSpawnToCamera();
-
+        audioSource.PlayOneShot(bowShootSound);
         arrow.GetComponent<Rigidbody>().AddForce(arrowSpawnPoint.forward * weaponActive.range, ForceMode.Impulse);
         chargeBow = false;
         OnBowChargeStateChanged?.Invoke(false);

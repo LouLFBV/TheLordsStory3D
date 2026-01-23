@@ -23,11 +23,16 @@ public class JumpBehaviour : GenericBehaviour
 
     [Header("References")]
     private AimBehaviourBasic aimBehaviour;
+    private AttackBehaviour attackBehaviour;
 
     void Awake()
     {
         if (playerInput == null)
             playerInput = GetComponent<PlayerInput>();
+        if (aimBehaviour == null)
+            aimBehaviour = GetComponent<AimBehaviourBasic>();
+        if (attackBehaviour == null)
+            attackBehaviour = GetComponent<AttackBehaviour>();
     }
 
     void Start()
@@ -35,7 +40,6 @@ public class JumpBehaviour : GenericBehaviour
         jumpBool = Animator.StringToHash("Jump");
         groundedBool = Animator.StringToHash("Grounded");
         behaviourManager.GetAnim.SetBool(groundedBool, true);
-        aimBehaviour = GetComponent<AimBehaviourBasic>();
     }
 
     void OnEnable()
@@ -63,7 +67,7 @@ public class JumpBehaviour : GenericBehaviour
     void Update()
     {
         // Détection de la touche de saut
-        if (!jump && isJumpInput && !aimBehaviour.IsAiming && canJump)
+        if (!jump && isJumpInput && !aimBehaviour.IsAiming && canJump && !attackBehaviour.isAttacking)
         {
             jump = true;
             isJumpInput = false;
