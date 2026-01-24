@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class SaveManager : MonoBehaviour
 {
@@ -75,17 +74,22 @@ public class SaveManager : MonoBehaviour
         yield return null;
 
         PlayerStats.instance.LoadSaveData(data.playerStats);
+
         if (data.inventory != null)
             Inventory.instance.LoadSaveData(data.inventory);
+
         if (data.palette != null)
             Palette.instance.LoadSaveData(data.palette);
+
         if (data.world != null)
+        {
             WorldStateManager.Instance.LoadSaveData(data.world);
-
-
+            WorldStateManager.Instance.ApplyWorldState(); 
+        }
 
         Debug.Log("Game Loaded");
     }
+
     public void DeleteSave(int slot)
     {
         string path = GetSavePath(slot);
@@ -124,8 +128,4 @@ public class SaveData
     public int saveVersion = 1;
 }
 
-[System.Serializable]
-public class WorldStateSaveData
-{
-    public List<string> collectedObjectIDs = new List<string>();
-}
+

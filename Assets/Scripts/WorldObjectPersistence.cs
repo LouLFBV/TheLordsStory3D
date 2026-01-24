@@ -2,9 +2,22 @@ using UnityEngine;
 
 public class WorldObjectPersistence : MonoBehaviour
 {
-    private void Start()
+    private WorldObjectID id;
+
+    private void Awake()
     {
-        var id = GetComponent<WorldObjectID>();
+        id = GetComponent<WorldObjectID>();
+        WorldStateManager.Instance?.RegisterWorldObject(this);
+    }
+
+    private void OnDestroy()
+    {
+        if (WorldStateManager.Instance != null)
+            WorldStateManager.Instance.UnregisterWorldObject(this);
+    }
+
+    public void ApplyWorldState()
+    {
         if (id != null && WorldStateManager.Instance.IsCollected(id.uniqueID))
         {
             Destroy(gameObject);

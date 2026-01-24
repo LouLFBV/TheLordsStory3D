@@ -108,7 +108,12 @@ public class InteractBehaviour : MonoBehaviour
         Debug.Log("Harvested: " + currentlyHarveting.name);
         if (currentlyHarveting.TryGetComponent<WorldObjectID>(out var worldID))
         {
+            Debug.Log("Registering collected object with ID: " + worldID.uniqueID);
             WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+        }
+        else
+        {
+            Debug.Log("No WorldObjectID found on harvested object: " + currentlyHarveting.name);
         }
 
         Destroy(currentlyHarveting.gameObject);

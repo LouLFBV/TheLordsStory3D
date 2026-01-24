@@ -1,27 +1,47 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldStateManager : MonoBehaviour
 {
     public static WorldStateManager Instance;
 
-    private HashSet<string> collectedObjects = new HashSet<string>();
+    private HashSet<string> collectedObjects = new();
+    private readonly List<WorldObjectPersistence> worldObjects = new();
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
-    public void RegisterCollectedObject(string id)
+    // 🔹 Enregistrement
+    public void RegisterWorldObject(WorldObjectPersistence obj)
     {
-        collectedObjects.Add(id);
+        if (!worldObjects.Contains(obj))
+            worldObjects.Add(obj);
     }
 
-    public bool IsCollected(string id)
+    public void UnregisterWorldObject(WorldObjectPersistence obj)
     {
-        return collectedObjects.Contains(id);
+        worldObjects.Remove(obj);
     }
 
+    // 🔹 Application globale
+    public void ApplyWorldState()
+    {
+        foreach (var obj in worldObjects)
+        {
+            obj.ApplyWorldState();
+        }
+    }
+
+    // --- Save / Load ---
     public WorldStateSaveData GetSaveData()
     {
         return new WorldStateSaveData
@@ -34,4 +54,21 @@ public class WorldStateManager : MonoBehaviour
     {
         collectedObjects = new HashSet<string>(data.collectedObjectIDs);
     }
+
+    public void RegisterCollectedObject(string id)
+    {
+        collectedObjects.Add(id);
+    }
+
+    public bool IsCollected(string id)
+    {
+        return collectedObjects.Contains(id);
+    }
+}
+
+
+[System.Serializable]
+public class WorldStateSaveData
+{
+    public List<string> collectedObjectIDs = new List<string>();
 }

@@ -22,7 +22,6 @@ public class Chest : InteractableBase
     [SerializeField] private GameObject topChest;
     [SerializeField] private Rigidbody topLock;
     [SerializeField] private Rigidbody bottomLock;
-    [SerializeField] private GameObject bottomChest;
 
     [Header("Chest Settings")]
     [SerializeField] private float rotationSpeed = 2f;
@@ -69,7 +68,7 @@ public class Chest : InteractableBase
         {
             if (WorldStateManager.Instance.IsCollected(worldID.uniqueID))
             {
-                RestoreOpenedState();
+                Destroy(gameObject);
                 return;
             }
         }
@@ -87,12 +86,6 @@ public class Chest : InteractableBase
             Debug.LogError("[CHEST] Player introuvable !");
         }
 
-
-
-
-
-        bottomChest.GetComponent<Harvestable>().enabled = false;
-        bottomChest.GetComponent<HarvestableInteractable>().enabled = false;
 
         if (palette == null)
             palette = Palette.instance;
@@ -278,24 +271,11 @@ public class Chest : InteractableBase
         {
             WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
         }
+        gameObject.tag = "Untagged";
+        gameObject.layer = LayerMask.NameToLayer("Default");
+        interactUI.Hide();
     }
 
-    private void RestoreOpenedState()
-    {
-        isOpen = true;
-        isLocked = false;
-        isAnimating = false;
-
-        // Visuel
-        topChest.transform.rotation = openRotation;
-
-        // Pas de récompense
-        descriptionPanel?.SetActive(false);
-
-        // Physique déjà déverrouillée
-        if (topLock != null) topLock.isKinematic = false;
-        if (bottomLock != null) bottomLock.isKinematic = false;
-    }
 
 
     // -------------------------------------------------------
