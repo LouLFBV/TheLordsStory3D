@@ -237,6 +237,9 @@ public class Chest : InteractableBase
         isAnimating = true;
         isOpen = true;
 
+        interactUI.Hide();
+        gameObject.tag = "Untagged";
+        gameObject.layer = LayerMask.NameToLayer("Default");
         openSound.Play();
 
         // Reward immédiat
@@ -271,9 +274,6 @@ public class Chest : InteractableBase
         {
             WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
         }
-        gameObject.tag = "Untagged";
-        gameObject.layer = LayerMask.NameToLayer("Default");
-        interactUI.Hide();
     }
 
 

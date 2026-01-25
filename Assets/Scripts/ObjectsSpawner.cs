@@ -12,10 +12,9 @@ public class ObjectsSpawner : MonoBehaviour
 
     private void Start()
     {
-        // On mémorise la position (locale au spawner)
-        spawnPosition = transform.position;
         if (aRemplirSiHarvestable == null)
             aRemplirSiHarvestable = transform.GetChild(0).gameObject.GetComponent<Item>().itemData.prefab;
+        spawnPosition = transform.GetChild(0).position;
     }
 
     private void SpawnObject()
@@ -24,10 +23,8 @@ public class ObjectsSpawner : MonoBehaviour
         currentObject.GetComponent<Rigidbody>().isKinematic = true;
     }
 
-    // Appelé par l’objet lorsqu’il est ramassé
     public void OnObjectCollected()
     {
-        // Lance la coroutine de respawn
         StartCoroutine(RespawnCoroutine());
     }
 

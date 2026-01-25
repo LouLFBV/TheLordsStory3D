@@ -218,8 +218,7 @@ public class InteractBehaviour : MonoBehaviour
         Transform parent = objectToRespawn.transform.parent;
         if (parent != null)
         {
-            ObjectsSpawner objectsSpawner = parent.GetComponent<ObjectsSpawner>();
-            if (objectsSpawner != null)
+            if (parent.TryGetComponent<ObjectsSpawner>(out var objectsSpawner))
             {
                 objectsSpawner.OnObjectCollected();
             }

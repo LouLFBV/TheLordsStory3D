@@ -7,12 +7,14 @@ public class JumpBehaviour : GenericBehaviour
     [Header("Paramètres de saut")]
     public float jumpHeight = 1.5f;             // Hauteur du saut
     public float jumpInertialForce = 10f;       // Force d’inertie horizontale
-    public float jumpCooldown = 0.2f;           // Petit délai avant de pouvoir resauter
     public bool jump;                          // Indique si le joueur a déclenché un saut
     private bool isColliding;                   // Vérifie si le joueur touche un obstacle
     public bool canJump = true;              // Indique si le joueur peut sauter
     private int jumpBool;                       // Paramètre Animator "Jump"
     private int groundedBool;                   // Paramètre Animator "Grounded"
+
+    [Header("Gravity tuning")]
+    public float fallGravityMultiplier = 2.5f;
 
     public bool IsJumping => behaviourManager.GetAnim.GetBool(jumpBool) && !behaviourManager.IsGrounded();
 
@@ -116,11 +118,19 @@ public class JumpBehaviour : GenericBehaviour
         // --- En plein saut ---
         else if (behaviourManager.GetAnim.GetBool(jumpBool) )
         {
+            // --- Gravité renforcée à la descente ---
+            if (!behaviourManager.IsGrounded() && rb.linearVelocity.y < 0)
+            {
+                rb.AddForce(
+                    Vector3.up * Physics.gravity.y * (fallGravityMultiplier - 1f),
+                    ForceMode.Acceleration
+                );
+            }
 
             // Si toujours en l'air, applique une force inertielle horizontale
             if (!behaviourManager.IsGrounded() && !isColliding && behaviourManager.GetTempLockStatus())
             {
-                rb.AddForce(transform.forward * jumpInertialForce * Time.fixedDeltaTime , ForceMode.Acceleration);
+                rb.AddForce(transform.forward * jumpInertialForce , ForceMode.Acceleration);
             }
 
             // --- Atterrissage ---

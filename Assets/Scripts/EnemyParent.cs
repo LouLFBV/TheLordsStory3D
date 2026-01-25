@@ -6,7 +6,8 @@ public abstract class EnemyParent : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] protected EnemySO enemyData;
-    
+    protected WorldObjectID worldID;
+
     [HideInInspector]public NavMeshAgent agent;
     protected Animator animator;
 
@@ -47,8 +48,17 @@ public abstract class EnemyParent : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         currentHealth = enemyData.pvMax;
 
+        worldID = GetComponent<WorldObjectID>();
+
+        if (worldID != null && WorldStateManager.Instance.IsCollected(worldID.uniqueID))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         isDead = animator.GetBool("IsDead");
     }
+
 
     void Start()
     {
@@ -100,7 +110,13 @@ public abstract class EnemyParent : MonoBehaviour
         healthBar.fillAmount = currentHealth / enemyData.pvMax;
     }
 
-    protected abstract void Die();
+    protected virtual void Die()
+    {
+        if (worldID != null)
+        {
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+        }
+    }
 
     public abstract void UpdateSpeedWitchCoefficient(float speedCoefficient);
 }

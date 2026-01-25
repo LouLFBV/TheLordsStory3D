@@ -175,6 +175,7 @@ public class EnemyAI : EnemyParent
 
     protected override void Die()
     {
+        base.Die();
         IsDead = true;
 
         vie.SetActive(false);
@@ -189,12 +190,7 @@ public class EnemyAI : EnemyParent
         grognemment.Stop();
         if (boxCollider != null) boxCollider.enabled = false;
         if (boxColliderOfDeath != null) boxColliderOfDeath.enabled = true;
-        //if (enemyData.enemyType == EnemyType.Zombie)
-        //{
-        //    agent.enabled = false;
-        //    Rigidbody rb = gameObject.GetComponent<Rigidbody>();
-        //    rb.isKinematic = false;
-        //}
+
         if (itemToDrop != null)
         {
             itemToDrop.SetActive(true);
