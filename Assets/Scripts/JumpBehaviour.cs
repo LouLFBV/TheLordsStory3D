@@ -7,6 +7,8 @@ public class JumpBehaviour : GenericBehaviour
     [Header("Paramètres de saut")]
     public float jumpHeight = 1.5f;             // Hauteur du saut
     public float jumpInertialForce = 10f;       // Force d’inertie horizontale
+    [SerializeField] private float jumpDelay = 1.5f;
+    private float nextJumpTime;
     public bool jump;                          // Indique si le joueur a déclenché un saut
     private bool isColliding;                   // Vérifie si le joueur touche un obstacle
     public bool canJump = true;              // Indique si le joueur peut sauter
@@ -69,7 +71,7 @@ public class JumpBehaviour : GenericBehaviour
     void Update()
     {
         // Détection de la touche de saut
-        if (!jump && isJumpInput && !aimBehaviour.IsAiming && canJump && !attackBehaviour.isAttacking)
+        if (!jump && isJumpInput && !aimBehaviour.IsAiming && canJump && !attackBehaviour.isAttacking && Time.time > nextJumpTime)
         {
             jump = true;
             isJumpInput = false;
@@ -90,7 +92,7 @@ public class JumpBehaviour : GenericBehaviour
         // --- Début du saut ---
         if (jump && behaviourManager.IsGrounded() && !behaviourManager.GetAnim.GetBool(jumpBool))
         {
-
+            nextJumpTime = Time.time + jumpDelay;
             // Verrou temporaire du comportement (empêche d'autres inputs)
             behaviourManager.LockTempBehaviour(this.behaviourCode);
 

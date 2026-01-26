@@ -69,31 +69,123 @@ public class MapManager : MonoBehaviour
     }
 
 
-    public void AddIconeMap(GameObject iconeMapPrefab)
+    public void AddIconeMap(ItemData itemData)
     {
-        if (iconeMapTransform == null || iconeMapPrefab == null) return;
-
-        GameObject newIcon = Instantiate(
-            iconeMapPrefab,
-            iconeMapTransform.position,
-            Quaternion.identity,
-            iconeMapTransform
-        );
-
-        string currentSceneName = SceneManager.GetActiveScene().name;
+        string sceneName = SceneManager.GetActiveScene().name;
 
         foreach (var map in allListMap)
         {
-            if (map.nomDeScene == currentSceneName)
+            if (map.nomDeScene == sceneName)
             {
+                if (map.morceauxDeMap.Exists(m =>
+                    m != null &&
+                    m.TryGetComponent<MapIcon>(out var existingIcon) &&
+                    existingIcon.sourceItem == itemData))
+                {
+                    return; // déjà possédée
+                }
+
+                GameObject newIcon = Instantiate(
+                    itemData.iconeMap,
+                    iconeMapTransform.position,
+                    Quaternion.identity,
+                    iconeMapTransform
+                );
+
+                if (!newIcon.TryGetComponent<MapIcon>(out var icon))
+                {
+                    Debug.LogError("Map icon prefab missing MapIcon component");
+                    Destroy(newIcon);
+                    return;
+                }
+
+                icon.sourceItem = itemData;
                 map.morceauxDeMap.Add(newIcon);
                 iconeIfNoMap.SetActive(false);
-                return; 
+                return;
+            }
+        }
+    }
+
+
+    public MapSaveData GetSaveData()
+    {
+        MapSaveData data = new MapSaveData();
+
+        foreach (var map in allListMap)
+        {
+            MapSceneSaveData sceneData = new MapSceneSaveData
+            {
+                sceneName = map.nomDeScene
+            };
+
+            foreach (var morceau in map.morceauxDeMap)
+            {
+                if (morceau == null) continue;
+
+                if (morceau.TryGetComponent<MapIcon>(out var icon))
+                {
+                    sceneData.mapItemIDs.Add(icon.sourceItem.itemID);
+                }
+            }
+
+            data.scenes.Add(sceneData);
+        }
+
+        return data;
+    }
+
+    public void LoadSaveData(MapSaveData data)
+    {
+        if (data == null) return;
+
+        // Nettoyage
+        foreach (var map in allListMap)
+        {
+            foreach (var morceau in map.morceauxDeMap)
+            {
+                if (morceau != null)
+                    Destroy(morceau);
+            }
+            map.morceauxDeMap.Clear();
+        }
+
+        foreach (var sceneData in data.scenes)
+        {
+            foreach (string itemID in sceneData.mapItemIDs)
+            {
+                ItemData item = ItemDataDatabase.Instance.GetItemByID(itemID);
+                if (item == null || item.iconeMap == null) continue;
+
+                GameObject newIcon = Instantiate(
+                    item.iconeMap,
+                    iconeMapTransform.position,
+                    Quaternion.identity,
+                    iconeMapTransform
+                );
+
+                var icon = newIcon.GetComponent<MapIcon>();
+                if (icon != null)
+                {
+                    icon.sourceItem = item;
+                }
+
+
+
+                var map = System.Array.Find(allListMap, m => m.nomDeScene == sceneData.sceneName);
+                if (map == null)
+                {
+                    Debug.LogWarning($"Map scene not found: {sceneData.sceneName}");
+                    Destroy(newIcon);
+                    continue;
+                }
+                map.morceauxDeMap.Add(newIcon);
             }
         }
 
-        Debug.LogWarning("Aucune map associée à cette scène");
+        SetMapActive(SceneManager.GetActiveScene().name);
     }
+
 }
 
 [System.Serializable]
@@ -101,4 +193,17 @@ public class ListeMorceauxDeMap
 {
     public string nomDeScene;
     public List<GameObject> morceauxDeMap;
+}
+
+[System.Serializable]
+public class MapSaveData
+{
+    public List<MapSceneSaveData> scenes = new();
+}
+
+[System.Serializable]
+public class MapSceneSaveData
+{
+    public string sceneName;
+    public List<string> mapItemIDs = new();
 }

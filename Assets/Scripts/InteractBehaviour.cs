@@ -167,7 +167,7 @@ public class InteractBehaviour : MonoBehaviour
         }
         else if (currentItem.itemData.itemType == ItemType.Map)
         {
-            MapManager.instance.AddIconeMap(currentItem.itemData.iconeMap);
+            MapManager.instance.AddIconeMap(currentItem.itemData);
         }
         else
         {

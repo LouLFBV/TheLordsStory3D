@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 
 public class Equipment : MonoBehaviour
 {
+    #region Champs
     public static Equipment instance;
 
     [Header("Other Scripts References")]
@@ -19,11 +21,9 @@ public class Equipment : MonoBehaviour
 
     [Header("Equipment Panel References")]
 
-    [SerializeField]
-    private EquipmentLibrary equipmentLibrary;
+    [SerializeField] private EquipmentLibrary equipmentLibrary;
 
-    [SerializeField]
-    private Image headSlotImage, chestSlotImage, handsSlotImage, legslotImage, feetSlotImage, arrowSlotImage;
+    [SerializeField] private Image headSlotImage, chestSlotImage, handsSlotImage, legslotImage, feetSlotImage, arrowSlotImage;
 
     [HideInInspector]
     public ItemData equipmentHeadItem, equipmentChestItem, equipmentHandsItem, equipmentLegsItem, equipmentFeetItem;
@@ -33,14 +33,15 @@ public class Equipment : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI arrowText;
 
-    [SerializeField]
-    private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
+    [SerializeField] private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
 
-    [HideInInspector]
-    public AudioSource audioSource;
+    [HideInInspector] public AudioSource audioSource;
 
-    [HideInInspector]
-    public AudioClip equipSound;
+    [HideInInspector] public AudioClip equipSound;
+
+    private bool isLoading = false;
+
+    #endregion
 
     private void Awake()
     {
@@ -175,12 +176,12 @@ public class Equipment : MonoBehaviour
             }
             equipmentLibraryItem.itemPrefab.SetActive(false);
         }
-        if (currentItem.handWeaponType == HandWeapon.TwoHanded)
-        {
-            animator.SetBool("IsTwoHandedWeapon", false);
-        }
         if (currentItem)
         {
+            if (currentItem.handWeaponType == HandWeapon.TwoHanded)
+            {
+                animator.SetBool("IsTwoHandedWeapon", false);
+            }
             switch (currentItem.armorType)
             {
                 case DamageType.Percant:
@@ -318,9 +319,10 @@ public class Equipment : MonoBehaviour
             }
 
             UpdateArmorText(itemToEquip);
-            if (itemToEquip.equipmentType != EquipmentType.Arrow)
-                 Inventory.instance.RemoveItem(itemToEquip);
-            audioSource.PlayOneShot(equipSound);
+            if (!isLoading && itemToEquip.equipmentType != EquipmentType.Arrow)
+                Inventory.instance.RemoveItem(itemToEquip);
+            if (!isLoading)
+                audioSource.PlayOneShot(equipSound);
         }
         else
         {
@@ -331,20 +333,81 @@ public class Equipment : MonoBehaviour
         UpdateEquipmentsDesequipButtons();
     }
 
-    public void LoadEquipments(ItemData[] savedEquiments)
+    public EquipmentSaveData GetSaveData()
     {
-        Inventory.instance.ClearContent();
-        foreach (EquipmentType type in System.Enum.GetValues(typeof(EquipmentType)))
+        return new EquipmentSaveData
         {
-            DesequipEquipment(type);
+            headID = equipmentHeadItem ? equipmentHeadItem.itemID : null,
+            chestID = equipmentChestItem ? equipmentChestItem.itemID : null,
+            handsID = equipmentHandsItem ? equipmentHandsItem.itemID : null,
+            legsID = equipmentLegsItem ? equipmentLegsItem.itemID : null,
+            feetID = equipmentFeetItem ? equipmentFeetItem.itemID : null,
+
+            arrowID = arrowItemInInventory.itemData ? arrowItemInInventory.itemData.itemID : null,
+            arrowCount = arrowItemInInventory.count
+        };
+    }
+
+    public void LoadSaveData(EquipmentSaveData data)
+    {
+        isLoading = true;
+
+        // Reset interne SANS toucher l'inventaire
+        equipmentHeadItem = null;
+        equipmentChestItem = null;
+        equipmentHandsItem = null;
+        equipmentLegsItem = null;
+        equipmentFeetItem = null;
+
+        arrowItemInInventory.itemData = null;
+        arrowItemInInventory.count = 0;
+
+        headSlotImage.sprite = Inventory.instance.emptySlotVisual;
+        chestSlotImage.sprite = Inventory.instance.emptySlotVisual;
+        handsSlotImage.sprite = Inventory.instance.emptySlotVisual;
+        legslotImage.sprite = Inventory.instance.emptySlotVisual;
+        feetSlotImage.sprite = Inventory.instance.emptySlotVisual;
+        arrowSlotImage.sprite = Inventory.instance.emptySlotVisual;
+
+        if (data == null)
+        {
+            isLoading = false;
+            return;
         }
 
-        foreach (ItemData item in savedEquiments)
+        EquipByID(data.headID);
+        EquipByID(data.chestID);
+        EquipByID(data.handsID);
+        EquipByID(data.legsID);
+        EquipByID(data.feetID);
+
+        if (!string.IsNullOrEmpty(data.arrowID))
         {
-            if (item)
-            {
-                EquipAction(item);
-            }
+            ItemData arrow = ItemDataDatabase.Instance.GetItemByID(data.arrowID);
+            arrowItemInInventory.itemData = arrow;
+            arrowItemInInventory.count = data.arrowCount;
+
+            arrowSlotImage.sprite = arrow.visual;
+            UpdateArrowsText();
+            BowBehaviour.instance.UpdateQuiverVisual(data.arrowCount);
+        }
+
+        UpdateEquipmentsDesequipButtons();
+        playerStats.UpddateArmorText();
+
+        isLoading = false;
+    }
+
+
+    private void EquipByID(string id)
+    {
+        Debug.Log("EquipByID: " + id);
+        if (string.IsNullOrEmpty(id)) return;
+
+        ItemData item = ItemDataDatabase.Instance.GetItemByID(id);
+        if (item != null)
+        {
+            EquipAction(item);
         }
     }
 
@@ -382,4 +445,17 @@ public class Equipment : MonoBehaviour
         }
         playerStats.UpddateArmorText();
     }
+}
+
+[System.Serializable]
+public class EquipmentSaveData
+{
+    public string headID;
+    public string chestID;
+    public string handsID;
+    public string legsID;
+    public string feetID;
+
+    public string arrowID;
+    public int arrowCount;
 }
