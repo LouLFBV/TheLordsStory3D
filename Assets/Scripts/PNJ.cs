@@ -19,12 +19,12 @@ public class PNJ : InteractableBase
 
 
     [Header("Quêtes")]
-    public QuestInstance[] questsDisponibles;
+    public QuestSO[] questsDisponibles;
     private int currentQuestIndex = 0;
-    private QuestInstance activeQuest;        // Quête actuellement discutée
+    private QuestSO currentQuestSO;
+    private QuestInstance activeQuestInstance;
     public bool canGiveQuest;
     private bool isPnjInteraction; 
-    private int intPnjInteraction = 0;
     [SerializeField] private float seuilDeReputationQuest = 0f;
 
 
@@ -125,6 +125,7 @@ public class PNJ : InteractableBase
     #region Start/End Dialogue
     public void StartDialogue()
     {
+        ResolveQuestInstance();
         moveBehaviour.StopPlayer();
 
         StartCoroutine(RotateTowardsToPlayer());
@@ -153,28 +154,33 @@ public class PNJ : InteractableBase
         // Choix du dialogue initial
         if (canGiveQuest)
         {
-            if (activeQuest != null && !isPnjInteraction)
+            if (activeQuestInstance == null)
             {
-                if (activeQuest.status == QuestStatus.NotStarted)
-                    currentDialogue = activeQuest.data.sentencesBeforeQuest;
-                else if (activeQuest.status == QuestStatus.InProgress)
-                    if (QuestManager.instance.CanCompleteQuest(activeQuest))
-                        CompleteQuest();
-                    else
-                        currentDialogue = activeQuest.data.sentencesQuestInProgress;
-                else
-                    currentDialogue = activeQuest.data.sentencesQuestCompleted;
+                // Quête jamais acceptée
+                currentDialogue = currentQuestSO.sentencesBeforeQuest;
             }
-            else if (questsDisponibles != null && currentQuestIndex < questsDisponibles.Length)
+            else
             {
-                activeQuest = questsDisponibles[currentQuestIndex];
-                currentDialogue = activeQuest.data.sentencesBeforeQuest;
+                switch (activeQuestInstance.status)
+                {
+                    case QuestStatus.InProgress:
+                        if (QuestManager.instance.CanCompleteQuest(activeQuestInstance))
+                            CompleteQuest();
+                        else
+                            currentDialogue = currentQuestSO.sentencesQuestInProgress;
+                        break;
+
+                    case QuestStatus.Completed:
+                        currentDialogue = currentQuestSO.sentencesQuestCompleted;
+                        break;
+                }
             }
         }
+
         else if (!isPnjInteraction)
         {
             currentDialogue = sentences;
-            activeQuest = null;
+            activeQuestInstance = null;
         }
         // Démarre la lecture
         NextLine();
@@ -214,7 +220,7 @@ public class PNJ : InteractableBase
         // Vérifie si le joueur a une mauvaise réputation
         if (PlayerStats.instance.reputationData.reputationPoints < seuilDeReputationQuest
             && sentencesIfPlayerIsBad.Length > 0
-            && (activeQuest != null && !activeQuest.data.isMainQuest)
+            && (activeQuestInstance != null && !currentQuestSO.isMainQuest)
             && currentDialogue != sentencesIfPlayerIsBad)
         {
             currentDialogue = sentencesIfPlayerIsBad;
@@ -225,23 +231,23 @@ public class PNJ : InteractableBase
         if (index >= currentDialogue.Length)
         {
             // Fin du dialogue
-            if(activeQuest != null)
+            if (activeQuestInstance != null)
             {
-                if (activeQuest.status == QuestStatus.NotStarted && currentDialogue != sentencesIfPlayerIsBad)
+                if (activeQuestInstance.status == QuestStatus.InProgress)
                 {
-                    DialogueManager.instance.ShowQuestButtons(this);
-                    animator.SetBool("isTalking", false);
-                }
-                else if(activeQuest.status == QuestStatus.Completed)
-                {
-                    QuestManager.instance.ApplyRewards(activeQuest.data.rewards);
-                    activeQuest = null;
-                }
-                else
                     EndDialogue();
+                }
+                else if (activeQuestInstance.status == QuestStatus.Completed)
+                {
+                    QuestManager.instance.ApplyRewards(currentQuestSO.rewards);
+                    activeQuestInstance = null;
+                    EndDialogue();
+                }
             }
             else
+            {
                 EndDialogue();
+            }
             return;
         }
 
@@ -288,97 +294,112 @@ public class PNJ : InteractableBase
     #region Accept/Refuse Quest
     public void AcceptQuest()
     {
-        if (activeQuest == null) return;
+        QuestManager.instance.AddQuest(currentQuestSO);
+        activeQuestInstance = QuestManager.instance.GetQuestInstance(currentQuestSO);
 
-        QuestManager.instance.AddQuest(activeQuest.data);
-        activeQuest.status = QuestStatus.InProgress;
         DialogueManager.instance.HideQuestButtons();
 
         animator.SetBool("isTalking", true);
         index = 0;
-        currentDialogue = activeQuest.data.sentencesQuestAccepted;
+        currentDialogue = currentQuestSO.sentencesQuestAccepted;
         NextLine();
     }
 
+
     public void RefuseQuest()
     {
-        if (activeQuest == null) return;
+        if (activeQuestInstance == null) return;
 
         DialogueManager.instance.HideQuestButtons();
         animator.SetBool("isTalking", true);
         index = 0;
-        currentDialogue = activeQuest.data.sentencesQuestRefused;
+        currentDialogue = currentQuestSO.sentencesQuestRefused;
         NextLine();
-        activeQuest = null;
+        activeQuestInstance = null;
     }
     #endregion
     private void CompleteQuest()
     {
-        if (activeQuest == null) return;
+        if (activeQuestInstance == null) return;
 
-        activeQuest.status = QuestStatus.Completed;
-        if (activeQuest.data.questName == QuestLog.instance.QuestActiveText.text)
+        QuestManager.instance.CompleteQuest(activeQuestInstance);
+
+        DeleteObjectsInInventory(
+            currentQuestSO.requiredItem,
+            currentQuestSO.requiredItemCount
+        );
+
+        if (currentQuestSO.questName == QuestLog.instance.QuestActiveText.text)
         {
             QuestLog.instance.QuestActiveText.gameObject.SetActive(false);
             QuestLog.instance.questToggle.isOn = false;
         }
-        QuestManager.instance.CompleteQuest(activeQuest);
-        DeleteObjectsInInventory(activeQuest.data.requiredItem, activeQuest.data.requiredItemCount);
 
         index = 0;
-        currentDialogue = activeQuest.data.sentencesQuestCompleted;
-
-        currentQuestIndex++; // Passe à la quête suivante
+        currentDialogue = currentQuestSO.sentencesQuestCompleted;
+        currentQuestIndex++;
     }
+
 
     private void VerifObjectsInInventory()
     {
-        if (activeQuest == null || activeQuest.status != QuestStatus.InProgress || activeQuest.data.requiredItem == null) return;
+        if (activeQuestInstance == null || activeQuestInstance.status != QuestStatus.InProgress || currentQuestSO.requiredItem == null) return;
         foreach (var obj in Inventory.instance.GetContent())
         {
-            if (activeQuest.data.requiredItem == obj.itemData)
+            if (currentQuestSO.requiredItem == obj.itemData)
             {
-                activeQuest.currentCount += obj.count;
+                activeQuestInstance.currentCount += obj.count;
             }
         }
     }
 
     private void AddEnemiesKilled()
     {
-        if (activeQuest == null || activeQuest.status != QuestStatus.InProgress || activeQuest.data.questType != QuestType.Hunt) return;
+        if (activeQuestInstance == null || activeQuestInstance.status != QuestStatus.InProgress || currentQuestSO.questType != QuestType.Hunt) return;
         foreach (var quest in QuestManager.instance.activeQuests)
         {
-            if (quest.data == activeQuest.data)
+            if (quest.data == currentQuestSO)
             {
-                activeQuest.currentCount = quest.currentCount;
+                activeQuestInstance.currentCount = quest.currentCount;
             }
         }
     }
 
     private void DeleteObjectsInInventory(ItemData itemData, int count)
     {
-        for (int i = 0; i < activeQuest.data.requiredItemCount; i++)
+        for (int i = 0; i < count; i++)
         {
             Inventory.instance.RemoveItem(itemData);
         }
     }
     private void VerifIfIntercationQuest()
     {
-        foreach(var quest in QuestManager.instance.activeQuests)
+        foreach (var quest in QuestManager.instance.activeQuests)
         {
             if (quest.data.namePNJ == namePNJ && quest.status == QuestStatus.InProgress)
             {
                 quest.interactionDone = true;
-                currentDialogue = quest.data.sentencesInteraction;
-                if(intPnjInteraction == 0)
-                    isPnjInteraction = true;
-                intPnjInteraction++;
+                activeQuestInstance = quest;
+                currentQuestSO = quest.data;
+                currentDialogue = currentQuestSO.sentencesInteraction;
+                isPnjInteraction = true;
                 return;
             }
         }
     }
 
-    
+    private void ResolveQuestInstance()
+    {
+        activeQuestInstance = null;
+
+        if (questsDisponibles == null || questsDisponibles.Length == 0)
+            return;
+
+        currentQuestSO = questsDisponibles[currentQuestIndex];
+
+        activeQuestInstance = QuestManager.instance.GetQuestInstance(currentQuestSO);
+    }
+
 
     private IEnumerator RotateTowardsToPlayer()
     {

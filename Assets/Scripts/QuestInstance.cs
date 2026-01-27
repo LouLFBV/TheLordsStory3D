@@ -7,3 +7,14 @@ public class QuestInstance
     public bool interactionDone;  // Pour les quêtes d'interaction
     public bool escortFinished; // Pour les quêtes d'escorte
 }
+
+[System.Serializable]
+public class QuestInstanceSaveData
+{
+    public string questID;
+    public QuestStatus status;
+
+    public int currentCount;
+    public bool interactionDone;
+    public bool escortFinished;
+}

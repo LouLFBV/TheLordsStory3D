@@ -45,6 +45,7 @@ public class SaveManager : MonoBehaviour
         data.sceneName = SceneManager.GetActiveScene().name;
         data.equipment = Equipment.instance.GetSaveData();
         data.map = MapManager.instance.GetSaveData();
+        data.quests = QuestManager.instance.GetSaveData();
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
@@ -95,6 +96,9 @@ public class SaveManager : MonoBehaviour
         if (data.map != null)
             MapManager.instance.LoadSaveData(data.map);
 
+        if (data.quests != null)
+            QuestManager.instance.LoadSaveData(data.quests);
+
         Debug.Log("Game Loaded");
     }
 
@@ -130,7 +134,7 @@ public class SaveData
     public PaletteSaveData palette;
     public EquipmentSaveData equipment;
     public MapSaveData map;
-    // public QuestSaveData quests;
+    public QuestSaveData quests;
     public WorldStateSaveData world;
 
     public string sceneName;

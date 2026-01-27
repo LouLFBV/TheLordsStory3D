@@ -50,11 +50,7 @@ public abstract class EnemyParent : MonoBehaviour
 
         worldID = GetComponent<WorldObjectID>();
 
-        if (worldID != null && WorldStateManager.Instance.IsCollected(worldID.uniqueID))
-        {
-            Destroy(gameObject);
-            return;
-        }
+        
 
         isDead = animator.GetBool("IsDead");
     }
@@ -64,6 +60,11 @@ public abstract class EnemyParent : MonoBehaviour
     {
         playerStats = PlayerStats.instance;
         player = playerStats.transform;
+        if (worldID != null && WorldStateManager.Instance.IsCollected(worldID.uniqueID))
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     public virtual void TakeDamage(float damage, DamageType damageType)

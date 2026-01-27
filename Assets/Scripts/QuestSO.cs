@@ -6,6 +6,7 @@ public enum QuestType {Collect, Hunt, Craft, Interaction}
 public class QuestSO : ScriptableObject
 {
     [Header("Identification")]
+    public string questID;
     public string questName;
     [TextArea] public string description;
 
@@ -56,6 +57,13 @@ public class QuestSO : ScriptableObject
                 return false;
         }
     }
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(questID))
+            questID = System.Guid.NewGuid().ToString();
+    }
+#endif
 }
 
 [System.Serializable]
