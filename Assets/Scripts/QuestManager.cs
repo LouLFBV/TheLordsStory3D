@@ -97,27 +97,27 @@ public class QuestManager : MonoBehaviour
     {
         quest.status = QuestStatus.Completed;
         completedQuests.Add(quest);
-
         QuestInstance toRemove = activeQuests.Find(q => q.data == quest.data);
         if (toRemove != null)
             activeQuests.Remove(toRemove);
     }
 
-    public void ApplyRewards(QuestReward rewards)
+    public void ApplyRewards(QuestInstance questInstane)
     {
-        if (rewards == null) return;
+        if (questInstane.data.rewards == null) return;
 
-        PlayerStats.instance.reputationData.reputationPoints += rewards.reputation;
-        if (rewards.gold > 0)
-            PlayerStats.instance.AddGold(rewards.gold);
+        PlayerStats.instance.reputationData.reputationPoints += questInstane.data.rewards.reputation;
+        if (questInstane.data.rewards.gold > 0)
+            PlayerStats.instance.AddGold(questInstane.data.rewards.gold);
 
-        if (rewards.items != null)
+        if (questInstane.data.rewards.items != null)
         {
-            foreach (var item in rewards.items)
+            foreach (var item in questInstane.data.rewards.items)
             {
                 Inventory.instance.AddItem(item);
             }
         }
+        questInstane.rewardsGiven = true;
     }
 
     public QuestSaveData GetSaveData()
@@ -144,7 +144,8 @@ public class QuestManager : MonoBehaviour
             status = quest.status,
             currentCount = quest.currentCount,
             interactionDone = quest.interactionDone,
-            escortFinished = quest.escortFinished
+            escortFinished = quest.escortFinished,
+            rewardsGiven = quest.rewardsGiven
         };
     }
 
@@ -195,7 +196,8 @@ public class QuestManager : MonoBehaviour
             status = data.status,
             currentCount = data.currentCount,
             interactionDone = data.interactionDone,
-            escortFinished = data.escortFinished
+            escortFinished = data.escortFinished,
+            rewardsGiven = data.rewardsGiven
         };
     }
 

@@ -6,6 +6,7 @@ public class QuestInstance
     public int currentCount;      // Compteur de progression (objets collectés, kills…)
     public bool interactionDone;  // Pour les quêtes d'interaction
     public bool escortFinished; // Pour les quêtes d'escorte
+    public bool rewardsGiven = false;
 }
 
 [System.Serializable]
@@ -17,4 +18,5 @@ public class QuestInstanceSaveData
     public int currentCount;
     public bool interactionDone;
     public bool escortFinished;
+    public bool rewardsGiven;
 }
