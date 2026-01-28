@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class PNJ : InteractableBase
 {
@@ -22,7 +23,7 @@ public class PNJ : InteractableBase
     public QuestSO[] questsDisponibles;
     private int currentQuestIndex = 0;
     private QuestSO currentQuestSO;
-    private QuestInstance activeQuestInstance;
+    [SerializeField] private QuestInstance activeQuestInstance;
     public bool canGiveQuest;
     private bool isPnjInteraction; 
     [SerializeField] private float seuilDeReputationQuest = 0f;
@@ -125,7 +126,8 @@ public class PNJ : InteractableBase
     #region Start/End Dialogue
     public void StartDialogue()
     {
-        ResolveQuestInstance();
+        if (canGiveQuest)
+            ResolveQuestInstance();
         moveBehaviour.StopPlayer();
 
         StartCoroutine(RotateTowardsToPlayer());
@@ -151,15 +153,12 @@ public class PNJ : InteractableBase
             uiManager.HandlePanelOpened();
         }
 
+        Debug.Log("Starting dialogue with PNJ: " + namePNJ);
         // Choix du dialogue initial
         if (canGiveQuest)
         {
-            if (activeQuestInstance == null)
-            {
-                // Quête jamais acceptée
-                currentDialogue = currentQuestSO.sentencesBeforeQuest;
-            }
-            else
+            Debug.Log("PNJ can give quest: " + namePNJ);
+            if (activeQuestInstance != null)
             {
                 switch (activeQuestInstance.status)
                 {
@@ -174,13 +173,19 @@ public class PNJ : InteractableBase
                         currentDialogue = currentQuestSO.sentencesQuestCompleted;
                         break;
                 }
+
+            }
+            else
+            {
+                Debug.Log("PNJ has no active quest instance, using sentencesBeforeQuest.");
+                currentDialogue = questsDisponibles.Length > 0 ? questsDisponibles[currentQuestIndex].sentencesBeforeQuest : sentences;
+                currentQuestSO = questsDisponibles.Length > 0 ? questsDisponibles[currentQuestIndex] : null;
             }
         }
-
         else if (!isPnjInteraction)
         {
+            Debug.Log("PNJ has no quest interaction, using default dialogue.");
             currentDialogue = sentences;
-            activeQuestInstance = null;
         }
         // Démarre la lecture
         NextLine();
@@ -217,6 +222,7 @@ public class PNJ : InteractableBase
 #endregion
     public void NextLine()
     {
+        Debug.Log("NextLine called for PNJ: " + namePNJ);
         // Vérifie si le joueur a une mauvaise réputation
         if (PlayerStats.instance.reputationData.reputationPoints < seuilDeReputationQuest
             && sentencesIfPlayerIsBad.Length > 0
@@ -230,23 +236,35 @@ public class PNJ : InteractableBase
 
         if (index >= currentDialogue.Length)
         {
-            // Fin du dialogue
             if (activeQuestInstance != null)
             {
-                if (activeQuestInstance.status == QuestStatus.InProgress)
+                if (activeQuestInstance.data != null)
                 {
-                    EndDialogue();
-                }
-                else if (activeQuestInstance.status == QuestStatus.Completed)
-                {
-                    QuestManager.instance.ApplyRewards(currentQuestSO.rewards);
-                    activeQuestInstance = null;
-                    EndDialogue();
+                    Debug.Log("Resolving quest instance for PNJ: " + namePNJ);
+                    if (activeQuestInstance.status == QuestStatus.Completed)
+                    {
+                        Debug.Log("Applying rewards for quest: " + currentQuestSO.questName);
+                        QuestManager.instance.ApplyRewards(currentQuestSO.rewards);
+                        EndDialogue();
+                    }
+                    else
+                        EndDialogue();
                 }
             }
             else
             {
-                EndDialogue();
+                if (canGiveQuest && currentDialogue == currentQuestSO.sentencesBeforeQuest)
+                {
+                    Debug.Log("Showing quest buttons for PNJ: " + namePNJ);
+                    DialogueManager.instance.ShowQuestButtons(this);
+                    animator.SetBool("isTalking", false);
+                }
+                else
+                {
+                    Debug.Log("Dialogue ended with PNJ: " + namePNJ);
+                    EndDialogue();
+                }
+                
             }
             return;
         }
@@ -302,6 +320,8 @@ public class PNJ : InteractableBase
         animator.SetBool("isTalking", true);
         index = 0;
         currentDialogue = currentQuestSO.sentencesQuestAccepted;
+        QuestLog.instance.ActiveDesactiveQuestText(currentQuestSO.questName);
+        Debug.Log("Quest accepted: " + currentQuestSO.questName);
         NextLine();
     }
 
@@ -338,6 +358,8 @@ public class PNJ : InteractableBase
         index = 0;
         currentDialogue = currentQuestSO.sentencesQuestCompleted;
         currentQuestIndex++;
+        if (currentQuestIndex >= questsDisponibles.Length)
+            canGiveQuest = false;
     }
 
 
@@ -390,7 +412,6 @@ public class PNJ : InteractableBase
 
     private void ResolveQuestInstance()
     {
-        activeQuestInstance = null;
 
         if (questsDisponibles == null || questsDisponibles.Length == 0)
             return;
