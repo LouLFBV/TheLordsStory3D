@@ -234,10 +234,8 @@ public class PNJ : InteractableBase
             {
                 if (activeQuestInstance.data != null)
                 {
-                    Debug.Log("Resolving quest instance for PNJ: " + namePNJ);
                     if (activeQuestInstance.status == QuestStatus.Completed && !activeQuestInstance.rewardsGiven)
                     {
-                        Debug.Log("Applying rewards for quest: " + currentQuestSO.questName);
                         QuestManager.instance.ApplyRewards(activeQuestInstance);
                         EndDialogue();
                     }
@@ -246,18 +244,19 @@ public class PNJ : InteractableBase
                 }
                 else if (canGiveQuest && currentDialogue == currentQuestSO.sentencesBeforeQuest)
                 {
-                    Debug.Log("Showing quest buttons for PNJ: " + namePNJ);
                     DialogueManager.instance.ShowQuestButtons(this);
                     animator.SetBool("isTalking", false);
                 }
-                else 
+                else
                     EndDialogue();
             }
-            else
+            else if (canGiveQuest && currentDialogue == currentQuestSO.sentencesBeforeQuest)
             {
-                Debug.Log("Dialogue ended with PNJ: " + namePNJ);
-                EndDialogue();
+                DialogueManager.instance.ShowQuestButtons(this);
+                animator.SetBool("isTalking", false);
             }
+            else
+                EndDialogue();
             return;
         }
 
@@ -320,7 +319,6 @@ public class PNJ : InteractableBase
 
     public void RefuseQuest()
     {
-        if (activeQuestInstance == null) return;
 
         DialogueManager.instance.HideQuestButtons();
         animator.SetBool("isTalking", true);
