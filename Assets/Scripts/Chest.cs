@@ -64,14 +64,7 @@ public class Chest : InteractableBase
         closedRotation = topChest.transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
 
-        if (TryGetComponent<WorldObjectID>(out var worldID))
-        {
-            if (WorldStateManager.Instance.IsCollected(worldID.uniqueID))
-            {
-                Destroy(gameObject);
-                return;
-            }
-        }
+        
         Debug.Log("<color=cyan>[CHEST] Initialisation du coffre…</color>");
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -138,6 +131,23 @@ public class Chest : InteractableBase
         if (playerInput != null)
         {
             playerInput.actions["Cancel"].performed -= OnCancel;
+        }
+    }
+
+    private void OnEnable()
+    {
+        WorldStateManager.Instance.OnWorldStateLoaded += Apply;
+    }
+
+    public void Apply()
+    {
+        if (TryGetComponent<WorldObjectID>(out var worldID))
+        {
+            if (WorldStateManager.Instance.IsCollected(worldID.UniqueID))
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
     }
 
@@ -272,7 +282,7 @@ public class Chest : InteractableBase
 
         if (TryGetComponent<WorldObjectID>(out var worldID))
         {
-            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.UniqueID);
         }
     }
 

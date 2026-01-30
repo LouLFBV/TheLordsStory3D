@@ -3,6 +3,8 @@ using System.Linq;
 using UnityEngine;
 public class ChestInventory : MonoBehaviour
 {
+    public static ChestInventory Instance;
+    
     [Header ("Chest inventory")]
 
     public Transform inventoryChestSlotsParent;
@@ -20,6 +22,17 @@ public class ChestInventory : MonoBehaviour
 
     [SerializeField] private GameObject objectsToDisable;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     public void OnEnable()
     {
         objectsToDisable.SetActive(false);
@@ -238,4 +251,40 @@ public class ChestInventory : MonoBehaviour
             }
         }
     }
+
+    public ChestInventoryData GetSaveData()
+    {
+        ChestInventoryData data = new ChestInventoryData();
+        data.items = new List<ItemInInventory>();
+        foreach (var item in contentChest)
+        {
+            data.items.Add(new ItemInInventory
+            {
+                itemData = item.itemData,
+                count = item.count
+            });
+        }
+        return data;
+    }
+
+    public ChestInventoryData LoadSavaData(ChestInventoryData chestInventoryData)
+    {
+        ChestInventoryData data = new ChestInventoryData();
+        data.items = new List<ItemInInventory>();
+        foreach (var item in chestInventoryData.items)
+        {
+            data.items.Add(new ItemInInventory
+            {
+                itemData = item.itemData,
+                count = item.count
+            });
+        }
+        return data;
+    }
+}
+
+[System.Serializable]
+public class ChestInventoryData
+{
+    public List<ItemInInventory> items = new List<ItemInInventory>();
 }

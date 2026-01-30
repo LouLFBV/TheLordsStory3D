@@ -1,12 +1,11 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public abstract class EnemyParent : MonoBehaviour
+public abstract class EnemyParent : WorldDisappearOnCollected
 {
     [Header("References")]
     [SerializeField] protected EnemySO enemyData;
-    protected WorldObjectID worldID;
 
     [HideInInspector]public NavMeshAgent agent;
     protected Animator animator;
@@ -27,7 +26,7 @@ public abstract class EnemyParent : MonoBehaviour
     [Header("Type Defense and Attack")]
     [SerializeField] protected DamageType[] defensePointFortType;
     [SerializeField] protected DamageType[] defensePointFaibleType;
-    [SerializeField] protected float pourcentageOfResistance = 0.2f; // 20% de résistance par rapport au type de défense
+    [SerializeField] protected float pourcentageOfResistance = 0.2f; // 20% de rÃ©sistance par rapport au type de dÃ©fense
 
     public bool isAttacking = false;
 
@@ -42,15 +41,12 @@ public abstract class EnemyParent : MonoBehaviour
         }
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         currentHealth = enemyData.pvMax;
-
-        worldID = GetComponent<WorldObjectID>();
-
-        
 
         isDead = animator.GetBool("IsDead");
     }
@@ -60,11 +56,6 @@ public abstract class EnemyParent : MonoBehaviour
     {
         playerStats = PlayerStats.instance;
         player = playerStats.transform;
-        if (worldID != null && WorldStateManager.Instance.IsCollected(worldID.uniqueID))
-        {
-            Destroy(gameObject);
-            return;
-        }
     }
 
     public virtual void TakeDamage(float damage, DamageType damageType)
@@ -115,7 +106,8 @@ public abstract class EnemyParent : MonoBehaviour
     {
         if (worldID != null)
         {
-            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.UniqueID);
+            Debug.LogWarning($"<color=purple>[{name}] registered as collected in WorldStateManager, with ID : {worldID.UniqueID}.</color>");
         }
     }
 

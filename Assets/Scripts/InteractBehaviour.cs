@@ -108,8 +108,8 @@ public class InteractBehaviour : MonoBehaviour
         Debug.Log("Harvested: " + currentlyHarveting.name);
         if (currentlyHarveting.TryGetComponent<WorldObjectID>(out var worldID))
         {
-            Debug.Log("Registering collected object with ID: " + worldID.uniqueID);
-            WorldStateManager.Instance.RegisterCollectedObject(worldID.uniqueID);
+            Debug.Log($"<color=yellow> Registering collected object with ID: {worldID.UniqueID} </color>");
+            WorldStateManager.Instance.RegisterCollectedObject(worldID.UniqueID);
         }
         else
         {
@@ -187,7 +187,8 @@ public class InteractBehaviour : MonoBehaviour
         interact?.SetTargeted(false, player.transform);
         if (currentItem.TryGetComponent<WorldObjectID>(out var id))
         {
-            WorldStateManager.Instance.RegisterCollectedObject(id.uniqueID);
+            WorldStateManager.Instance.RegisterCollectedObject(id.UniqueID);
+            Debug.Log($"<color=yellow> Registering collected object with ID: {id.UniqueID} </color>");
         }
 
         Destroy(currentItem.gameObject);

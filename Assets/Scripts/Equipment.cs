@@ -401,7 +401,6 @@ public class Equipment : MonoBehaviour
 
     private void EquipByID(string id)
     {
-        Debug.Log("EquipByID: " + id);
         if (string.IsNullOrEmpty(id)) return;
 
         ItemData item = ItemDataDatabase.Instance.GetItemByID(id);

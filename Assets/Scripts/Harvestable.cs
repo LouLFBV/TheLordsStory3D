@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Harvestable : MonoBehaviour
+public class Harvestable : WorldDisappearOnCollected
 {
     public Ressource[] harvestableItems;
 
@@ -9,6 +9,7 @@ public class Harvestable : MonoBehaviour
     public bool disableKinematicOnHarvest;
     public float destroyDelay;
 }
+
 
 [System.Serializable]
 public class Ressource

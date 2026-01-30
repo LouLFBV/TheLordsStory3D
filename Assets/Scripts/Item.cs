@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public class Item : WorldDisappearOnCollected
 {
     [Header("Item Data")]
     public ItemData itemData;
@@ -16,8 +16,9 @@ public class Item : MonoBehaviour
     private float timeOffset;
     private Rigidbody rb;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         rb = GetComponent<Rigidbody>();
     }
 

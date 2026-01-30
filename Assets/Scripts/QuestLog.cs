@@ -112,4 +112,52 @@ public class QuestLog : MonoBehaviour
         foreach (Transform child in QuestsList)
             Destroy(child.gameObject);
     }
+
+    public QuestLogSaveData GetSaveData()
+    {
+        return new QuestLogSaveData
+        {
+            activeQuestName = QuestActiveText.gameObject.activeSelf
+                ? QuestActiveText.text
+                : string.Empty,
+            isQuestToggleOn = questToggle != null && questToggle.isOn
+        };
+    }
+
+    public void LoadSaveData(QuestLogSaveData data)
+    {
+        if (data == null || string.IsNullOrEmpty(data.activeQuestName))
+        {
+            QuestActiveText.gameObject.SetActive(false);
+            return;
+        }
+
+        //  Texte
+        QuestActiveText.text = data.activeQuestName;
+        QuestActiveText.gameObject.SetActive(true);
+
+        //  Toggle (sans déclencher l’event)
+        if (questToggle != null)
+        {
+            questToggle.onValueChanged.RemoveAllListeners();
+            questToggle.isOn = data.isQuestToggleOn;
+
+            questToggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                    ActiveDesactiveQuestText(QuestActiveText.text);
+                else
+                    QuestActiveText.gameObject.SetActive(false);
+            });
+        }
+    }
+
 }
+
+[System.Serializable]
+public class QuestLogSaveData
+{
+    public string activeQuestName;
+    public bool isQuestToggleOn;
+}
+

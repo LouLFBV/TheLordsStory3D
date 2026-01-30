@@ -37,8 +37,8 @@ public class InteractableIconUI : MonoBehaviour
 
         if (iconeObject == null)
             iconeObject = transform.GetChild(1).GetComponent<Image>();
-
     }
+
 
     private void OnEnable()
     {

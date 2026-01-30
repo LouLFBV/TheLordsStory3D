@@ -6,8 +6,8 @@ public class WorldStateManager : MonoBehaviour
     public static WorldStateManager Instance;
 
     private HashSet<string> collectedObjects = new();
-    private readonly List<WorldObjectPersistence> worldObjects = new();
 
+    public event System.Action OnWorldStateLoaded;
     private void Awake()
     {
         if (Instance != null)
@@ -20,28 +20,6 @@ public class WorldStateManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // 🔹 Enregistrement
-    public void RegisterWorldObject(WorldObjectPersistence obj)
-    {
-        if (!worldObjects.Contains(obj))
-            worldObjects.Add(obj);
-    }
-
-    public void UnregisterWorldObject(WorldObjectPersistence obj)
-    {
-        worldObjects.Remove(obj);
-    }
-
-    // 🔹 Application globale
-    public void ApplyWorldState()
-    {
-        foreach (var obj in worldObjects)
-        {
-            obj.ApplyWorldState();
-        }
-    }
-
-    // --- Save / Load ---
     public WorldStateSaveData GetSaveData()
     {
         return new WorldStateSaveData
@@ -53,6 +31,12 @@ public class WorldStateManager : MonoBehaviour
     public void LoadSaveData(WorldStateSaveData data)
     {
         collectedObjects = new HashSet<string>(data.collectedObjectIDs);
+        Debug.Log($"<color=green>[WorldStateManager] Loaded {collectedObjects.Count} collected objects.</color>");
+        foreach (var id in collectedObjects)
+        {
+            Debug.Log($"<color=green> - Collected Object ID: {id}</color>");
+        }
+        OnWorldStateLoaded?.Invoke();
     }
 
     public void RegisterCollectedObject(string id)

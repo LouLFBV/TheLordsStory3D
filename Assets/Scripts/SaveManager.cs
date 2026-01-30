@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEditor.Overlays;
 
 public class SaveManager : MonoBehaviour
 {
@@ -27,7 +28,6 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // 🔹 appelé depuis le menu ou le save book
     public void SetCurrentSlot(int slot)
     {
         currentSlot = slot;
@@ -37,15 +37,19 @@ public class SaveManager : MonoBehaviour
     {
         string path = GetSavePath(currentSlot);
 
-        SaveData data = new SaveData();
-        data.playerStats = PlayerStats.instance.GetSaveData();
-        data.inventory = Inventory.instance.GetSaveData();
-        data.palette = Palette.instance.GetSaveData();
-        data.world = WorldStateManager.Instance.GetSaveData();
-        data.sceneName = SceneManager.GetActiveScene().name;
-        data.equipment = Equipment.instance.GetSaveData();
-        data.map = MapManager.instance.GetSaveData();
-        data.quests = QuestManager.instance.GetSaveData();
+        SaveData data = new SaveData
+        {
+            playerStats = PlayerStats.instance.GetSaveData(),
+            inventory = Inventory.instance.GetSaveData(),
+            palette = Palette.instance.GetSaveData(),
+            world = WorldStateManager.Instance.GetSaveData(),
+            sceneName = SceneManager.GetActiveScene().name,
+            equipment = Equipment.instance.GetSaveData(),
+            map = MapManager.instance.GetSaveData(),
+            quests = QuestManager.instance.GetSaveData(),
+            questLog = QuestLog.instance.GetSaveData(),
+            chestInventory = ChestInventory.Instance.GetSaveData()
+        };
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
@@ -85,10 +89,7 @@ public class SaveManager : MonoBehaviour
             Palette.instance.LoadSaveData(data.palette);
 
         if (data.world != null)
-        {
             WorldStateManager.Instance.LoadSaveData(data.world);
-            WorldStateManager.Instance.ApplyWorldState(); 
-        }
 
         if (data.equipment != null)
             Equipment.instance.LoadSaveData(data.equipment);
@@ -99,6 +100,11 @@ public class SaveManager : MonoBehaviour
         if (data.quests != null)
             QuestManager.instance.LoadSaveData(data.quests);
 
+        if (data.questLog != null)
+            QuestLog.instance.LoadSaveData(data.questLog);
+
+        if (data.chestInventory != null)
+            ChestInventory.Instance.LoadSavaData(data.chestInventory);
         Debug.Log("Game Loaded");
     }
 
@@ -136,6 +142,8 @@ public class SaveData
     public MapSaveData map;
     public QuestSaveData quests;
     public WorldStateSaveData world;
+    public QuestLogSaveData questLog;
+    public ChestInventoryData chestInventory;
 
     public string sceneName;
     public int saveVersion = 1;
