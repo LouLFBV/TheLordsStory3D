@@ -34,8 +34,6 @@ public class Recipe : MonoBehaviour
 
     [HideInInspector] public CraftingSystem craftingSystem;
 
-
-
     public void Configure(RecipeData recipe)
     {
         currentRecipe = recipe;
@@ -108,6 +106,13 @@ public class Recipe : MonoBehaviour
             if (found != null)
             {
                 found.transform.GetChild(0).gameObject.SetActive(true);
+
+                if (craftingSystem.gameObject.TryGetComponent<WorldObjectID>(out var worldID))
+                {
+                    WorldStateManager.Instance.RegisterActivedBuilding(worldID.UniqueID);
+                    Debug.Log($"<color=green>Registered collected object: {worldID.UniqueID}</color");
+                }
+
                 craftingSystem.craftPanel.SetActive(false);
             }
             else
@@ -121,6 +126,13 @@ public class Recipe : MonoBehaviour
             if (found != null)
             {
                 found.transform.GetChild(0).gameObject.SetActive(false);
+
+                if (craftingSystem.gameObject.TryGetComponent<WorldObjectID>(out var worldID))
+                {
+                    WorldStateManager.Instance.RegisterCollectedObject(worldID.UniqueID);
+                    Debug.Log($"<color=green>Registered collected object: { worldID.UniqueID}</color");
+                }
+
                 craftingSystem.craftPanel.SetActive(false);
             }
             else
@@ -134,6 +146,7 @@ public class Recipe : MonoBehaviour
             QuestManager.instance.UpdateQuestProgress("", 1, currentRecipe.craftableItem);
         }
     }
+
 
     private void Update()
     {

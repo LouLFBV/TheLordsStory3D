@@ -121,6 +121,10 @@ public class Chest : InteractableBase
         {
             playerInput.actions["Cancel"].performed -= OnCancel;
         }
+        if (WorldStateManager.Instance != null)
+        {
+            WorldStateManager.Instance.OnWorldStateLoaded -= Apply;
+        }
     }
 
 
@@ -136,7 +140,8 @@ public class Chest : InteractableBase
 
     private void OnEnable()
     {
-        WorldStateManager.Instance.OnWorldStateLoaded += Apply;
+        if (WorldStateManager.Instance != null)
+            WorldStateManager.Instance.OnWorldStateLoaded += Apply;
     }
 
     public void Apply()

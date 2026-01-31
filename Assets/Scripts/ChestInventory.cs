@@ -252,39 +252,68 @@ public class ChestInventory : MonoBehaviour
         }
     }
 
+
     public ChestInventoryData GetSaveData()
     {
+        Debug.Log("<color=blue>[ChestInventory] Saving chest content</color>");
+
         ChestInventoryData data = new ChestInventoryData();
-        data.items = new List<ItemInInventory>();
-        foreach (var item in contentChest)
+        data.items = new List<ItemInInventorySave>();
+
+        foreach (var item in contentChest) 
         {
-            data.items.Add(new ItemInInventory
+            Debug.Log($"<color=cyan>Saving {item.itemData.itemName} x{item.count}</color>");
+
+            data.items.Add(new ItemInInventorySave
             {
-                itemData = item.itemData,
+                itemID = item.itemData.itemID,
                 count = item.count
             });
         }
+
+        Debug.Log($"<color=green>[ChestInventory] Saved {data.items.Count} items</color>");
         return data;
     }
 
-    public ChestInventoryData LoadSavaData(ChestInventoryData chestInventoryData)
+
+
+    public void LoadSaveData(ChestInventoryData data)
     {
-        ChestInventoryData data = new ChestInventoryData();
-        data.items = new List<ItemInInventory>();
-        foreach (var item in chestInventoryData.items)
+        Debug.Log("<color=blue>[ChestInventory] Loading chest content</color>");
+
+        if (data == null || data.items == null)
         {
-            data.items.Add(new ItemInInventory
-            {
-                itemData = item.itemData,
-                count = item.count
-            });
+            Debug.LogWarning("[ChestInventory] No data to load");
+            return;
         }
-        return data;
+
+        contentChest.Clear();
+
+        foreach (var savedItem in data.items)
+        {
+            ItemData itemData = ItemDataDatabase.Instance.GetItemByID(savedItem.itemID);
+            if (itemData == null)
+            {
+                Debug.LogWarning($"Item ID not found: {savedItem.itemID}");
+                continue;
+            }
+
+            contentChest.Add(new ItemInInventory
+            {
+                itemData = itemData,
+                count = savedItem.count
+            });
+
+            Debug.Log($"<color=cyan>Loaded {itemData.itemName} x{savedItem.count}</color>");
+        }
+
+        Debug.Log($"<color=green>[ChestInventory] Loaded {contentChest.Count} items</color>");
     }
+
 }
 
 [System.Serializable]
 public class ChestInventoryData
 {
-    public List<ItemInInventory> items = new List<ItemInInventory>();
+    public List<ItemInInventorySave> items = new List<ItemInInventorySave>();
 }

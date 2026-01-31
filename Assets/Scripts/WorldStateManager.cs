@@ -7,6 +7,8 @@ public class WorldStateManager : MonoBehaviour
 
     private HashSet<string> collectedObjects = new();
 
+    private HashSet<string> activedBuildings = new();
+
     public event System.Action OnWorldStateLoaded;
     private void Awake()
     {
@@ -24,13 +26,15 @@ public class WorldStateManager : MonoBehaviour
     {
         return new WorldStateSaveData
         {
-            collectedObjectIDs = new List<string>(collectedObjects)
+            collectedObjectIDs = new List<string>(collectedObjects),
+            activedBuildings = new List<string>(activedBuildings)
         };
     }
 
     public void LoadSaveData(WorldStateSaveData data)
     {
         collectedObjects = new HashSet<string>(data.collectedObjectIDs);
+        activedBuildings = new HashSet<string>(data.activedBuildings);
         Debug.Log($"<color=green>[WorldStateManager] Loaded {collectedObjects.Count} collected objects.</color>");
         foreach (var id in collectedObjects)
         {
@@ -44,9 +48,19 @@ public class WorldStateManager : MonoBehaviour
         collectedObjects.Add(id);
     }
 
+    public void RegisterActivedBuilding(string id)
+    {
+        activedBuildings.Add(id);
+    }
+
     public bool IsCollected(string id)
     {
         return collectedObjects.Contains(id);
+    }
+
+    public bool IsActived(string id)
+    {
+        return activedBuildings.Contains(id);
     }
 }
 
@@ -54,5 +68,6 @@ public class WorldStateManager : MonoBehaviour
 [System.Serializable]
 public class WorldStateSaveData
 {
-    public List<string> collectedObjectIDs = new List<string>();
+    public List<string> collectedObjectIDs = new List<string>(); 
+    public List<string> activedBuildings = new List<string>();
 }

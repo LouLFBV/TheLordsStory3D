@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEditor.Overlays;
+using Unity.VectorGraphics;
+using UnityEngine.LightTransport;
 
 public class SaveManager : MonoBehaviour
 {
@@ -37,19 +39,18 @@ public class SaveManager : MonoBehaviour
     {
         string path = GetSavePath(currentSlot);
 
-        SaveData data = new SaveData
-        {
-            playerStats = PlayerStats.instance.GetSaveData(),
-            inventory = Inventory.instance.GetSaveData(),
-            palette = Palette.instance.GetSaveData(),
-            world = WorldStateManager.Instance.GetSaveData(),
-            sceneName = SceneManager.GetActiveScene().name,
-            equipment = Equipment.instance.GetSaveData(),
-            map = MapManager.instance.GetSaveData(),
-            quests = QuestManager.instance.GetSaveData(),
-            questLog = QuestLog.instance.GetSaveData(),
-            chestInventory = ChestInventory.Instance.GetSaveData()
-        };
+        SaveData data = new SaveData();
+        data.playerStats = PlayerStats.instance.GetSaveData();
+        data.inventory = Inventory.instance.GetSaveData();
+        data.palette = Palette.instance.GetSaveData();
+        data.world = WorldStateManager.Instance.GetSaveData();
+        data.sceneName = SceneManager.GetActiveScene().name;
+        data.equipment = Equipment.instance.GetSaveData();
+        data.map = MapManager.instance.GetSaveData();
+        data.quests = QuestManager.instance.GetSaveData();
+        data.questLog = QuestLog.instance.GetSaveData();
+        if (ChestInventory.Instance != null)
+            data.chestInventory = ChestInventory.Instance.GetSaveData();
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
@@ -102,9 +103,15 @@ public class SaveManager : MonoBehaviour
 
         if (data.questLog != null)
             QuestLog.instance.LoadSaveData(data.questLog);
+        
+        while (ChestInventory.Instance == null)
+        {
+            yield return null;
+        }
+
 
         if (data.chestInventory != null)
-            ChestInventory.Instance.LoadSavaData(data.chestInventory);
+            ChestInventory.Instance.LoadSaveData(data.chestInventory);
         Debug.Log("Game Loaded");
     }
 

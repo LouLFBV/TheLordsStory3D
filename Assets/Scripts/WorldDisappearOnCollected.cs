@@ -11,7 +11,12 @@ public class WorldDisappearOnCollected : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        if (WorldStateManager.Instance == null || worldID == null) return;
+        if (WorldStateManager.Instance == null || worldID == null)
+        {
+            Debug.LogWarning($"<color=red>[{name}] WorldStateManager instance is null or WorldObjectID is missing. Cannot apply world state.</color>");
+            return;
+        }
+        Debug.LogWarning($"<color=green>[{name}] Subscribing to OnWorldStateLoaded event.</color>");
         WorldStateManager.Instance.OnWorldStateLoaded += ApplyWorldState;
     }
 
@@ -32,10 +37,5 @@ public class WorldDisappearOnCollected : MonoBehaviour
         {
             Debug.LogWarning($"<color=cyan>[{name}] checked world state: Collected = {WorldStateManager.Instance.IsCollected(worldID.UniqueID)}, with ID : {worldID.UniqueID}</color>");
         }
-    }
-
-    protected void OnDestroy()
-    {
-        Debug.Log($"<color=red>[DESTROYED] {name}, with ID : {worldID.UniqueID}</color>");
     }
 }
