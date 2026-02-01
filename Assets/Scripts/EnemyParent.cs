@@ -10,6 +10,8 @@ public abstract class EnemyParent : WorldDisappearOnCollected
     [HideInInspector]public NavMeshAgent agent;
     protected Animator animator;
 
+    [SerializeField] private BarriereDeCombat barriereDeCombat;
+
 
     [SerializeField] protected Image healthBar;
     [SerializeField] protected GameObject vie;
@@ -108,6 +110,11 @@ public abstract class EnemyParent : WorldDisappearOnCollected
         {
             WorldStateManager.Instance.RegisterCollectedObject(worldID.UniqueID);
             Debug.LogWarning($"<color=purple>[{name}] registered as collected in WorldStateManager, with ID : {worldID.UniqueID}.</color>");
+        }
+        if (barriereDeCombat != null)
+        {
+            Debug.Log("Raising the combat barrier.");
+            barriereDeCombat.UpBarriere();
         }
     }
 
