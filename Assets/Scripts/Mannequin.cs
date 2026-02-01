@@ -1,16 +1,65 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Mannequin : MonoBehaviour
+public class Mannequin : MonoBehaviour, IDamageable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField] private GameObject barreDeVie;
+    [SerializeField] private Image vieImage;
+
+    [SerializeField] private float currentHealth;
+    [SerializeField] private float maxHealth;
+
+    [SerializeField] private Animator animator;
+
+    [SerializeField] private float healthRegenRate = 10f;
+    [SerializeField] private float delayToRegen = 5f;
+    [SerializeField] private float delayBetweenRegen = 1f;
+
+    private Coroutine regenCoroutine;
     void Start()
     {
-        
+        currentHealth = maxHealth;
+        barreDeVie.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+
+    public void TakeDamage(float damage, DamageType damageType)
     {
-        
+        barreDeVie.SetActive(true);
+
+        currentHealth = Mathf.Max(currentHealth - damage, 0);
+        animator.SetTrigger("SmallDamage");
+        UpdateLife();
+
+
+        if (regenCoroutine != null)
+            StopCoroutine(regenCoroutine);
+
+        regenCoroutine = StartCoroutine(RegenRoutine());
+    }
+
+    private void UpdateLife()
+    {
+        float healthRatio = currentHealth / maxHealth;
+        vieImage.fillAmount = healthRatio;
+
+        vieImage.color = Color.Lerp(Color.red, Color.yellow, healthRatio);
+    }
+
+    private IEnumerator RegenRoutine()
+    {
+        yield return new WaitForSeconds(delayToRegen);
+
+        while (currentHealth < maxHealth)
+        {
+            currentHealth += healthRegenRate * Time.deltaTime;
+            currentHealth = Mathf.Min(currentHealth, maxHealth);
+            UpdateLife();
+            yield return null;
+        }
+
+        barreDeVie.SetActive(false);
     }
 }
+

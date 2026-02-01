@@ -9,7 +9,7 @@ public class HitBoxWeapon : MonoBehaviour
     {
         if (other.CompareTag("AI"))
         {
-            if (other.TryGetComponent<EnemyParent>(out var enemyAI))
+            if (other.TryGetComponent<IDamageable>(out var enemyAI))
             {
                 if (itemData.equipmentType != EquipmentType.Arrow)
                 {
@@ -19,8 +19,8 @@ public class HitBoxWeapon : MonoBehaviour
                         itemData.cameraShakeDuration
                     );
                 }
-                else
-                    StartCoroutine(ApplyArrowEffect(enemyAI));
+                else if(other.TryGetComponent<EnemyParent>(out var enemyAI1))
+                    StartCoroutine(ApplyArrowEffect(enemyAI1));
             }
             if (blood != null && itemData.equipmentType == EquipmentType.Arrow)
             {

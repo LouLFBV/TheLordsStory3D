@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public abstract class EnemyParent : WorldDisappearOnCollected
+public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
 {
     [Header("References")]
     [SerializeField] protected EnemySO enemyData;
