@@ -12,7 +12,7 @@ public class SceneTransitionTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player"))
             return;
-        other.GetComponent<MoveBehaviour>().canMove = false;
+        //other.GetComponent<MoveBehaviour>().canMove = false;
         StartCoroutine(LoadScene());
     }
 

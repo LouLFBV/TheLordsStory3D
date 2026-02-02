@@ -21,7 +21,6 @@ public class WorldStateManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public WorldStateSaveData GetSaveData()

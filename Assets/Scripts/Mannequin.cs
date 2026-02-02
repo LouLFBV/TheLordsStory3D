@@ -12,9 +12,7 @@ public class Mannequin : MonoBehaviour, IDamageable
 
     [SerializeField] private Animator animator;
 
-    [SerializeField] private float healthRegenRate = 10f;
     [SerializeField] private float delayToRegen = 5f;
-    [SerializeField] private float delayBetweenRegen = 1f;
 
     private Coroutine regenCoroutine;
     void Start()

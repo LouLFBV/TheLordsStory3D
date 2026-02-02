@@ -14,7 +14,6 @@ public class InputProvider : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(this.gameObject);
         UIInput = playerInput;
     }
 }
