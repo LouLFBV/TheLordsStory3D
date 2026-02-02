@@ -218,7 +218,7 @@ public class Marchand : InteractableBase
 
     private void Acheter(ItemData produit)
     {
-        if (produit.prix <= PlayerStats.instance.goldAmount)
+        if (produit.prix <= PlayerStats.instance.goldAmount && !Inventory.instance.IsFull())
         {
             PlayerStats.instance.goldAmount -= produit.prix;
             PlayerStats.instance.UpdateGoldText();

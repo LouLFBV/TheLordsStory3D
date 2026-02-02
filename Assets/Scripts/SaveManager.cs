@@ -2,9 +2,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEditor.Overlays;
-using Unity.VectorGraphics;
-using UnityEngine.LightTransport;
 
 public class SaveManager : MonoBehaviour
 {

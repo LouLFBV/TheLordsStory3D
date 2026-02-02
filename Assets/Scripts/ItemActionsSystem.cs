@@ -111,7 +111,6 @@ public class ItemActionsSystem : MonoBehaviour
         GameObject instantiatedItem = Instantiate(itemCurrentlySelected.prefab);
         instantiatedItem.transform.position = dropPoint.position;
         instantiatedItem.GetComponent<Item>().enableFloating = true;
-        instantiatedItem.GetComponent<Collider>().enabled = false;
         DestroyActionButton();
     }
 

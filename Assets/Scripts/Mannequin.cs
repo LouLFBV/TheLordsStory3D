@@ -51,14 +51,11 @@ public class Mannequin : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(delayToRegen);
 
-        while (currentHealth < maxHealth)
-        {
-            currentHealth += healthRegenRate * Time.deltaTime;
-            currentHealth = Mathf.Min(currentHealth, maxHealth);
-            UpdateLife();
-            yield return null;
-        }
+        currentHealth = maxHealth;
+        UpdateLife();
 
+
+        yield return new WaitForSeconds(delayToRegen);
         barreDeVie.SetActive(false);
     }
 }

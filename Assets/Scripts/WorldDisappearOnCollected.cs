@@ -7,24 +7,26 @@ public class WorldDisappearOnCollected : MonoBehaviour
     protected virtual void Awake()
     {
         worldID = GetComponent<WorldObjectID>();
+        Debug.Log($"[Awake] {name} activeSelf={gameObject.activeSelf} activeInHierarchy={gameObject.activeInHierarchy}");
     }
 
     protected virtual void OnEnable()
     {
-        if (WorldStateManager.Instance == null || worldID == null)
-        {
-            Debug.LogWarning($"<color=red>[{name}] WorldStateManager instance is null or WorldObjectID is missing. Cannot apply world state.</color>");
+        Debug.Log($"[OnEnable] {name}");
+
+        if (worldID == null || WorldStateManager.Instance == null)
             return;
-        }
-        Debug.LogWarning($"<color=green>[{name}] Subscribing to OnWorldStateLoaded event.</color>");
-        WorldStateManager.Instance.OnWorldStateLoaded += ApplyWorldState;
+
+        WorldStateManager.Instance.Subscribe(ApplyWorldState);
     }
+
 
     protected virtual void OnDisable()
     {
-        if (WorldStateManager.Instance != null || worldID == null)
-            WorldStateManager.Instance.OnWorldStateLoaded -= ApplyWorldState;
+        if (WorldStateManager.Instance != null)
+            WorldStateManager.Instance.Unsubscribe(ApplyWorldState);
     }
+
 
     protected void ApplyWorldState()
     {
@@ -36,6 +38,10 @@ public class WorldDisappearOnCollected : MonoBehaviour
         else if (worldID != null)
         {
             Debug.LogWarning($"<color=cyan>[{name}] checked world state: Collected = {WorldStateManager.Instance.IsCollected(worldID.UniqueID)}, with ID : {worldID.UniqueID}</color>");
+        }
+        else
+        {
+            Debug.LogWarning($"<color=red>[{name}] has no WorldObjectID component!, with ID : {worldID.UniqueID}</color>\"");
         }
     }
 }

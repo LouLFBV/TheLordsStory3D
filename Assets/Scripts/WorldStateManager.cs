@@ -9,6 +9,8 @@ public class WorldStateManager : MonoBehaviour
 
     private HashSet<string> activedBuildings = new();
 
+    public bool IsWorldStateLoaded { get; private set; }
+
     public event System.Action OnWorldStateLoaded;
     private void Awake()
     {
@@ -35,6 +37,8 @@ public class WorldStateManager : MonoBehaviour
     {
         collectedObjects = new HashSet<string>(data.collectedObjectIDs);
         activedBuildings = new HashSet<string>(data.activedBuildings);
+
+        IsWorldStateLoaded = true;
         Debug.Log($"<color=green>[WorldStateManager] Loaded {collectedObjects.Count} collected objects.</color>");
         foreach (var id in collectedObjects)
         {
@@ -62,6 +66,22 @@ public class WorldStateManager : MonoBehaviour
     {
         return activedBuildings.Contains(id);
     }
+    public void Subscribe(System.Action callback)
+    {
+        OnWorldStateLoaded += callback;
+
+        //  Replay automatique si déjà chargé
+        if (IsWorldStateLoaded)
+        {
+            callback.Invoke();
+        }
+    }
+
+    public void Unsubscribe(System.Action callback)
+    {
+        OnWorldStateLoaded -= callback;
+    }
+
 }
 
 

@@ -119,7 +119,7 @@ public class MoveBehaviour : GenericBehaviour
 
     private void OnForwarRool(InputAction.CallbackContext ctx)
     {
-        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded())
+        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded() || jumpBehaviour.jump)
             return;
         attackBehaviour.isAttacking = true;
         behaviourManager.GetAnim.SetTrigger("ForwardRoll");

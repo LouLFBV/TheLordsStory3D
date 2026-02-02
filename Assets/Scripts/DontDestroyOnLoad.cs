@@ -1,17 +1,18 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DontDestroyOnLoad : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> objectsToPreserve;
+    private static DontDestroyOnLoad instance;
+
     private void Awake()
     {
-        foreach (var obj in objectsToPreserve)
+        if (instance != null)
         {
-            if (obj != null)
-            {
-                DontDestroyOnLoad(obj);
-            }
+            Destroy(gameObject);
+            return;
         }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 }
