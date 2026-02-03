@@ -75,6 +75,8 @@ public class SaveManager : MonoBehaviour
 
     private IEnumerator LoadRoutine(SaveData data)
     {
+
+        yield return SceneManager.LoadSceneAsync("Bootstrap");
         yield return SceneManager.LoadSceneAsync(data.sceneName);
         yield return null;
 
@@ -105,7 +107,6 @@ public class SaveManager : MonoBehaviour
         {
             yield return null;
         }
-
 
         if (data.chestInventory != null)
             ChestInventory.Instance.LoadSaveData(data.chestInventory);

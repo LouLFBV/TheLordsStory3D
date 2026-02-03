@@ -120,10 +120,34 @@ public class Menu : MonoBehaviour
         fullScreenToggle.isOn = Screen.fullScreen;
 
         Time.timeScale = 1f; // Assurez-vous que le temps est normalisé au démarrage du menu
+
+        OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "Bootstrap")
+        {
+            Debug.Log("Menu Start: LoadScene Bootstrap");
+            TransitionPanel.Instance.PlayTransitionIn();
+        }
     }
     public void LoadScene(string scene)
     {
         SceneManager.LoadScene(scene);
+    }
+    public void LoadMenu()
+    {
+        TransitionPanel.Instance.PlayTransitionOut();
     }
     public void Quit()
     {
@@ -166,21 +190,24 @@ public class Menu : MonoBehaviour
 
         pendingSlot = slot;
         isNewGame = true;
-        animatorPanelChargerPartie.SetTrigger("Open");
+        TransitionPanel.Instance.PlayTransitionOut();
     }
-
 
     public void LoadGame(int slot)
     {
         pendingSlot = slot;
         isNewGame = false;
-        animatorPanelChargerPartie.SetTrigger("Open");
+        TransitionPanel.Instance.PlayTransitionOut();
     }
 
     //  Appelé par l'Animation Event
     public void OnOpenAnimationFinished()
     {
-        if (isNewGame)
+        if (SceneManager.GetActiveScene().name != "MainMenu")
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        else if (isNewGame)
         {
             SaveManager.Instance.SetCurrentSlot(pendingSlot);
             SceneManager.LoadScene("Donjon");

@@ -1,0 +1,40 @@
+using UnityEngine; 
+
+public class TransitionPanel : MonoBehaviour
+{
+    public static TransitionPanel Instance;
+    [SerializeField] private Animator animator;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    private void OnDestroy()
+    {
+        Debug.Log("TransitionPanel Destroyed");
+    }
+    public void PlayTransitionIn()
+    {
+        if (animator == null)
+        {
+           animator = GetComponent<Animator>();
+        }
+
+        animator.SetTrigger("Open");
+    }
+
+    public void PlayTransitionOut()
+    {
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+        animator.SetTrigger("Close");
+    }
+}

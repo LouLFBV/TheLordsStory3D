@@ -15,10 +15,12 @@ public class DestroyAllDontDestroyOnLoad : MonoBehaviour
         foreach (GameObject obj in allObjects)
         {
             // Vérifier si l'objet appartient à la scène de "DontDestroyOnLoad"
-            if (obj.scene.name == null || obj.scene.name == "DontDestroyOnLoad" && obj.gameObject.name != "SaveManager")
+            if (obj.scene.name == null|| (obj.scene.name == "DontDestroyOnLoad"&& obj.tag != "DontDestroy"))
             {
-                Destroy(obj);
+                Destroy(obj.gameObject);
+                Debug.Log($"<color=red>Destroyed object:  {obj.name}</color>");
             }
+
         }
     }
 }

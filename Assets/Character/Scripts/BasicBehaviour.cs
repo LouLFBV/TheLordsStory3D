@@ -32,8 +32,8 @@ public class BasicBehaviour : MonoBehaviour
     public Animator GetAnim => anim;                      // Retourne l’Animator du joueur.
     public int GetDefaultBehaviour => defaultBehaviour;   // Retourne le comportement par défaut.
 
-    [Header("Transition Arrivée")]
-    [SerializeField] private Animator animator;
+    //[Header("Transition Arrivée")]
+    //[SerializeField] private Animator animator;
     void Awake()
     {
         // Initialisation des références.
@@ -62,7 +62,7 @@ public class BasicBehaviour : MonoBehaviour
 
     private void Start()
     {
-        animator.SetTrigger("Open");
+        //animator.SetTrigger("Open");
         Debug.Log("Début du jeu - Animation d'ouverture déclenchée.");
     }
     void Update()
