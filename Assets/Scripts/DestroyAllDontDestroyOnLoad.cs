@@ -18,7 +18,7 @@ public class DestroyAllDontDestroyOnLoad : MonoBehaviour
             if (obj.scene.name == null|| (obj.scene.name == "DontDestroyOnLoad"&& obj.tag != "DontDestroy"))
             {
                 Destroy(obj.gameObject);
-                Debug.Log($"<color=red>Destroyed object:  {obj.name}</color>");
+                //Debug.Log($"<color=red>Destroyed object:  {obj.name}</color>");
             }
 
         }

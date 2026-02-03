@@ -13,8 +13,10 @@ public class BuildingState : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.LogWarning($"<color=blue>[BuildingState] Awake called for building {worldID.UniqueID}.</color>");
         if (WorldStateManager.Instance != null)
             WorldStateManager.Instance.OnWorldStateLoaded += ApplyWorldState;
+        ApplyWorldState();
     }
 
     private void OnDisable()
@@ -25,7 +27,6 @@ public class BuildingState : MonoBehaviour
 
     private void ApplyWorldState()
     {
-        Debug.LogWarning($"<color=green>[BuildingState] Applying world state for building {worldID.UniqueID}.</color>");
         if (WorldStateManager.Instance.IsActived(worldID.UniqueID))
         {
             buildingVisual.SetActive(true);

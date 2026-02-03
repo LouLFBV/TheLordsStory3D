@@ -757,6 +757,8 @@ public class Palette : MonoBehaviour
 
         RefreshAffichage();
         UpdateImageSeleted();
+
+        ApplyEquippedStateAfterLoad();
     }
 
     private void ClearPalette()
@@ -840,6 +842,64 @@ public class Palette : MonoBehaviour
         }
         UpdateSlotUI(index, save.count);
     }
+
+    private void ApplyEquippedStateAfterLoad()
+    {
+        // Priorité aux armes
+        if (isEquippedWeapon1 && equipmentWeapon1Item != null)
+        {
+            EquipFromSave(equipmentWeapon1Item);
+        }
+        else if (isEquippedWeapon2 && equipmentWeapon2Item != null)
+        {
+            EquipFromSave(equipmentWeapon2Item);
+        }
+        // Sinon objets
+        else if (isEquippedObject1 && equipmentObject1Item != null)
+        {
+            EquipObjectFromSave(equipmentObject1Item);
+        }
+        else if (isEquippedObject2 && equipmentObject2Item != null)
+        {
+            EquipObjectFromSave(equipmentObject2Item);
+        }
+    }
+
+    private void EquipFromSave(ItemData item)
+    {
+        // Désactiver tout
+        DisableObject(equipmentObject1Item);
+        DisableObject(equipmentObject2Item);
+
+        EquipmentLibraryItem libItem =
+            equipmentLibrary.content.First(x => x.itemData == item);
+
+        // Activer le prefab
+        libItem.itemPrefab.SetActive(true);
+
+        // Informer les systèmes
+        interactBehaviour.SetCurrentEquippedItem(libItem);
+        PlayerStats.instance.equipmentToEquip = libItem;
+
+        // Animator
+        ApplyWeaponTypeToAnimator(item.handWeaponType);
+
+        Debug.Log($"[SAVE] Equipped weapon from save: {item.name}");
+    }
+
+    private void EquipObjectFromSave(ItemData item)
+    {
+        EquipmentLibraryItem libItem =
+            equipmentLibrary.content.First(x => x.itemData == item);
+
+        libItem.itemPrefab.SetActive(true);
+        interactBehaviour.SetCurrentEquippedItem(libItem);
+
+        animator.SetBool("CarryingConsumable", true);
+
+        Debug.Log($"[SAVE] Equipped object from save: {item.name}");
+    }
+
 }
 
 [System.Serializable]
