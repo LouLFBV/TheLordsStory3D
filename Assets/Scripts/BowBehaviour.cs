@@ -17,7 +17,7 @@ public class BowBehaviour : MonoBehaviour
     private GameObject arrow;
     private ItemData weaponActive;
     private ItemInInventory arrowItem;
-    [SerializeField] private Quaternion initialFlecheRotation;
+    [SerializeField] private Quaternion initialFlecheRotation = new (330.536f, 204.401f, 331.288f,0f);
 
     public event Action<float> OnBowChargeProgress;
     public event Action<bool> OnBowChargeStateChanged;
