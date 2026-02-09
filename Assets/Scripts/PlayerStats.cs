@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private Animator animator;
     public ReputationData reputationData;
     private MoveBehaviour playerMovementScript;
+    private AttackBehaviour attackBehaviour;
 
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
@@ -76,6 +77,7 @@ public class PlayerStats : MonoBehaviour
     {
         instance = this;
         playerMovementScript = GetComponent<MoveBehaviour>();
+        attackBehaviour = GetComponent<AttackBehaviour>();
 
         if (currentHealth <= 0)
             currentHealth = maxHealth;
@@ -106,7 +108,7 @@ public class PlayerStats : MonoBehaviour
             canRecoverEndurance = true;
         }
 
-        if (!playerMovementScript.isSprinting  && currentEndurance < maxEndurance && canRecoverEndurance)
+        if (!playerMovementScript.isSprinting  && currentEndurance < maxEndurance && canRecoverEndurance && !attackBehaviour.isAttacking)
         {
             UpdateEndurance(20f * Time.deltaTime); // regen endurance
         }

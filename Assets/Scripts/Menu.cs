@@ -138,7 +138,8 @@ public class Menu : MonoBehaviour
         if (scene.name != "Bootstrap")
         {
             Debug.Log("Menu Start: LoadScene Bootstrap");
-            TransitionPanel.Instance.PlayTransitionIn();
+            if (TransitionPanel.Instance != null)
+                TransitionPanel.Instance.PlayTransitionIn();
         }
     }
     public void LoadScene(string scene)

@@ -110,7 +110,8 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].canceled += OnObjectCanceled;
 
 
-        DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
+        if (DeviceWatcher.Instance != null)
+            DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
     }
     void OnDisable()
     {
@@ -130,7 +131,8 @@ public class Palette : MonoBehaviour
         playerInput.actions["Object2"].performed -= OnObjectPerformed;
         playerInput.actions["Object2"].canceled -= OnObjectCanceled;
 
-        DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
+        if (DeviceWatcher.Instance != null)
+            DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
     }
 
     private void OnWeaponPerformed(InputAction.CallbackContext ctx)

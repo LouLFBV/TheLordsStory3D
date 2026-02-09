@@ -45,6 +45,7 @@ public class MoveBehaviour : GenericBehaviour
     private Vector3 originalCapsuleCenter;
 
     public event Action<bool> OnCrouchChanged;
+    [SerializeField] private float coutRoulade = 20f; // Coût en endurance du crouch
     #region PlayerInput
     [SerializeField] private PlayerInput playerInput;
     private Vector2 moveInput;
@@ -121,6 +122,10 @@ public class MoveBehaviour : GenericBehaviour
     {
         if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded() || jumpBehaviour.jump)
             return;
+        if (PlayerStats.instance != null && PlayerStats.instance.currentEndurance > 0)
+        {
+            PlayerStats.instance.UpdateEndurance(-coutRoulade);
+        }
         attackBehaviour.isAttacking = true;
         behaviourManager.GetAnim.SetTrigger("ForwardRoll");
     }
