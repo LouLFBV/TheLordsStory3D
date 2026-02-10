@@ -9,7 +9,6 @@ public class Chest : InteractableBase
 {
     #region Champs
     [Header("References")]
-    [SerializeField] private Palette palette;
     [SerializeField] private EquipmentLibrary equipmentLibrary;
 
     [Header("Description Panel")]
@@ -28,11 +27,13 @@ public class Chest : InteractableBase
     [SerializeField] private Vector3 openEulerAngles = new Vector3(0, 0, 90);
     [SerializeField] private bool isLocked = false;
     [SerializeField] private ItemData keyItem;
+    [SerializeField] private int niveauDeVerrouillage = 0;
 
     [Header("Audio")]
     [SerializeField] private AudioSource openSound;
     [SerializeField] private AudioSource lockedSound;
     [SerializeField] private AudioSource unlockSound;
+    [SerializeField] private AudioSource unlockFailSound;
 
     [Header("Reward")]
     [SerializeField] private ItemData rewardItem;
@@ -79,9 +80,6 @@ public class Chest : InteractableBase
             Debug.LogError("[CHEST] Player introuvable !");
         }
 
-
-        if (palette == null)
-            palette = Palette.instance;
         if (equipmentLibrary == null)
             equipmentLibrary = GameObject.FindWithTag("GameManager").GetComponent<EquipmentLibrary>();
 
@@ -188,60 +186,54 @@ public class Chest : InteractableBase
     {
         if (isAnimating) return;
 
-        // Déverrouillage
-        if (isLocked && TryUnlockWithEquippedKey())
-        {
-            unlockSound.Play();
-            isLocked = false;
-        }
-
-        if (isLocked)
-        {
+        if (isLocked && Inventory.instance.KeyIsInInventory(keyItem))
+            TryToOpenWithKey(keyItem);
+        else if (!isOpen && !isLocked)
+            StartCoroutine(OpenChest());
+        else if (isLocked)
             lockedSound.Play();
-            return;
-        }
+    }
 
-        // OUVERTURE
-        if (!isOpen)
+    public void TryToOpenWithKey(ItemData key)
+    {
+        if (!isLocked)
         {
             StartCoroutine(OpenChest());
+            return;
         }
-    }
-
-    private bool TryUnlockWithEquippedKey()
-    {
-        ItemData equipped1 = palette.equipmentObject1Item;
-        ItemData equipped2 = palette.equipmentObject2Item;
-
-        if (equipped1 == keyItem && palette.isEquippedObject1)
+        // Cas 1 : la bonne clé est utilisée
+        else if (key == keyItem)
         {
-            RemoveEquippedKey(1, equipped1);
-            return true;
+            Inventory.instance.RemoveItem(key);
+            StartCoroutine(OpenChest());
+            return;
         }
-
-        if (equipped2 == keyItem && palette.isEquippedObject2)
+        // Cas 2 : tentative de crochetage avec une clé "improvisée"
+        else if (key.attackPoints > 0)
         {
-            RemoveEquippedKey(2, equipped2);
-            return true;
+            float chanceDeReussite = Mathf.Clamp01((float)key.attackPoints / (niveauDeVerrouillage + 1));
+            float tirage = Random.value;
+
+            Debug.Log($"Chance de réussite : {chanceDeReussite}, tirage : {tirage}");
+
+            if (tirage <= chanceDeReussite)
+            {
+                StartCoroutine(OpenChest());
+            }
+            else
+            {
+                unlockFailSound.PlayOneShot(unlockFailSound.clip);
+                if (PlayerStats.instance.reputationData.reputationPoints > -10)
+                    PlayerStats.instance.reputationData.reputationPoints -= 1;
+            }
+            Inventory.instance.RemoveItem(key);
         }
-
-        return false;
+        else
+        {
+            lockedSound.Play();
+        }
     }
 
-    private void RemoveEquippedKey(int slot, ItemData equipped)
-    {
-        EquipmentLibraryItem libItem = equipmentLibrary.content
-            .Where(x => x.itemData == equipped)
-            .FirstOrDefault();
-
-        libItem?.itemPrefab.SetActive(false);
-
-        palette.RemoveObject(slot);
-        palette.isEquippedObject1 = false;
-        palette.isEquippedObject2 = false;
-        palette.UpdateImageSeleted();
-        playerAnimator.SetBool("CarryingConsumable", false);
-    }
 
     // -------------------------------------------------------
     // OPEN ANIMATION
@@ -249,6 +241,7 @@ public class Chest : InteractableBase
 
     private IEnumerator OpenChest()
     {
+        isLocked = false;
         isAnimating = true;
         isOpen = true;
 

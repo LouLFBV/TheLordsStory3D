@@ -67,7 +67,7 @@ public class ItemActionsSystem : MonoBehaviour
                 break;
             case ItemType.QuestItem:
                 useItemButton.gameObject.SetActive(false);
-                equipmentItemButton.gameObject.SetActive(!palette.ObjectsAreFull(item));
+                equipmentItemButton.gameObject.SetActive(false);
                 dropItemButton.gameObject.SetActive(false);
                 destroyItemButton.gameObject.SetActive(false);
                 break;
@@ -79,7 +79,7 @@ public class ItemActionsSystem : MonoBehaviour
                 break;
             case ItemType.Key:
                 useItemButton.gameObject.SetActive(false);
-                equipmentItemButton.gameObject.SetActive(!palette.ObjectsAreFull(item));
+                equipmentItemButton.gameObject.SetActive(false);
                 dropItemButton.gameObject.SetActive(true);
                 destroyItemButton.gameObject.SetActive(true);
                 break;

@@ -236,6 +236,11 @@ public class Inventory : MonoBehaviour
         content.Clear();
     }
 
+    public bool KeyIsInInventory(ItemData itemData)
+    {
+        return content.Any(i => i.itemData == itemData);    
+    }
+
     public InventorySaveData GetSaveData()
     {
         InventorySaveData data = new InventorySaveData();

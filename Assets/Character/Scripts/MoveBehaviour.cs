@@ -120,9 +120,9 @@ public class MoveBehaviour : GenericBehaviour
 
     private void OnForwarRool(InputAction.CallbackContext ctx)
     {
-        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded() || jumpBehaviour.jump)
+        if (behaviourManager.GetAnim.GetBool("IsCrouched") || attackBehaviour.isAttacking || !behaviourManager.IsGrounded() || jumpBehaviour.jump || PlayerStats.instance.currentEndurance < 20)
             return;
-        if (PlayerStats.instance != null && PlayerStats.instance.currentEndurance > 0)
+        if (PlayerStats.instance.currentEndurance > 0)
         {
             PlayerStats.instance.UpdateEndurance(-coutRoulade);
         }

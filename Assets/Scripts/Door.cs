@@ -7,9 +7,6 @@ public class Door : InteractableBase
     [SerializeField] private int niveauDeVerrouillage = 0; // Niveau de verrouillage de la porte
     [SerializeField] private bool IsUnlockable = true;
 
-    private Palette palette; 
-    private EquipmentLibrary equipmentLibrary; // Référence à l'item d'équipement si nécessaire
-
     [Header("Sounds")]
 
     [SerializeField] private AudioSource openDoorSound;
@@ -35,22 +32,12 @@ public class Door : InteractableBase
 
     [SerializeField] private ItemData keyItem; // L'item de clé requis pour ouvrir la porte
 
-    private Animator animator;
-
     private void Start()
     {
-        equipmentLibrary = GameObject.FindGameObjectWithTag("GameManager").GetComponent<EquipmentLibrary>();
-        palette = Palette.instance;
-
         if (door != null)
         {
             closedRotation = door.transform.rotation;
             openRotation = closedRotation * Quaternion.Euler(openRotationEuler);
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                animator = player.GetComponent<Animator>();
-            }
         }
         if (isLocked)
         {
@@ -162,29 +149,7 @@ public class Door : InteractableBase
     }
     private void ConsommerCle(ItemData key)
     {
-        if (palette.isEquippedObject1 && palette.equipmentObject1Item == key)
-        {
-            EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.FirstOrDefault(x => x.itemData == key);
-            if (equipmentLibraryItem1 != null)
-            {
-                equipmentLibraryItem1.itemPrefab.SetActive(false);
-            }
-            palette.RemoveObject(1);
-            palette.isEquippedObject1 = false;
-        }
-        else if (palette.isEquippedObject2 && palette.equipmentObject2Item == key)
-        {
-            EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.FirstOrDefault(x => x.itemData == key);
-            if (equipmentLibraryItem2 != null)
-            {
-                equipmentLibraryItem2.itemPrefab.SetActive(false);
-            }
-            palette.RemoveObject(2);
-            palette.isEquippedObject2 = false;
-        }
-
-        animator.SetBool("CarryingConsumable", false);
-        palette.UpdateImageSeleted();
+       Inventory.instance.RemoveItem(key);
     }
     private void DeverrouillerEtOuvrir()
     {
@@ -197,10 +162,8 @@ public class Door : InteractableBase
 
     public override void OnInteract(PlayerInteractor player)
     {
-        if (palette.equipmentObject1Item != null && palette.equipmentObject1Item.itemType == ItemType.Key && palette.isEquippedObject1)
-            TryToOpenWithKey(palette.equipmentObject1Item);
-        else if (palette.equipmentObject2Item != null && palette.equipmentObject2Item.itemType == ItemType.Key && palette.isEquippedObject2)
-            TryToOpenWithKey(palette.equipmentObject2Item);
+        if (Inventory.instance.KeyIsInInventory(keyItem))
+            TryToOpenWithKey(keyItem);
         else
             OpenAndCloseDoor();
     }

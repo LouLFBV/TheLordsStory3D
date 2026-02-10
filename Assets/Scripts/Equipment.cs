@@ -313,7 +313,7 @@ public class Equipment : MonoBehaviour
                     BowBehaviour.instance.UpdateQuiverVisual(arrowItemInInventory.count);
                     break;
             }
-            if (itemToEquip.itemType == ItemType.Consumable || itemToEquip.itemType == ItemType.Key || itemToEquip.itemType == ItemType.QuestItem)
+            if (itemToEquip.itemType == ItemType.Consumable)
             {
                 palette.AddObject(itemToEquip);
             }
