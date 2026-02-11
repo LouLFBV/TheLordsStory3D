@@ -148,7 +148,9 @@ public class Menu : MonoBehaviour
     }
     public void LoadMenu()
     {
-        TransitionPanel.Instance.PlayTransitionOut();
+        if (TransitionPanel.Instance != null)
+            TransitionPanel.Instance.PlayTransitionOut();
+        else SceneManager.LoadScene("MainMenu");
     }
     public void Quit()
     {
