@@ -2,10 +2,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 // Cette classe correspond aux fonctionnalités de la caméra à la troisième personne.
 public class ThirdPersonOrbitCamBasic : MonoBehaviour
 {
+    public static ThirdPersonOrbitCamBasic Instance;
     public Transform player;                                           // Référence du joueur.
     public float smooth = 10f;                                         // Vitesse de réactivité de la caméra.
     public float horizontalAimingSpeed = 6f;                           // Vitesse de rotation horizontale.
@@ -81,6 +83,16 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         isLocked = false;
         controls = new PlayerControls();
         // Souris
