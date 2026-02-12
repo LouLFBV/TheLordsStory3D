@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 // Cette classe correspond aux fonctionnalités de la caméra à la troisième personne.
 public class ThirdPersonOrbitCamBasic : MonoBehaviour
@@ -31,7 +29,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
 
     [Header("Camera Lock")]
-    private bool isLocked = false;
+    [SerializeField] private bool isLocked = false;
     public bool IsLocked => isLocked;
 
     // Retourne l’angle horizontal actuel.
@@ -239,6 +237,7 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
 
     public void UnlockCamera()
     {
+        Debug.Log("Camera Unlocked");
         isLocked = false;
     }
 

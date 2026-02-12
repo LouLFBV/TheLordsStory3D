@@ -73,12 +73,10 @@ public sealed class SpawnSystem
             Debug.LogError("PlayerStats instance is null.");
             yield break;
         }
-        ThirdPersonOrbitCamBasic.Instance.UnlockCamera();
         player.transform.SetPositionAndRotation(
             target.transform.position,
             target.transform.rotation
         );
-
         _pendingSpawnID = null;
     }
 }
