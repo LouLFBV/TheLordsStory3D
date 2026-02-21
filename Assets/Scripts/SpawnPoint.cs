@@ -8,7 +8,6 @@ public sealed class SpawnPoint : MonoBehaviour
     private void OnEnable()
     {
         GameManager.Instance.SpawnSystem.Register(this);
-        GameManager.Instance.SpawnSystem.TryResolveSpawn(this);
         ThirdPersonOrbitCamBasic.Instance.UnlockCamera();
     }
 

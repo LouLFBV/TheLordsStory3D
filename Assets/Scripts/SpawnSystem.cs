@@ -41,20 +41,6 @@ public sealed class SpawnSystem
         CoroutineRunner.Instance.StartCoroutine(SpawnNextFrame());
     }
 
-    public void TryResolveSpawn(SpawnPoint spawnPoint)
-    {
-        if (spawnPoint.SpawnID != _pendingSpawnID)
-            return;
-
-        PlayerStats player = PlayerStats.instance;
-
-        player.transform.SetPositionAndRotation(
-            spawnPoint.transform.position,
-            spawnPoint.transform.rotation
-        );
-
-        _pendingSpawnID = null;
-    }
 
     private IEnumerator SpawnNextFrame()
     {
@@ -78,5 +64,6 @@ public sealed class SpawnSystem
             target.transform.rotation
         );
         _pendingSpawnID = null;
+        _spawnPoints.Clear(); // optionnel mais propre
     }
 }
