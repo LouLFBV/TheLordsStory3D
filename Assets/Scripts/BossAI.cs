@@ -164,6 +164,7 @@ public class BossAI : EnemyParent
     #endregion
     protected override void Die()
     {
+        base.Die();
         IsDead = true;
         basicCollider.enabled = false;
         if (phaseMusicRoutine != null)

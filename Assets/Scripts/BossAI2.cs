@@ -152,6 +152,7 @@ public class BossAI2 : EnemyParent
 
     protected override void Die()
     {
+        base.Die();
         IsDead = true;
         if (colliderOfDeath != null)
             colliderOfDeath.SetActive(true);
