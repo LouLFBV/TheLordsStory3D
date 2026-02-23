@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class BarriereDeCombat : MonoBehaviour
 {
-    private Animator animator;
+    private Animator _animator;
+    [SerializeField] private string triggerName = "Up";
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
-    public void UpBarriere() => animator.SetTrigger("Up");
+    public void UpBarriere() => _animator.SetTrigger(triggerName);
 }

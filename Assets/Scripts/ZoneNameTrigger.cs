@@ -19,11 +19,17 @@ public class ZoneNameTrigger : MonoBehaviour
     public AudioClip zoneEnterSound;
     public AudioSource audioSource;
 
-    private bool isOnCooldown = false;
+    private bool _isOnCooldown = false;
+    private bool _isUsed = false;
+
+    private void Start()
+    {
+        _isUsed = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isOnCooldown)
+        if (other.CompareTag("Player") && !_isOnCooldown && !_isUsed)
         {
             StartCoroutine(ShowZoneName());
         }
@@ -31,7 +37,8 @@ public class ZoneNameTrigger : MonoBehaviour
 
     private IEnumerator ShowZoneName()
     {
-        isOnCooldown = true;
+        _isOnCooldown = true;
+        _isUsed = true;
 
         // Play sound if assigned
         if (zoneEnterSound != null && audioSource != null)
@@ -71,6 +78,6 @@ public class ZoneNameTrigger : MonoBehaviour
         zoneTextUI.text = "";
 
         yield return new WaitForSeconds(cooldownDuration);
-        isOnCooldown = false;
+        _isOnCooldown = false;
     }
 }

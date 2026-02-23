@@ -3,6 +3,7 @@ using UnityEngine;
 public class BarriereDeBoss : MonoBehaviour
 {
     private Animator _animator;
+    [SerializeField] private string triggerName = "Monter";
 
     private void Awake()
     {
@@ -16,6 +17,6 @@ public class BarriereDeBoss : MonoBehaviour
 
     public void MonterBarriere()
     {
-        _animator.SetTrigger("Monter");
+        _animator.SetTrigger(triggerName);
     }
 }

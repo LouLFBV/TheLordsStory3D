@@ -343,6 +343,11 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
         shakeRoutine = null;
     }
 
+    public void SetRotation(float horizontal, float vertical)
+    {
+        this.angleH = horizontal;
+        this.angleV = vertical;
+    }
     // Définit un champ de vision personnalisé.
     public void SetFOV(float customFOV)
     {

@@ -30,6 +30,7 @@ public sealed class SpawnSystem
 
     public void SetSpawn(string spawnID)
     {
+        Debug.Log($"Setting pending spawn ID: {spawnID}");
         _pendingSpawnID = spawnID;
     }
 

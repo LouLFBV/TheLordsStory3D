@@ -1,20 +1,35 @@
+using System.Collections;
 using UnityEngine;
 
 public class BlockCamera : MonoBehaviour
 {
+    [Header("Camera Default Settings")]
+    [SerializeField] private Vector2 defaultRotation = new Vector2(0f, 0f);
+    // X = yaw (horizontal), Y = pitch (vertical)
+
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Player entered BlockCamera zone.");
         if (!other.CompareTag("Player"))
             return;
 
         if (other.TryGetComponent<BasicBehaviour>(out var player))
         {
-            Debug.Log("Toggling camera lock.");
-            if (player.GetCamScript.IsLocked)
-                player.GetCamScript.UnlockCamera();
+            var cam = player.GetCamScript;
+            if (cam.IsLocked)
+            {
+                cam.UnlockCamera();
+            }
             else
-                player.GetCamScript.LockCamera();
+            {
+                cam.SetRotation(defaultRotation.x, defaultRotation.y);
+                StartCoroutine(LockAfterDelay(player, 0.1f));
+            }
         }
+    }
+
+    private IEnumerator LockAfterDelay(BasicBehaviour player, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        player.GetCamScript.LockCamera();
     }
 }
