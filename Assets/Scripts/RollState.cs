@@ -1,51 +1,51 @@
-using UnityEngine;
+//using UnityEngine;
 
-public class RollState : PlayerState
-{
-    private float rollDuration = 0.8f;
-    private float iframeStart = 0.15f;
-    private float iframeEnd = 0.45f;
+//public class RollState : PlayerState
+//{
+//    private float rollDuration = 0.8f;
+//    private float iframeStart = 0.15f;
+//    private float iframeEnd = 0.45f;
 
-    private float timer;
+//    private float timer;
 
-	public RollState(PlayerController player) : base(player) { }
+//	public RollState(PlayerController player) : base(player) { }
 
-	public override void Enter()
-	{
-		player.Stamina.Spend(20);
+//	public override void Enter()
+//	{
+//		player.Stamina.Spend(20);
 
-		player.Animator.applyRootMotion = true;
-		player.Animator.SetTrigger("Roll");
+//		player.Animator.applyRootMotion = true;
+//		player.Animator.SetTrigger("Roll");
 
-		player.Motor.EnableRollCollider(true);
+//		player.Motor.EnableRollCollider(true);
 
-		timer = 0f;
-	}
+//		timer = 0f;
+//	}
 
-	public override void Update()
-	{
-        timer += Time.deltaTime;
+//	public override void Update()
+//	{
+//        timer += Time.deltaTime;
 
-        if (timer >= iframeStart && timer <= iframeEnd)
-            player.SetInvincibility(true);
-        else
-            player.SetInvincibility(false);
+//        if (timer >= iframeStart && timer <= iframeEnd)
+//            player.SetInvincibility(true);
+//        else
+//            player.SetInvincibility(false);
 
-        if (timer >= rollDuration)
-            player.StateMachine.ChangeState(player.IdleState);
+//        if (timer >= rollDuration)
+//            player.StateMachine.ChangeState(player.IdleState);
 
-        if (player.Input.AttackPressed)
-		{
-			player.BufferAction(() =>
-				player.StateMachine.ChangeState(player.AttackState));
-		}
-	}
+//        if (player.Input.AttackPressed)
+//		{
+//			player.BufferAction(() =>
+//				player.StateMachine.ChangeState(player.AttackState));
+//		}
+//	}
 
-	public override void Exit()
-    {
-        player.SetInvincibility(false);
-        player.Animator.applyRootMotion = false;
-		player.Motor.EnableRollCollider(false);
-		player.ExecuteBufferedAction();
-	}
-}
+//	public override void Exit()
+//    {
+//        player.SetInvincibility(false);
+//        player.Animator.applyRootMotion = false;
+//		player.Motor.EnableRollCollider(false);
+//		player.ExecuteBufferedAction();
+//	}
+//}
