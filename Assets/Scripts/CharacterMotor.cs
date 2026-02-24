@@ -68,23 +68,23 @@ public class CharacterMotor : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
-    private Transform _cameraTransform;
+    [SerializeField] private Transform cameraTransform;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        _cameraTransform = ThirdPersonCameraController.Instance.GetTransform();
+        cameraTransform = ThirdPersonCameraController.Instance.GetTransform();
     }
     public void RotateTowardsInput(Vector2 input)
     {
         if (input == Vector2.zero)
             return;
 
-        Vector3 forward = _cameraTransform.forward;
+        Vector3 forward = cameraTransform.forward;
         forward.y = 0;
         forward.Normalize();
 
-        Vector3 right = _cameraTransform.right;
+        Vector3 right = cameraTransform.right;
         right.y = 0;
 
         Vector3 direction = forward * input.y + right * input.x;

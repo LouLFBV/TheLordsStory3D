@@ -83,11 +83,16 @@ public class PlayerController : MonoBehaviour
     public PlayerInputHandler Input { get; private set; }
     public CharacterMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
-
     public IdleState IdleState { get; private set; }
     public MoveState MoveState { get; private set; }
-
     public Rigidbody Rigidbody { get; private set; }
+    public ThirdPersonCameraController Camera { get; private set; }
+    [SerializeField] private ThirdPersonCameraController cameraScript;
+
+    public float MaxStamina = 100f;
+    public float CurrentStamina { get; private set; }
+    public float StaminaConsumptionRate = 30f; // par seconde lors du sprint
+    public float StaminaRecoveryRate = 20f;    // par seconde quand non sprint
 
     private void Awake()
     {
@@ -95,7 +100,7 @@ public class PlayerController : MonoBehaviour
         Motor = GetComponent<CharacterMotor>();
         Animator = GetComponent<Animator>();
         Rigidbody = GetComponent<Rigidbody>(); // Ensure Rigidbody is assigned here
-
+        Camera = cameraScript; // Assign the camera script reference
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
 
@@ -106,6 +111,7 @@ public class PlayerController : MonoBehaviour
                 { PlayerStateType.Move, MoveState }
             }
         );
+        CurrentStamina = MaxStamina;
     }
 
     private void Start()
@@ -123,7 +129,6 @@ public class PlayerController : MonoBehaviour
         StateMachine.FixedUpdate();
     }
 
-
     private void OnAnimatorMove()
     {
         if (!Animator.applyRootMotion)
@@ -137,4 +142,16 @@ public class PlayerController : MonoBehaviour
             Rigidbody.rotation * Animator.deltaRotation
         );
     }
+
+    public void ConsumeStamina(float amount)
+    {
+        CurrentStamina = Mathf.Max(CurrentStamina - amount, 0f);
+    }
+
+    public void RecoverStamina(float amount)
+    {
+        CurrentStamina = Mathf.Min(CurrentStamina + amount, MaxStamina);
+    }
+
+    public bool HasStamina() => CurrentStamina > 0f;
 }

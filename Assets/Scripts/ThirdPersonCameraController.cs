@@ -17,6 +17,14 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float minVerticalAngle = -40f;
     [SerializeField] private float maxVerticalAngle = 60f;
 
+     public float SprintFOV { get; private set; }
+    [SerializeField] private float sprintFOV = 80f;
+    private float defaultFOV;                                          // Champ de vision (Field of View) par défaut.
+    private float targetFOV;                                           // Champ de vision cible.
+
+    [SerializeField] private float fovLerpSpeed = 8f;
+    private Camera _camComponent;
+
     private PlayerInputHandler input;
     private float yaw;
     private float pitch;
@@ -32,7 +40,11 @@ public class ThirdPersonCameraController : MonoBehaviour
             Debug.LogError("ThirdPersonCameraController: Target not assigned!");
 
         input = target.GetComponent<PlayerInputHandler>();
+        _camComponent = GetComponent<Camera>();
+        SprintFOV = sprintFOV;
 
+        defaultFOV = _camComponent.fieldOfView;
+        targetFOV = defaultFOV;
         yaw = target.eulerAngles.y;
     }
 
@@ -57,6 +69,10 @@ public class ThirdPersonCameraController : MonoBehaviour
         Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
         Vector3 pivot = target.position + Vector3.up * height;
 
+
+        // Met à jour le champ de vision.
+        _camComponent.fieldOfView = Mathf.Lerp(_camComponent.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
+
         // position caméra derrière le pivot
         Vector3 desiredPosition = pivot - rot * Vector3.forward * distance;
 
@@ -66,5 +82,16 @@ public class ThirdPersonCameraController : MonoBehaviour
     public Transform GetTransform()
     {
         return transform;
+    }
+    // Définit un champ de vision personnalisé.
+    public void SetFOV(float customFOV)
+    {
+        this.targetFOV = customFOV;
+    }
+
+    // Réinitialise le champ de vision à la valeur par défaut.
+    public void ResetFOV()
+    {
+        this.targetFOV = defaultFOV;
     }
 }
