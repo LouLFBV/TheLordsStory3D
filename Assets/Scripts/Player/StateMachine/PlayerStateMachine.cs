@@ -28,6 +28,16 @@ public class PlayerStateMachine
         CurrentState.Enter();
     }
 
+    public PlayerState GetState(PlayerStateType type)
+    {
+        if (states.ContainsKey(type))
+        {
+            return states[type];
+        }
+        Debug.LogError($"L'état {type} n'a pas été ajouté au dictionnaire de la StateMachine !");
+        return null;
+    }
+
     public void Update()
     {
         CurrentState?.Update();
@@ -45,5 +55,7 @@ public enum PlayerStateType
     Move,
     Attack,
     Roll,
-    Hit
+    Hit,
+    Fall,
+    Aim
 }

@@ -1,31 +1,6 @@
-//using UnityEngine;
-
-//public class MoveState : PlayerState
-//{
-//    public MoveState(PlayerController player) : base(player) { }
-
-//    public override void Update()
-//    {
-//        if (player.Input.MoveInput == Vector2.zero)
-//            player.StateMachine.ChangeState(player.IdleState);
-
-//        if (player.Input.AttackPressed)
-//            player.StateMachine.ChangeState(player.AttackState);
-
-//        if (player.Input.RollPressed && player.Stamina.CanSpend(20))
-//            player.StateMachine.ChangeState(player.RollState);
-//    }
-
-//    public override void FixedUpdate()
-//    {
-//        player.Motor.Move(player.Input.MoveInput);
-//    }
-//}
-
-
 using UnityEngine;
 
-public class MoveState : PlayerState
+public class MoveState : PlayerGroundedState
 {
     private int hHash = Animator.StringToHash("H");
     private int vHash = Animator.StringToHash("V");
@@ -45,11 +20,14 @@ public class MoveState : PlayerState
 
     public override void Enter()
     {
+        Debug.Log("Enter: Move");
+        base.Enter();
         player.Animator.applyRootMotion = true;
     }
 
     public override void Update()
     {
+        base.Update();
         Vector2 input = player.Input.MoveInput;
         cachedInput = input;
 

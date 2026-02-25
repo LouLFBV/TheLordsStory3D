@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool RollPressed { get; private set; }
     public bool SprintHeld { get; private set; }
     public bool CrouchHeld { get; private set; }
+    public bool AimHeld { get; private set; }
 
     private PlayerInput input;
 
@@ -34,7 +36,7 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Sprint"].canceled += ctx => SprintHeld = false;
 
         input.actions["Crouch"].performed += ctx => CrouchHeld = true;
-        input.actions["Crouch"].performed += ctx => CrouchHeld = false;
+        input.actions["Crouch"].canceled += ctx => CrouchHeld = false;
 
 
         // Souris
@@ -44,5 +46,10 @@ public class PlayerInputHandler : MonoBehaviour
         // Gamepad
         input.actions["LookGamepad"].performed += ctx => gamepadLook = ctx.ReadValue<Vector2>();
         input.actions["LookGamepad"].canceled += _ => gamepadLook = Vector2.zero;
+
+
+        input.actions["Aim"].performed += ctx => AimHeld = true;
+        input.actions["Aim"].canceled += ctx => AimHeld = false;
+
     }
 }
