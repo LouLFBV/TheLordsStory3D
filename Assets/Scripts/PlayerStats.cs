@@ -73,6 +73,16 @@ public class PlayerStats : MonoBehaviour
     [HideInInspector] public bool isDead = false;
     [HideInInspector] public EquipmentLibraryItem equipmentToEquip, equipmentToDesequip;
     [HideInInspector] public bool isEquiping = false;
+
+    [Header("States Bars")]
+    // Couleurs extraites de ta palette
+    private Color colorFull = new Color32(0x2F, 0x62, 0x26, 0xFF);   // #2f6226 (Vert)
+    private Color colorMedium = new Color32(0xC0, 0x88, 0x34, 0xFF); // #c08834 (Orange)
+    private Color colorLow = new Color32(0x99, 0x46, 0x46, 0xFF);    // #994646 (Rouge)
+    [SerializeField] private Animator staminaBarAnimator;
+    [SerializeField] private Animator healthBarAnimator;
+    private bool _fistAnimStaminaLowPlayed = false;
+
     void Awake()
     {
         instance = this;
@@ -84,6 +94,7 @@ public class PlayerStats : MonoBehaviour
 
         if (currentEndurance <= 0)
             currentEndurance = maxEndurance;
+        UpdateHealthBar();
     }
 
 
@@ -91,12 +102,18 @@ public class PlayerStats : MonoBehaviour
     {
         if (currentEndurance <= 0)
         {
+            if (!_fistAnimStaminaLowPlayed)
+            {
+                AnimStaminaLow();
+                _fistAnimStaminaLowPlayed = true;
+            }
             canRecoverEndurance = false;
             enduranceRecoveryTimer += Time.deltaTime;
 
             // Après le délai, on peut régénérer 
             if (enduranceRecoveryTimer >= enduranceRecoveryDelay)
             {
+                _fistAnimStaminaLowPlayed = false;
                 canRecoverEndurance = true;
                 enduranceRecoveryTimer = 0f;
             }
@@ -145,14 +162,14 @@ public class PlayerStats : MonoBehaviour
                     break;
             }
             currentHealth -= damage;
-            CameraEvents.OnCameraShake?.Invoke(cameraShakeIntensity, cameraShakeDuration);
+            //CameraEvents.OnCameraShake?.Invoke(cameraShakeIntensity, cameraShakeDuration);
         }
         if (currentHealth <= 0 && !isDead)
         {
             currentHealth = 0;
             Die();
         }
-        UpdateHealthBar();
+        AnimTakeDamage();
     }
 
     private void Die()
@@ -169,9 +186,32 @@ public class PlayerStats : MonoBehaviour
         deathAnimator.SetTrigger("Open");
     }
 
+    public void AnimTakeDamage() => healthBarAnimator.SetTrigger("TakeDamage");
+    public void AnimStaminaLow() => staminaBarAnimator.SetTrigger("StaminaLow");
     public void UpdateHealthBar()
     {
-        healthBarFill.fillAmount = currentHealth / maxHealth;
+        float ratio = currentHealth / maxHealth;
+        healthBarFill.fillAmount = ratio;
+
+        if (ratio >= 0.6f)
+        {
+            // On passe de Orange (à 0.6) vers Vert (à 1.0)
+            // La plage est de 0.4 (1.0 - 0.6)
+            float t = (ratio - 0.6f) / 0.4f;
+            healthBarFill.color = Color.Lerp(colorMedium, colorFull, t);
+        }
+        else if (ratio >= 0.2f)
+        {
+            // On passe de Rouge (à 0.2) vers Orange (à 0.6)
+            // La plage est de 0.4 (0.6 - 0.2)
+            float t = (ratio - 0.2f) / 0.4f;
+            healthBarFill.color = Color.Lerp(colorLow, colorMedium, t);
+        }
+        else
+        {
+            // En dessous de 20%, on reste rouge
+            healthBarFill.color = colorLow;
+        }
     }
 
 

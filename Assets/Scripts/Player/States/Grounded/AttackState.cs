@@ -5,7 +5,7 @@ public class AttackState : PlayerState
     private AttackSO currentAttack;
     private float timer;
     private bool comboBuffered;
-
+    private const int ATTACK_LAYER = 10; // On définit le layer une fois pour toutes
     public AttackState(PlayerController player) : base(player) { }
 
     public void SetAttack(AttackSO attack) => currentAttack = attack;
@@ -16,22 +16,34 @@ public class AttackState : PlayerState
         comboBuffered = false;
 
         // On utilise le Hash, c'est beaucoup plus fiable pour Unity
-        player.Animator.CrossFadeInFixedTime(currentAttack.AnimationHash, 0.1f, 0, 0f);
+        // Play force l'animation instantanément sans transition
+        player.Animator.Play(currentAttack.animationName, ATTACK_LAYER, 0f);
 
         player.Animator.applyRootMotion = true;
         player.ConsumeStamina(currentAttack.staminaCost);
+        player.Animator.SetLayerWeight(10, 1f);
     }
     public override void Update()
     { 
         timer += Time.deltaTime;
-        AnimatorStateInfo stateInfo = player.Animator.GetCurrentAnimatorStateInfo(0);
+        // --- AJOUTE CECI : DÉTECTION DU COMBO ---
+        // Si le joueur clique et qu'on a dépassé la fenêtre de début de combo
+        if (player.Input.AttackPressed && timer >= currentAttack.comboWindowStart)
+        {
+            comboBuffered = true;
+            Debug.Log("Combo enregistré !"); // Petit log pour confirmer
+        }
+        // ----------------------------------------
+
+        AnimatorStateInfo stateInfo = player.Animator.GetCurrentAnimatorStateInfo(ATTACK_LAYER);
 
         // On ne check la fin que si l'Animator a BIEN commencé l'attaque
         bool isPlayingCorrectAnim = stateInfo.shortNameHash == currentAttack.AnimationHash;
 
         if (isPlayingCorrectAnim)
         {
-            if (stateInfo.normalizedTime >= 0.95f)
+            // Au lieu de 0.95f (95% de l'anim), essaie 0.7f ou 0.8f
+            if (stateInfo.normalizedTime >= 0.85f)
             {
                 if (comboBuffered && currentAttack.nextAttack != null)
                 {
@@ -54,6 +66,7 @@ public class AttackState : PlayerState
 
     public override void Exit()
     {
-        // On s'assure que le Root Motion ne reste pas bloqué selon tes besoins
+        // On dit à l'Animator d'arrêter d'afficher le Layer 10
+        player.Animator.SetLayerWeight(10, 0f);
     }
 }

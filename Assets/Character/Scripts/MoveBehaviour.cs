@@ -103,6 +103,10 @@ public class MoveBehaviour : GenericBehaviour
         if(bowBehaviour != null && bowBehaviour.chargeBow)
             return;
         sprintInput = true;
+        if (!CanSprint())
+        {
+            PlayerStats.instance.AnimStaminaLow();
+        }
     }
 
     private void OnSprintCanceled(InputAction.CallbackContext ctx)
@@ -227,7 +231,6 @@ public class MoveBehaviour : GenericBehaviour
 
         // 🟢 Gestion du sprint avec le nouveau Input System
         isSprinting = CanSprint();
-
         if (isSprinting && IsMoving())
         {
             targetSpeed = sprintSpeed;
