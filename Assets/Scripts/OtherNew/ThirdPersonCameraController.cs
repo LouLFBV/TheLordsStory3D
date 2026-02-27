@@ -86,14 +86,12 @@ public class ThirdPersonCameraController : MonoBehaviour
     // Définit un champ de vision personnalisé.
     public void SetFOV(float customFOV)
     {
-        Debug.Log("SetFOV");
         this.targetFOV = customFOV;
     }
 
     // Réinitialise le champ de vision à la valeur par défaut.
     public void ResetFOV()
     {
-        Debug.Log("ResetFOV");
         this.targetFOV = defaultFOV;
     }
 }

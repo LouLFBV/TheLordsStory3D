@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -50,6 +49,5 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Aim"].performed += ctx => AimHeld = true;
         input.actions["Aim"].canceled += ctx => AimHeld = false;
-
     }
 }
