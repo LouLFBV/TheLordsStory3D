@@ -64,9 +64,7 @@ public class MoveState : PlayerGroundedState
 
         // Stamina
         if (isSprinting)
-            player.ConsumeStamina(player.StaminaConsumptionRate * Time.deltaTime);
-        else
-            player.RecoverStamina(player.StaminaRecoveryRate * Time.deltaTime);
+            player.Stamina.Spend(player.Stamina.consommationRate * Time.deltaTime);
     }
 
     public override void FixedUpdate()
@@ -79,6 +77,6 @@ public class MoveState : PlayerGroundedState
     {
         return input.magnitude > 0.1f
                && player.Input.SprintHeld
-               && player.HasStamina();
+               && player.Stamina.HasStamina();
     }
 }

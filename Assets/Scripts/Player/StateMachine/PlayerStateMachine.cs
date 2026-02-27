@@ -57,5 +57,6 @@ public enum PlayerStateType
     Roll,
     Hit,
     Fall,
-    Aim
+    Aim,
+    Death
 }

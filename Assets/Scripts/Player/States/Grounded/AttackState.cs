@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AttackState : PlayerState
+public class AttackState : PlayerGroundedState
 {
     private AttackSO currentAttack;
     private float timer;
@@ -12,6 +12,7 @@ public class AttackState : PlayerState
 
     public override void Enter()
     {
+        base.Enter();
         timer = 0f;
         comboBuffered = false;
 
@@ -20,7 +21,8 @@ public class AttackState : PlayerState
         player.Animator.Play(currentAttack.animationName, ATTACK_LAYER, 0f);
 
         player.Animator.applyRootMotion = true;
-        player.ConsumeStamina(currentAttack.staminaCost);
+        //if (player.Stamina.CanSpend(currentAttack.staminaCost))
+        //     player.Stamina.Spend(currentAttack.staminaCost);
         player.Animator.SetLayerWeight(10, 1f);
     }
     public override void Update()

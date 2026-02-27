@@ -21,7 +21,7 @@ public class PlayerGroundedState : PlayerState
             player.StateMachine.ChangeState(PlayerStateType.Fall); // à créer
             return;
         }
-        if (player.Input.AttackPressed && player.HasStamina())
+        if (player.Input.AttackPressed && player.Stamina.HasStamina())
         {
             if (player.StateMachine.CurrentState.GetType() != typeof(AttackState))
             {

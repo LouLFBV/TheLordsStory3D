@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStateMachine StateMachine { get; private set; }
     public PlayerInputHandler Input { get; private set; }
     public CharacterMotor Motor { get; private set; }
+    public HealthSystem Health { get; private set; }
     public Animator Animator { get; private set; }
     public IdleState IdleState { get; private set; }
     public MoveState MoveState { get; private set; }
@@ -13,6 +14,9 @@ public class PlayerController : MonoBehaviour
     public AttackState AttackState { get; private set; }
     public RollState RollState { get; private set; }
     public HitState HitState { get; private set; }
+    public FallState FallState { get; private set; }
+    public AimState AimState { get; private set; }
+    public DeathState DeathState { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
     public ThirdPersonCameraController Camera { get; private set; }
     [SerializeField] private ThirdPersonCameraController cameraScript;
@@ -20,15 +24,12 @@ public class PlayerController : MonoBehaviour
     [Header("Combat Settings")]
     public AttackSO defaultLightAttack;
 
-    public float MaxStamina = 100f;
-    public float CurrentStamina { get; private set; }
-    public float StaminaConsumptionRate = 30f; // par seconde lors du sprint
-    public float StaminaRecoveryRate = 20f;    // par seconde quand non sprint
-
     private void Awake()
     {
         Input = GetComponent<PlayerInputHandler>();
         Motor = GetComponent<CharacterMotor>();
+        Health = GetComponent<HealthSystem>();
+        Stamina = GetComponent<StaminaSystem>();
         Animator = GetComponent<Animator>();
         Rigidbody = GetComponent<Rigidbody>(); // Ensure Rigidbody is assigned here
         Camera = cameraScript; // Assign the camera script reference
@@ -37,6 +38,9 @@ public class PlayerController : MonoBehaviour
         AttackState = new AttackState(this);
         RollState = new RollState(this);
         HitState = new HitState(this);
+        FallState = new FallState(this);
+        DeathState = new DeathState(this);
+        AimState = new AimState(this);
 
         StateMachine = new PlayerStateMachine(
             new System.Collections.Generic.Dictionary<PlayerStateType, PlayerState>
@@ -45,10 +49,12 @@ public class PlayerController : MonoBehaviour
                 { PlayerStateType.Move, MoveState },
                 { PlayerStateType.Attack, AttackState},
                 { PlayerStateType.Roll, RollState },
-                { PlayerStateType.Hit, HitState }
+                { PlayerStateType.Hit, HitState },
+                 { PlayerStateType.Fall, FallState},
+                 { PlayerStateType.Death, DeathState },
+                 { PlayerStateType.Aim, AimState }
             }
         );
-        CurrentStamina = MaxStamina;
     }
 
     private void Start()
@@ -79,16 +85,4 @@ public class PlayerController : MonoBehaviour
             Rigidbody.rotation * Animator.deltaRotation
         );
     }
-
-    public void ConsumeStamina(float amount)
-    {
-        CurrentStamina = Mathf.Max(CurrentStamina - amount, 0f);
-    }
-
-    public void RecoverStamina(float amount)
-    {
-        CurrentStamina = Mathf.Min(CurrentStamina + amount, MaxStamina);
-    }
-
-    public bool HasStamina() => CurrentStamina > 0f;
 }

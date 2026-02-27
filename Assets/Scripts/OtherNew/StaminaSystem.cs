@@ -6,6 +6,7 @@ public class StaminaSystem : MonoBehaviour
     [SerializeField] private float maxStamina = 100f;
     [SerializeField] private float regenRate = 15f;
     [SerializeField] private float regenDelay = 1f;
+    public float consommationRate = 1f;
 
     public float CurrentStamina { get; private set; }
 
@@ -34,10 +35,10 @@ public class StaminaSystem : MonoBehaviour
         }
     }
 
-    public bool CanSpend(float amount)
-    {
-        return CurrentStamina >= amount;
-    }
+    //public bool CanSpend(float amount)
+    //{
+    //    return CurrentStamina >= amount;
+    //}
 
     public void Spend(float amount)
     {
@@ -47,5 +48,7 @@ public class StaminaSystem : MonoBehaviour
         regenTimer = regenDelay;
 
         OnStaminaChanged?.Invoke(CurrentStamina, maxStamina);
-    }
+    }   
+
+    public bool HasStamina() => CurrentStamina > 0f;
 }
