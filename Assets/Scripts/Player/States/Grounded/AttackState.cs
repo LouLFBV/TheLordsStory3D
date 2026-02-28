@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AttackState : PlayerGroundedState
+public class AttackState : GroundedState
 {
     private AttackSO currentAttack;
     private float timer;

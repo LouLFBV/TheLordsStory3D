@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MoveState : PlayerGroundedState
+public class MoveState : GroundedState
 {
     private int hHash = Animator.StringToHash("H");
     private int vHash = Animator.StringToHash("V");
@@ -65,6 +65,21 @@ public class MoveState : PlayerGroundedState
         // Stamina
         if (isSprinting)
             player.Stamina.Spend(player.Stamina.consommationRate * Time.deltaTime);
+
+        if (player.Input.SprintHeld) // Le joueur VEUT sprinter
+        {
+            if (isSprinting)
+            {
+                // Consommation normale
+                player.Stamina.Spend(player.Stamina.consommationRate * Time.deltaTime);
+            }
+            else if (!player.Stamina.HasStamina())
+            {
+                // Le joueur appuie mais HasStamina est faux (épuisé ou vide)
+                // On force l'appel à Spend(0) ou une méthode de feedback
+                player.Stamina.RequestEmptyFeedback();
+            }
+        }
     }
 
     public override void FixedUpdate()

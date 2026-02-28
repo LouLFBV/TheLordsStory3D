@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RollState : PlayerGroundedState
+public class RollState : GroundedState
 {
 	private float rollDuration = 0.8f;
 	private float iframeStart = 0.15f;

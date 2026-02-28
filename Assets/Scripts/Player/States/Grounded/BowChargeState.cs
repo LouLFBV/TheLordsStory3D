@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BowChargeState : PlayerGroundedState
+public class BowChargeState : GroundedState
 {
     private float chargeTime = 1.5f; // Temps nécessaire pour charger complètement
     private float timer;

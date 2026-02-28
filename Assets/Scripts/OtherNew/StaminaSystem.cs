@@ -12,9 +12,11 @@ public class StaminaSystem : MonoBehaviour
     public float CurrentStamina { get; private set; }
     public float consommationRate = 1f;
     private float _regenTimer;
-    private bool _isExhausted; // Plus clair que _canToRestartRun
+    private bool _isExhausted;
+    private bool _feedbackSent;
 
     public event Action<float, float> OnStaminaChanged;
+    public event Action OnStaminaEmpty;
 
     private void Awake() => CurrentStamina = maxStamina;
 
@@ -45,29 +47,38 @@ public class StaminaSystem : MonoBehaviour
     {
         if (amount <= 0) return;
 
+        // Si on essaie de dépenser alors qu'on est déjà à sec
+        if (_isExhausted || CurrentStamina <= 0)
+        {
+            OnStaminaEmpty?.Invoke(); // On prévient que c'est vide
+            return;
+        }
+
         CurrentStamina -= amount;
 
         if (CurrentStamina <= 0)
         {
             CurrentStamina = 0;
             _isExhausted = true;
-            _regenTimer = regenDelayEmpty; // On applique la grosse pénalité UNE SEULE FOIS
+            _regenTimer = regenDelayEmpty;
+            OnStaminaEmpty?.Invoke(); // Flash au moment où ça tombe à 0
         }
         else
         {
-            // On ne reset le timer que si on n'est pas déjà en pénalité "Empty"
             _regenTimer = Mathf.Max(_regenTimer, regenDelay);
         }
 
         OnStaminaChanged?.Invoke(CurrentStamina, maxStamina);
     }
 
-    public bool HasStamina()
-    {
-        // On ne peut pas consommer si on est épuisé (en dessous du seuil)
-        return !_isExhausted && CurrentStamina > 0;
-    }
+    public bool HasStamina() => !_isExhausted && CurrentStamina > 0;
 
+    public void RequestEmptyFeedback()
+    {
+        // On déclenche l'événement sans réduire la stamina
+        if (CurrentStamina <= 0)
+            OnStaminaEmpty?.Invoke();
+    }
 
     //public bool CanSpend(float amount)
     //{

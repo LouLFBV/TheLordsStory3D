@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class IdleState : PlayerGroundedState
+public class IdleState : GroundedState
 {
     public IdleState(PlayerController player) : base(player) { }
 

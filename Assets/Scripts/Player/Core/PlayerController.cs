@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public AttackState AttackState { get; private set; }
     public RollState RollState { get; private set; }
     public HitState HitState { get; private set; }
+    public JumpState JumpState { get; private set; }
     public FallState FallState { get; private set; }
     public AimState AimState { get; private set; }
     public DeathState DeathState { get; private set; }
@@ -37,8 +38,9 @@ public class PlayerController : MonoBehaviour
         MoveState = new MoveState(this);
         AttackState = new AttackState(this);
         RollState = new RollState(this);
-        HitState = new HitState(this);
+        HitState = new HitState(this); 
         FallState = new FallState(this);
+        JumpState = new JumpState(this);
         DeathState = new DeathState(this);
         AimState = new AimState(this);
 
@@ -50,9 +52,10 @@ public class PlayerController : MonoBehaviour
                 { PlayerStateType.Attack, AttackState},
                 { PlayerStateType.Roll, RollState },
                 { PlayerStateType.Hit, HitState },
-                 { PlayerStateType.Fall, FallState},
-                 { PlayerStateType.Death, DeathState },
-                 { PlayerStateType.Aim, AimState }
+                { PlayerStateType.Jump, JumpState },
+                { PlayerStateType.Fall, FallState},
+                { PlayerStateType.Death, DeathState },
+                { PlayerStateType.Aim, AimState }
             }
         );
     }

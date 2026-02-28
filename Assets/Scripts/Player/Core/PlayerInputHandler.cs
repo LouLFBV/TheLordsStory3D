@@ -12,6 +12,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool SprintHeld { get; private set; }
     public bool CrouchHeld { get; private set; }
     public bool AimHeld { get; private set; }
+    public bool JumpPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -36,6 +37,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Crouch"].performed += ctx => CrouchHeld = true;
         input.actions["Crouch"].canceled += ctx => CrouchHeld = false;
+
+        input.actions["Jump"].performed += ctx => JumpPressed = true;
+        input.actions["Jump"].canceled += ctx => JumpPressed = false;
 
 
         // Souris

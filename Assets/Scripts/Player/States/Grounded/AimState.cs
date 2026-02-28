@@ -1,4 +1,4 @@
-public class AimState : PlayerGroundedState
+public class AimState : GroundedState
 {
     public AimState(PlayerController player) : base(player) { }
     public override void Enter()

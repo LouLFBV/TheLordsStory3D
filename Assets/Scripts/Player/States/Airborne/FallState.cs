@@ -1,22 +1,39 @@
-public class FallState : PlayerState
+using UnityEngine;
+
+public class FallState : AirborneState
 {
+    private float fallTimer;
+    private float threshold = 0.15f; // Le temps d'attente "Juice"
+    private bool animTriggered;
+
     public FallState(PlayerController player) : base(player) { }
+
     public override void Enter()
     {
         base.Enter();
-        // Ici, tu pourrais jouer une animation de chute ou déclencher des effets visuels
-        player.Animator.SetTrigger("Fall");
+        fallTimer = 0;
+        animTriggered = false;
+        // On ne trigger rien ici !
     }
+
     public override void Update()
     {
         base.Update();
-        // Vérifie si le joueur touche le sol pour revenir à l'état Idle ou Move
-        if (player.Motor.IsGrounded())
+
+        if (!animTriggered)
         {
-            player.StateMachine.ChangeState(PlayerStateType.Idle);
+            fallTimer += Time.deltaTime;
+            if (fallTimer > threshold)
+            {
+                player.Animator.SetBool("IsFalling", true);
+                animTriggered = true;
+            }
         }
     }
+
     public override void Exit()
     {
+        base.Exit();
+        player.Animator.SetBool("IsFalling", false);
     }
 }
