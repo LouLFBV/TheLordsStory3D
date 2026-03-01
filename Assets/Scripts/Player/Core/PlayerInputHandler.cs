@@ -13,6 +13,10 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CrouchHeld { get; private set; }
     public bool AimHeld { get; private set; }
     public bool JumpPressed { get; private set; }
+    public bool Weapon1Pressed { get; private set; }
+    public bool Weapon2Pressed { get; private set; }
+    public bool Object1Pressed { get; private set; }
+    public bool Object2Pressed { get; private set; }
 
     private PlayerInput input;
 
@@ -53,5 +57,18 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Aim"].performed += ctx => AimHeld = true;
         input.actions["Aim"].canceled += ctx => AimHeld = false;
+
+        //Palette
+        input.actions["Weapon1"].performed += ctx => Weapon1Pressed = true;
+        input.actions["Weapon1"].canceled += ctx => Weapon1Pressed = false;
+
+        input.actions["Weapon2"].performed += ctx => Weapon2Pressed = true;
+        input.actions["Weapon2"].canceled += ctx => Weapon2Pressed = false;
+
+        input.actions["Object1"].performed += ctx => Object1Pressed = true;
+        input.actions["Object1"].canceled += ctx => Object1Pressed = false;
+
+        input.actions["Object2"].performed += ctx => Object2Pressed = true;
+        input.actions["Object2"].canceled += ctx => Object2Pressed = false;
     }
 }
