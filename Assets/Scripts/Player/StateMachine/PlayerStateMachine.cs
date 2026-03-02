@@ -59,5 +59,8 @@ public enum PlayerStateType
     Jump,
     Fall,
     Aim,
+    Equip,
+    Unequip,
+    Crouch,
     Death
 }

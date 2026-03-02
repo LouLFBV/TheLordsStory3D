@@ -1,7 +1,6 @@
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -17,7 +16,6 @@ public class PaletteSystem : MonoBehaviour
 
     [SerializeField] private ItemActionsSystem itemActionsSystem;
 
-    [SerializeField] private Animator animator;
     [SerializeField] private InteractBehaviour interactBehaviour;
 
 
@@ -69,14 +67,6 @@ public class PaletteSystem : MonoBehaviour
 
     #endregion
 
-    #region PlayerInput
-
-    [SerializeField] private PlayerInput playerInput;
-    private bool takingWeapon1;
-    private bool takingWeapon2;
-    private bool takingObject1;
-    private bool takingObject2;
-    #endregion
 
     private void Awake()
     {
@@ -90,244 +80,144 @@ public class PaletteSystem : MonoBehaviour
         }
     }
 
-    #region PlayerInput Methods
-    void OnEnable()
-    {
-        playerInput.actions["Weapon1"].Enable();
-        playerInput.actions["Weapon1"].performed += OnWeaponPerformed;
-        playerInput.actions["Weapon1"].canceled += OnWeaponCanceled;
+    //void OnEnable()
+    //{
 
-        playerInput.actions["Weapon2"].Enable();
-        playerInput.actions["Weapon2"].performed += OnWeaponPerformed;
-        playerInput.actions["Weapon2"].canceled += OnWeaponCanceled;
+    //    if (DeviceWatcher.Instance != null)
+    //        DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
+    //}
+    //void OnDisable()
+    //{
 
-        playerInput.actions["Object1"].Enable();
-        playerInput.actions["Object1"].performed += OnObjectPerformed;
-        playerInput.actions["Object1"].canceled += OnObjectCanceled;
-
-        playerInput.actions["Object2"].Enable();
-        playerInput.actions["Object2"].performed += OnObjectPerformed;
-        playerInput.actions["Object2"].canceled += OnObjectCanceled;
+    //    if (DeviceWatcher.Instance != null)
+    //        DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
+    //}
 
 
-        if (DeviceWatcher.Instance != null)
-            DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
-    }
-    void OnDisable()
-    {
-        playerInput.actions["Weapon1"].Disable();
-        playerInput.actions["Weapon1"].performed -= OnWeaponPerformed;
-        playerInput.actions["Weapon1"].canceled -= OnWeaponCanceled;
-
-        playerInput.actions["Weapon2"].Disable();
-        playerInput.actions["Weapon2"].performed -= OnWeaponPerformed;
-        playerInput.actions["Weapon2"].canceled -= OnWeaponCanceled;
-
-        playerInput.actions["Object1"].Disable();
-        playerInput.actions["Object1"].performed -= OnObjectPerformed;
-        playerInput.actions["Object1"].canceled -= OnObjectCanceled;
-
-        playerInput.actions["Object2"].Disable();
-        playerInput.actions["Object2"].performed -= OnObjectPerformed;
-        playerInput.actions["Object2"].canceled -= OnObjectCanceled;
-
-        if (DeviceWatcher.Instance != null)
-            DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
-    }
-
-    private void OnWeaponPerformed(InputAction.CallbackContext ctx)
-    {
-        if (ctx.action.name == "Weapon1") takingWeapon1 = true;
-        else if (ctx.action.name == "Weapon2") takingWeapon2 = true;
-    }
-
-    private void OnWeaponCanceled(InputAction.CallbackContext ctx)
-    {
-        if (ctx.action.name == "Weapon1") takingWeapon1 = false;
-        else if (ctx.action.name == "Weapon2") takingWeapon2 = false;
-    }
-
-    private void OnObjectPerformed(InputAction.CallbackContext ctx)
-    {
-        if (ctx.action.name == "Object1") takingObject1 = true;
-        else if (ctx.action.name == "Object2") takingObject2 = true;
-    }
-
-    private void OnObjectCanceled(InputAction.CallbackContext ctx)
-    {
-        if (ctx.action.name == "Object1") takingObject1 = false;
-        else if (ctx.action.name == "Object2") takingObject2 = false;
-    }
-
-    #endregion
 
     private void Start()
     {
         UpdateEquipmentsDesequipButtons();
-        UpdateBindingDisplay(DeviceWatcher.Instance.CurrentDevice);
+        //UpdateBindingDisplay(DeviceWatcher.Instance.CurrentDevice);
     }
 
     public void HandlePaletteLogic(PlayerController player)
     {
-        // On utilise l'input du player au lieu de variables internes
+        // On ne permet pas le switch si on est déjà en train d'équiper ou si on n'est pas au sol
+        if (player.StateMachine.CurrentState is not GroundedState || player.StateMachine.CurrentState is EquipState)
+            return;
+
         if (player.Input.Weapon1Pressed && equipmentWeapon1Item != null)
         {
-            // Vérifie si l'état actuel autorise le changement d'arme
-            if (player.StateMachine.CurrentState is GroundedState)
-            {
-                //ToggleWeapon(1);
-            }
+            ToggleWeapon(1, player);
         }
         else if (player.Input.Weapon2Pressed && equipmentWeapon2Item != null)
         {
-            // Vérifie si l'état actuel autorise le changement d'arme
-            if (player.StateMachine.CurrentState is GroundedState)
-            {
-                //ToggleWeapon(2);
-            }
+            ToggleWeapon(2, player);
         }
         else if (player.Input.Object1Pressed && equipmentObject1Item != null)
         {
-            // Vérifie si l'état actuel autorise le changement d'arme
-            if (player.StateMachine.CurrentState is GroundedState)
-            {
-                //ToggleObject(1);
-            }
+            ToggleObject(1, player);
         }
         else if (player.Input.Object2Pressed && equipmentObject2Item != null)
         {
-            // Vérifie si l'état actuel autorise le changement d'arme
-            if (player.StateMachine.CurrentState is GroundedState)
-            {
-                //ToggleObject(2);
-            }
+            ToggleObject(2, player);
         }
     }
-    //void Update()
-    //{
-    //    if (takingWeapon1 && equipmentWeapon1Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
-    //    {
-    //        if (!isEquippedWeapon1)
-    //        {
-    //            isEquippedWeapon1 = true;
-    //            UseWeapon(1);
-    //            UpdateImageSeleted();
-    //        }
-    //        else
-    //        {
-    //            EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).First();
-    //            PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
-    //            if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.Bow)
-    //            {
-    //                animator.SetTrigger("DesequipBow");
-    //                animator.SetBool("BowEquipped", false);
-    //            }
 
-    //            isEquippedWeapon1 = false;
-    //            if (equipmentWeapon1Item.handWeaponType == HandWeapon.TwoHanded)
-    //            {
-    //                animator.SetBool("IsTwoHandedWeapon", false);
-    //                animator.SetTrigger("DesequipLongSword");
-    //            }
-    //            else if (equipmentWeapon1Item.handWeaponType == HandWeapon.OneHanded)
-    //            {
-    //                animator.SetBool("IsOneHandedWeapon", false);
-    //                animator.SetTrigger("DesequipSword");
-    //            }
-    //            UpdateImageSeleted();
-    //        }
-    //        takingWeapon1 = false;
-    //    }
-    //    if (takingWeapon2 && equipmentWeapon2Item != null && !PlayerStats.instance.isEquiping && !BowBehaviour.instance.chargeBow)
-    //    {
-    //        if (!isEquippedWeapon2)
-    //        {
-    //            isEquippedWeapon2 = true;
-    //            UseWeapon(2);
-    //            UpdateImageSeleted();
-    //        }
-    //        else
-    //        {
-    //            EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).First();
-    //            PlayerStats.instance.equipmentToDesequip = equipmentLibraryItem;
-    //            if (equipmentLibraryItem.itemData.handWeaponType == HandWeapon.Bow)
-    //            {
-    //                animator.SetTrigger("DesequipBow");
-    //                animator.SetBool("BowEquipped", false);
-    //            }
+    private void ToggleWeapon(int slot, PlayerController player)
+    {
+        bool isCurrentlyEquipped = (slot == 1) ? isEquippedWeapon1 : isEquippedWeapon2;
+        ItemData item = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
 
-    //            isEquippedWeapon2 = false;
-    //            if (equipmentWeapon2Item.handWeaponType == HandWeapon.TwoHanded)
-    //            {
-    //                animator.SetBool("IsTwoHandedWeapon", false);
-    //                animator.SetTrigger("DesequipLongSword");
-    //            }
-    //            else if (equipmentWeapon2Item.handWeaponType == HandWeapon.OneHanded)
-    //            {
-    //                animator.SetBool("IsOneHandedWeapon", false);
-    //                animator.SetTrigger("DesequipSword");
-    //            }
-    //            UpdateImageSeleted();
-    //        }
-    //        takingWeapon2 = false;
-    //    }
-    //    if (takingObject1 && equipmentObject1Item != null && !PlayerStats.instance.isEquiping)
-    //    {
-    //        if (!isEquippedObject1)
-    //        {
-    //            isEquippedObject1 = true;
-    //            isEquippedObject2 = false;
-    //            UseObject(1);
-    //            UpdateImageSeleted();
-    //        }
-    //        else
-    //        {
-    //            EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).First();
-    //            equipmentLibraryItem.itemPrefab.SetActive(false);
-    //            isEquippedObject1 = false;
-    //            animator.SetBool("CarryingConsumable", false);
-    //            UpdateImageSeleted();
-    //        }
-    //        takingObject1 = false;
-    //    }
-    //    if (takingObject2 && equipmentObject2Item != null && !PlayerStats.instance.isEquiping)
-    //    {
-    //        if (!isEquippedObject2)
-    //        {
-    //            isEquippedObject2 = true;
-    //            isEquippedObject1 = false;
-    //            UseObject(2);
-    //            UpdateImageSeleted();
-    //        }
-    //        else
-    //        {
-    //            EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).First();
-    //            equipmentLibraryItem.itemPrefab.SetActive(false);
-    //            isEquippedObject2 = false;
-    //            animator.SetBool("CarryingConsumable", false);
-    //            UpdateImageSeleted();
-    //        }
-    //        takingObject2 = false;
-    //    }
+        if (!isCurrentlyEquipped)
+        {
+            if (slot == 1) isEquippedWeapon1 = true; else isEquippedWeapon2 = true;
 
-    //}
+            // On passe l'info au player et on change d'état
+            player.PendingWeaponType = item.handWeaponType;
+            player.StateMachine.ChangeState(PlayerStateType.Equip);
+
+            UseWeapon(slot, player);
+        }
+        else
+        {
+            // Pour le déséquipement, on pourrait aussi créer un "UnequipState" 
+            // ou simplement appeler la logique via le player
+            DesequipCurrentActiveWeapon(slot, player);
+        }
+        UpdateImageSeleted();
+    }
+
+    private void DesequipCurrentActiveWeapon(int slot, PlayerController player)
+    {
+        ItemData item = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
+        if (item == null) return;
+
+        // On passe par une version qui prend le player pour l'animator
+        if (slot == 1) ForceDesequipWeapon(item, ref isEquippedWeapon1, player);
+        else ForceDesequipWeapon(item, ref isEquippedWeapon2, player);
+
+        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == item);
+        lib.itemPrefab.SetActive(false);
+    }
+
+    private void ForceDesequipWeapon(ItemData weaponData, ref bool equippedFlag, PlayerController player)
+    {
+        if (weaponData == null) return;
+
+        // On prépare les infos pour l'état
+        player.PendingUnequipType = weaponData.handWeaponType;
+
+        // On change d'état (Cela lancera l'animation proprement)
+        player.StateMachine.ChangeState(PlayerStateType.Unequip);
+
+        // On garde la logique de Data
+        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == weaponData);
+        PlayerStats.instance.equipmentToDesequip = lib;
+
+        equippedFlag = false;
+    }
+    private void ToggleObject(int slot, PlayerController player)
+    {
+        bool isCurrentlyEquipped = (slot == 1) ? isEquippedObject1 : isEquippedObject2;
+
+        if (!isCurrentlyEquipped)
+        {
+            isEquippedObject1 = (slot == 1);
+            isEquippedObject2 = (slot == 2);
+
+            player.StateMachine.ChangeState(PlayerStateType.Equip);
+            UseObject(slot, player);
+        }
+        else
+        {
+            // Déséquipement de l'objet
+            if (slot == 1) isEquippedObject1 = false; else isEquippedObject2 = false;
+
+            var item = (slot == 1) ? equipmentObject1Item : equipmentObject2Item;
+            DisableObject(item);
+            player.Animator.SetBool("CarryingConsumable", false);
+        }
+        UpdateImageSeleted();
+    }
 
 
     private void UpdateBindingDisplay(DeviceType currentDevice)
     {
-        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1, currentDevice);
-        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2, currentDevice);
-        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1, currentDevice);
-        InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2, currentDevice);
+        //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1, currentDevice);
+        //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2, currentDevice);
+        //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1, currentDevice);
+        //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2, currentDevice);
     }
 
-    private void UseObject(int numberOfObject)
+    private void UseObject(int numberOfObject, PlayerController player)
     {
         isEquippedWeapon1 = false;
         isEquippedWeapon2 = false;
-        animator.SetBool("CarryingConsumable", true);
-        animator.SetBool("IsTwoHandedWeapon", false);
-        animator.SetBool("IsOneHandedWeapon", false);
+        player.Animator.SetBool("CarryingConsumable", true);
+        player.Animator.SetBool("IsTwoHandedWeapon", false);
+        player.Animator.SetBool("IsOneHandedWeapon", false);
         if (numberOfObject == 1)
         {
             EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).First();
@@ -365,38 +255,31 @@ public class PaletteSystem : MonoBehaviour
         UpdateEquipmentsDesequipButtons();
     }
 
-    private void UseWeapon(int slot)
+    private void UseWeapon(int slot, PlayerController player)
     {
         ItemData itemToEquip = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
-        Debug.Log("Equip item in palette : " + itemToEquip.name);
 
-        // 1. Désactiver tous les objets
+        // 1. On cache les consommables
         DisableObject(equipmentObject1Item);
         DisableObject(equipmentObject2Item);
+        isEquippedObject1 = isEquippedObject2 = false;
+        player.Animator.SetBool("CarryingConsumable", false);
 
-        isEquippedObject1 = false;
-        isEquippedObject2 = false;
-        animator.SetBool("CarryingConsumable", false);
+        // 2. On force le rangement de l'AUTRE arme si elle était sortie
+        if (slot == 1 && isEquippedWeapon2) ForceDesequipWeapon(equipmentWeapon2Item, ref isEquippedWeapon2, player);
+        if (slot == 2 && isEquippedWeapon1) ForceDesequipWeapon(equipmentWeapon1Item, ref isEquippedWeapon1, player);
 
-        // 2. Appliquer le type d’arme
-        ApplyWeaponTypeToAnimator(itemToEquip.handWeaponType);
-
-        // 3. Forcer le déséquipement de l'autre weapon
-        if (slot == 1 && isEquippedWeapon2)
-            ForceDesequipWeapon(equipmentWeapon2Item, ref isEquippedWeapon2);
-
-        if (slot == 2 && isEquippedWeapon1)
-            ForceDesequipWeapon(equipmentWeapon1Item, ref isEquippedWeapon1);
-
-        // 4. Équiper maintenant
+        // 3. On prépare les data pour le script qui gère l'apparition du mesh
         EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
         interactBehaviour.SetCurrentEquippedItem(libItem);
         PlayerStats.instance.equipmentToEquip = libItem;
 
-        StartCoroutine(EquipAfterDesequip(itemToEquip.handWeaponType, 0.01f));
+        // Note: Le mesh apparaîtra via un Animation Event ou la logique de ton EquipmentSystem
+
+        //StartCoroutine(EquipAfterDesequip(itemToEquip.handWeaponType, 0.01f));
 
 
-        UpdateEquipmentsDesequipButtons();
+        //UpdateEquipmentsDesequipButtons();
     }
 
 
@@ -692,69 +575,7 @@ public class PaletteSystem : MonoBehaviour
         lib?.itemPrefab.SetActive(false);
     }
 
-    private void ForceDesequipWeapon(ItemData weaponData, ref bool equippedFlag)
-    {
-        if (weaponData == null) return;
 
-        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == weaponData);
-
-        // Informer PlayerStats
-        PlayerStats.instance.equipmentToDesequip = lib;
-
-        // Gérer animations
-        switch (weaponData.handWeaponType)
-        {
-            case HandWeapon.Bow:
-                animator.SetTrigger("DesequipBow");
-                animator.SetBool("BowEquipped", false);
-                break;
-
-            case HandWeapon.TwoHanded:
-                animator.SetTrigger("DesequipLongSword");
-                animator.SetBool("IsTwoHandedWeapon", false);
-                break;
-
-            case HandWeapon.OneHanded:
-                animator.SetTrigger("DesequipSword");
-                animator.SetBool("IsOneHandedWeapon", false);
-                break;
-        }
-        Debug.LogWarning("Forcing desequip of weapon: " + weaponData.name);
-        equippedFlag = false;
-    }
-
-    private void ApplyWeaponTypeToAnimator(HandWeapon type)
-    {
-        animator.SetBool("IsOneHandedWeapon", type == HandWeapon.OneHanded);
-        animator.SetBool("IsTwoHandedWeapon", type == HandWeapon.TwoHanded);
-    }
-
-    private void PlayEquipAnimation(HandWeapon type)
-    {
-        Debug.LogWarning("Playing equip animation for weapon type: " + type);
-
-        switch (type)
-        {
-            case HandWeapon.Bow:
-                animator.SetTrigger("EquipBow");
-                animator.SetBool("BowEquipped", true);
-                break;
-
-            case HandWeapon.TwoHanded:
-                animator.SetTrigger("EquipLongSword");
-                break;
-
-            case HandWeapon.OneHanded:
-                animator.SetTrigger("EquipSword");
-                break;
-        }
-    }
-
-    IEnumerator EquipAfterDesequip(HandWeapon type, float desequipDuration)
-    {
-        yield return new WaitForSeconds(desequipDuration);
-        PlayEquipAnimation(type);
-    }
 
     public PaletteSaveData GetSaveData()
     {
@@ -920,7 +741,7 @@ public class PaletteSystem : MonoBehaviour
         PlayerStats.instance.equipmentToEquip = libItem;
 
         // Animator
-        ApplyWeaponTypeToAnimator(item.handWeaponType);
+        // ApplyWeaponTypeToAnimator(item.handWeaponType);
 
         Debug.Log($"[SAVE] Equipped weapon from save: {item.name}");
     }
@@ -933,7 +754,7 @@ public class PaletteSystem : MonoBehaviour
         libItem.itemPrefab.SetActive(true);
         interactBehaviour.SetCurrentEquippedItem(libItem);
 
-        animator.SetBool("CarryingConsumable", true);
+        //animator.SetBool("CarryingConsumable", true);
 
         Debug.Log($"[SAVE] Equipped object from save: {item.name}");
     }

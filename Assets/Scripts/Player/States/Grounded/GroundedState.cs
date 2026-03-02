@@ -78,12 +78,21 @@ public class GroundedState : PlayerState
         // 3. PRIORITÉ : L'Attaque
         if (player.Input.AttackPressed && player.Stamina.HasStamina())
         {
-            var attackState = (AttackState)player.StateMachine.GetState(PlayerStateType.Attack);
-            attackState.SetAttack(player.defaultLightAttack);
-            player.StateMachine.ChangeState(PlayerStateType.Attack);
+            // On vérifie quelle arme la palette a activé
+            ItemData activeWeapon = player.Palette.isEquippedWeapon1 ?
+                                     player.Palette.equipmentWeapon1Item :
+                                     player.Palette.equipmentWeapon2Item;
+
+            if (activeWeapon != null)
+            {
+                var attackState = (AttackState)player.StateMachine.GetState(PlayerStateType.Attack);
+                // On récupère l'AttackSO liée à l'objet de la palette
+                //attackState.SetAttack(activeWeapon.lightAttackSO);
+                attackState.SetAttack(player.defaultLightAttack);
+                player.StateMachine.ChangeState(PlayerStateType.Attack);
+            }
             return;
         }
-
         // 4. PRIORITÉ : La Roulade (Si tu l'as déjà implémentée)
         if (player.Input.RollPressed && player.Stamina.HasStamina())
         {
