@@ -13,56 +13,71 @@ public class AttackState : GroundedState
     public override void Enter()
     {
         base.Enter();
+        // 1. Sécurité : Vérifier si l'arme est nulle
+        if (player.PendingWeaponItem == null)
+        {
+            Debug.LogError("Tentative d'attaque sans arme assignée dans PendingWeaponItem !");
+            player.StateMachine.ChangeState(PlayerStateType.Idle);
+            return;
+        }
+        // 1. On récupère l'arme et ses données de combat
+        // Supposons que player.EquippedWeapon est l'ItemData actuel
+        WeaponCombatData combatData = player.PendingWeaponItem.combatData;
+
+        if (combatData == null)
+        {
+            Debug.LogError("Cette arme n'a pas de WeaponCombatData !");
+            player.StateMachine.ChangeState(PlayerStateType.Idle);
+            return;
+        }
+
+        // 2. Si c'est le début du combo, on prend la startingAttack
+        if (player.CurrentAttack == null)
+        {
+            player.CurrentAttack = combatData.startingAttack;
+        }
+
+        // 3. On joue l'animation
+        // On utilise le Hash pour la performance
+        player.Animator.Play(player.CurrentAttack.AnimationHash, ATTACK_LAYER, 0f);
+
+        // Initialisation du buffer pour le prochain coup
         timer = 0f;
         comboBuffered = false;
-
-        // On utilise le Hash, c'est beaucoup plus fiable pour Unity
-        // Play force l'animation instantanément sans transition
-        player.Animator.Play(currentAttack.animationName, ATTACK_LAYER, 0f);
-
         player.Animator.applyRootMotion = true;
-        //if (player.Stamina.CanSpend(currentAttack.staminaCost))
-        //     player.Stamina.Spend(currentAttack.staminaCost);
-        player.Animator.SetLayerWeight(10, 1f);
     }
+
     public override void Update()
-    { 
+    {
+        base.Update();
         timer += Time.deltaTime;
-        // --- AJOUTE CECI : DÉTECTION DU COMBO ---
-        // Si le joueur clique et qu'on a dépassé la fenêtre de début de combo
-        if (player.Input.AttackPressed && timer >= currentAttack.comboWindowStart)
+
+        // Détection du "Buffer" (clic pendant l'attaque actuelle)
+        // On vérifie si on est dans la fenêtre définie dans l'AttackSO
+        if (player.Input.AttackPressed) // Remplace par ton système d'input
         {
-            comboBuffered = true;
-            Debug.Log("Combo enregistré !"); // Petit log pour confirmer
-        }
-        // ----------------------------------------
-
-        AnimatorStateInfo stateInfo = player.Animator.GetCurrentAnimatorStateInfo(ATTACK_LAYER);
-
-        // On ne check la fin que si l'Animator a BIEN commencé l'attaque
-        bool isPlayingCorrectAnim = stateInfo.shortNameHash == currentAttack.AnimationHash;
-
-        if (isPlayingCorrectAnim)
-        {
-            // Au lieu de 0.95f (95% de l'anim), essaie 0.7f ou 0.8f
-            if (stateInfo.normalizedTime >= 0.85f)
+            if (timer >= player.CurrentAttack.comboWindowStart && timer <= player.CurrentAttack.comboWindowEnd)
             {
-                if (comboBuffered && currentAttack.nextAttack != null)
-                {
-                    SetAttack(currentAttack.nextAttack);
-                    Enter(); // On relance la suivante
-                }
-                else
-                {
-                    Debug.Log("Fin de l'attaque, retour à Idle");
-                    player.StateMachine.ChangeState(PlayerStateType.Idle);
-                }
+                comboBuffered = true;
+                Debug.Log("Combo Bufferisé !");
             }
         }
-        else if (timer > 0.5f) // Sécurité : si après 0.5s on n'est toujours pas dans l'anim
+
+        // Si l'animation est terminée (ou presque)
+        if (timer >= player.Animator.GetCurrentAnimatorStateInfo(ATTACK_LAYER).length)
         {
-            Debug.LogError("L'animation n'a jamais démarré, sortie de secours.");
-            player.StateMachine.ChangeState(PlayerStateType.Idle);
+            if (comboBuffered && player.CurrentAttack.nextAttack != null)
+            {
+                // On passe à l'attaque suivante définie dans le SO
+                player.CurrentAttack = player.CurrentAttack.nextAttack;
+                player.StateMachine.ChangeState(PlayerStateType.Attack); // On relance l'état
+            }
+            else
+            {
+                // Fin du combo, on reset et on rentre en Idle
+                player.CurrentAttack = null;
+                player.StateMachine.ChangeState(PlayerStateType.Idle);
+            }
         }
     }
 

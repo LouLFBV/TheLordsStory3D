@@ -13,7 +13,7 @@ public class InventorySystem : MonoBehaviour
 
     [Header("Other scripts References")]
     [SerializeField] private EquipmentSystem equipment;
-    [SerializeField] private ItemActionsSystem itemActionsSystem;
+    [SerializeField] private NewItemActionsSystem itemActionsSystem;
     [SerializeField] private PlayerController player;
 
     [Header("Inventory System Variables")]
@@ -28,7 +28,6 @@ public class InventorySystem : MonoBehaviour
 
     const int InventorySize = 32;
 
-    private bool _isOpen;
     private void Awake()
     {
         if (instance == null)
@@ -43,34 +42,20 @@ public class InventorySystem : MonoBehaviour
 
     private void Start()
     {
-        CloseInventory();
+        //CloseInventory();
         RefreshContent();
     }
 
-    private void OnInventory(InputAction.CallbackContext ctx)
-    {
-        // On ne permet pas d'ouvrir l'inventaire si on est dans certains états (ex: Mort, Dialogue)
-        // Mais on permet de l'ouvrir depuis Grounded, Move, Idle, etc.
-        if (!_isOpen)
-        {
-            if (player.StateMachine.CurrentState is not DeathState) // Exemple de restriction
-                OpenInventory();
-        }
-        else
-        {
-            CloseInventory();
-        }
-    }
 
-    private void OpenInventory()
+    public void OpenInventory()
     {
-        _isOpen = true;
         inventoryPanel.SetActive(true);
+        player.StateMachine.ChangeState(PlayerStateType.UI);
         RefreshContent();
 
         // On force la State Machine à passer dans un état "Menu" ou "Idle" 
         // pour empêcher le joueur de frapper/courir pendant qu'il trie ses objets
-        player.StateMachine.ChangeState(PlayerStateType.Idle);
+        //player.StateMachine.ChangeState(PlayerStateType.Idle);
 
         // Si tu as un état spécifique "UI" ou "Pause", c'est encore mieux :
         // player.StateMachine.ChangeState(PlayerStateType.InventoryOpen);
@@ -84,8 +69,7 @@ public class InventorySystem : MonoBehaviour
     {
         if (itemActionsSystem.actionPanel.activeSelf) return;
 
-        _isOpen = false;
-        inventoryPanel.SetActive(false);
+        inventoryPanel.SetActive(false); 
         itemActionsSystem.actionPanel.SetActive(false);
         TooltipSystem.instance.Hide();
 

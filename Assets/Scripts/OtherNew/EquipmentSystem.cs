@@ -11,7 +11,7 @@ public class EquipmentSystem : MonoBehaviour
 
     [Header("Other Scripts References")]
 
-    [SerializeField] private ItemActionsSystem itemActionsSystem;
+    [SerializeField] private NewItemActionsSystem itemActionsSystem;
 
     [SerializeField] private PlayerController player;
 
@@ -88,17 +88,17 @@ public class EquipmentSystem : MonoBehaviour
                 arrowItemInInventory.itemData = null;
                 for (int i = 0; i < count; i++)
                 {
-                    Inventory.instance.AddItem(itemToDisable);
+                    InventorySystem.instance.AddItem(itemToDisable);
                 }
             }
         }
         else
-            Inventory.instance.AddItem(itemToDisable);
+            InventorySystem.instance.AddItem(itemToDisable);
     }
 
     public void DesequipEquipment(EquipmentType equipmentType)
     {
-        if (Inventory.instance.IsFull())
+        if (InventorySystem.instance.IsFull())
         {
             Debug.LogWarning("Cannot desequip item, inventory is full.");
             return;
@@ -110,32 +110,32 @@ public class EquipmentSystem : MonoBehaviour
         {
             case EquipmentType.Head:
                 currentItem = equipmentHeadItem;
-                headSlotImage.sprite = Inventory.instance.emptySlotVisual;
+                headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 equipmentHeadItem = null;
                 break;
             case EquipmentType.Chest:
                 currentItem = equipmentChestItem;
-                chestSlotImage.sprite = Inventory.instance.emptySlotVisual;
+                chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 equipmentChestItem = null;
                 break;
             case EquipmentType.Hands:
                 currentItem = equipmentHandsItem;
-                handsSlotImage.sprite = Inventory.instance.emptySlotVisual;
+                handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 equipmentHandsItem = null;
                 break;
             case EquipmentType.Legs:
                 currentItem = equipmentLegsItem;
-                legslotImage.sprite = Inventory.instance.emptySlotVisual;
+                legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 equipmentLegsItem = null;
                 break;
             case EquipmentType.Feet:
                 currentItem = equipmentFeetItem;
-                feetSlotImage.sprite = Inventory.instance.emptySlotVisual;
+                feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 equipmentFeetItem = null;
                 break;
             case EquipmentType.Arrow:
                 currentItem = arrowItemInInventory.itemData;
-                arrowSlotImage.sprite = Inventory.instance.emptySlotVisual;
+                arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
                 arrowItemInInventory.itemData = null;
                 break;
         }
@@ -163,13 +163,13 @@ public class EquipmentSystem : MonoBehaviour
                 {
                     for (int i = 0; i < arrowItemInInventory.count; i++)
                     {
-                        Inventory.instance.AddItem(currentItem);
+                        InventorySystem.instance.AddItem(currentItem);
                     }
                 }
                 UpdateArrowsText();
             }
             else
-                Inventory.instance.AddItem(currentItem);
+                InventorySystem.instance.AddItem(currentItem);
             UpdateEquipmentsDesequipButtons();
         }
     }
@@ -274,10 +274,10 @@ public class EquipmentSystem : MonoBehaviour
                     DisablePreviousEquipedEquipment(arrowItemInInventory.itemData);
                     arrowSlotImage.sprite = itemToEquip.visual;
                     arrowItemInInventory.itemData = itemToEquip;
-                    arrowItemInInventory.count = Inventory.instance.GetContent().Find(x => x.itemData == itemToEquip).count;
+                    arrowItemInInventory.count = InventorySystem.instance.GetContent().Find(x => x.itemData == itemToEquip).count;
                     for (int i = 0; i < arrowItemInInventory.count; i++)
                     {
-                        Inventory.instance.RemoveItem(itemToEquip);
+                        InventorySystem.instance.RemoveItem(itemToEquip);
                     }
                     UpdateArrowsText();
                     ActiveItemVisuel(equipmentLibraryItem);
@@ -290,7 +290,7 @@ public class EquipmentSystem : MonoBehaviour
             }
 
             if (!isLoading && itemToEquip.equipmentType != EquipmentType.Arrow)
-                Inventory.instance.RemoveItem(itemToEquip);
+                InventorySystem.instance.RemoveItem(itemToEquip);
             if (!isLoading)
                 audioSource.PlayOneShot(equipSound);
         }
@@ -332,12 +332,12 @@ public class EquipmentSystem : MonoBehaviour
         arrowItemInInventory.itemData = null;
         arrowItemInInventory.count = 0;
 
-        headSlotImage.sprite = Inventory.instance.emptySlotVisual;
-        chestSlotImage.sprite = Inventory.instance.emptySlotVisual;
-        handsSlotImage.sprite = Inventory.instance.emptySlotVisual;
-        legslotImage.sprite = Inventory.instance.emptySlotVisual;
-        feetSlotImage.sprite = Inventory.instance.emptySlotVisual;
-        arrowSlotImage.sprite = Inventory.instance.emptySlotVisual;
+        headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
 
         if (data == null)
         {

@@ -23,23 +23,22 @@ public class PlayerController : MonoBehaviour
     public UnequipState UnequipState { get; private set; }
     public CrouchState CrouchState { get; private set; }
     public DeathState DeathState { get; private set; }
+    public UIState UIState { get; private set; }
 
 
     [Header("Systems")]
     public HealthSystem Health { get; private set; }
     public ArmorSystem Armor { get; private set; }
-    public PaletteSystem Palette { get; private set; }
-    [SerializeField] private PaletteSystem palette;
 
-    public Rigidbody Rigidbody { get; private set; }
-    public ThirdPersonCameraController Camera { get; private set; }
-    [SerializeField] private ThirdPersonCameraController cameraScript;
+
+    [Header("Combat Settings")]
+    public AttackSO defaultLightAttack;
+    public AttackSO CurrentAttack { get; set; }
     public ItemData PendingWeaponItem { get; set; }
     public HandWeapon PendingWeaponType { get; set; }
     public HandWeapon PendingUnequipType { get; set; }
 
-    [Header("Combat Settings")]
-    public AttackSO defaultLightAttack;
+    public Rigidbody Rigidbody { get; private set; }
 
     private void Awake()
     {
@@ -50,8 +49,6 @@ public class PlayerController : MonoBehaviour
         Stamina = GetComponent<StaminaSystem>();
         Animator = GetComponent<Animator>();
         Rigidbody = GetComponent<Rigidbody>(); // Ensure Rigidbody is assigned here
-        Camera = cameraScript; // Assign the camera script reference
-        Palette = palette; // Assign the palette system reference
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
         AttackState = new AttackState(this);
@@ -64,6 +61,7 @@ public class PlayerController : MonoBehaviour
         AimState = new AimState(this);
         EquipState = new EquipState(this);
         UnequipState = new UnequipState(this);
+        UIState = new UIState(this);
 
         StateMachine = new PlayerStateMachine(
             new System.Collections.Generic.Dictionary<PlayerStateType, PlayerState>
@@ -79,7 +77,8 @@ public class PlayerController : MonoBehaviour
                 { PlayerStateType.Aim, AimState },
                 { PlayerStateType.Equip, EquipState },
                 { PlayerStateType.Unequip, UnequipState },
-                { PlayerStateType.Crouch, CrouchState }
+                { PlayerStateType.Crouch, CrouchState },
+                { PlayerStateType.UI, UIState   }
             }
         );
     }
@@ -92,7 +91,20 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         StateMachine.Update();
-        Palette.HandlePaletteLogic(this);
+        PaletteSystem.instance.HandlePaletteLogic(this); 
+        Debug.Log($"Current State: {StateMachine.CurrentState.GetType().Name} | Inventory Pressed: {Input.InventoryPressed}");
+        if (Input.InventoryPressed && StateMachine.CurrentState != UIState)
+        {
+            Debug.Log("Inventory button pressed. Switching to UI State.");
+            StateMachine.ChangeState(PlayerStateType.UI);
+            Input.UseInventoryInput(); 
+        }
+        else if (Input.ClosePressed && StateMachine.CurrentState == UIState)
+        {
+            Debug.Log("Cancel button pressed. Returning to Idle State.");
+            StateMachine.ChangeState(PlayerStateType.Idle);
+            Input.UseCloseInput();
+        }
     }
 
     private void FixedUpdate()
@@ -113,4 +125,5 @@ public class PlayerController : MonoBehaviour
             Rigidbody.rotation * Animator.deltaRotation
         );
     }
+
 }

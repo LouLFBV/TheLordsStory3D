@@ -48,12 +48,12 @@ public class MoveState : GroundedState
         // FOV sprint
         if (isSprinting && !changedFOV)
         {
-            player.Camera.SetFOV(player.Camera.SprintFOV);
+            ThirdPersonCameraController.Instance.SetFOV(ThirdPersonCameraController.Instance.SprintFOV);
             changedFOV = true;
         }
         else if (!isSprinting && changedFOV)
         {
-            player.Camera.ResetFOV();
+            ThirdPersonCameraController.Instance.ResetFOV();
             changedFOV = false;
         }
 

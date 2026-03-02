@@ -62,5 +62,6 @@ public enum PlayerStateType
     Equip,
     Unequip,
     Crouch,
-    Death
+    Death,
+    UI
 }

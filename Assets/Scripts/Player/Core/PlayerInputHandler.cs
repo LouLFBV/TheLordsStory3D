@@ -17,6 +17,12 @@ public class PlayerInputHandler : MonoBehaviour
     public bool Weapon2Pressed { get; private set; }
     public bool Object1Pressed { get; private set; }
     public bool Object2Pressed { get; private set; }
+    public bool InventoryPressed { get; private set; }
+    public bool MenuPressed { get; private set; }
+    public Vector2 NavigationInput { get; private set; }
+    public bool SubmitPressed { get; private set; }
+    public bool CancelPressed { get; private set; }
+    public bool ClosePressed { get; private set; }
 
     private PlayerInput input;
 
@@ -45,6 +51,12 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Jump"].performed += ctx => JumpPressed = true;
         input.actions["Jump"].canceled += ctx => JumpPressed = false;
 
+        input.actions["Inventory"].performed += ctx => InventoryPressed = true;
+        input.actions["Inventory"].canceled += ctx => InventoryPressed = false;
+
+        input.actions["Menu"].performed += ctx => MenuPressed = true;
+        input.actions["Menu"].canceled += ctx => MenuPressed = false;
+
 
         // Souris
         input.actions["LookMouse"].performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
@@ -70,5 +82,41 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Object2"].performed += ctx => Object2Pressed = true;
         input.actions["Object2"].canceled += ctx => Object2Pressed = false;
+
+        // UI
+
+        input.actions["Navigate"].performed += ctx => NavigationInput = ctx.ReadValue<Vector2>(); ;
+        input.actions["Navigate"].canceled += ctx => NavigationInput = Vector2.zero;
+
+        input.actions["Submit"].performed += ctx => SubmitPressed = true;
+        input.actions["Submit"].canceled += ctx => SubmitPressed = false;
+
+        input.actions["Cancel"].performed += ctx => CancelPressed = true;
+        input.actions["Cancel"].canceled += ctx => CancelPressed = false;
+
+        input.actions["Close"].performed += ctx => ClosePressed = true;
+        input.actions["Close"].canceled += ctx => ClosePressed = false;
     }
+
+    // --- LA MÉTHODE PRO ---
+    public void SwitchActionMap(string mapName)
+    {
+        input.SwitchCurrentActionMap(mapName);
+
+        // Reset des valeurs pour éviter que le perso continue de courir 
+        // si on ouvre l'inventaire en plein sprint
+        MoveInput = Vector2.zero;
+        AttackPressed = false;
+        RollPressed = false;
+        SprintHeld = false;
+        CrouchHeld = false;
+        AimHeld = false;
+        JumpPressed = false;
+        Weapon1Pressed = false;
+        Weapon2Pressed = false;
+        Object1Pressed = false;
+        Object2Pressed = false;
+    }
+    public void UseInventoryInput() => InventoryPressed = false;
+    public void UseCloseInput() => ClosePressed = false;
 }

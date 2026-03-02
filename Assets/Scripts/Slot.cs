@@ -8,7 +8,8 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Text countTexte;
 
     [SerializeField]
-    private ItemActionsSystem itemActionsSystem;
+    //private ItemActionsSystem itemActionsSystem;
+    private NewItemActionsSystem itemActionsSystem;
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (item != null)

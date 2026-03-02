@@ -12,6 +12,9 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float height = 1.7f;
     [SerializeField] private float rotationSpeed = 180f;
     [SerializeField] private float verticalSpeed = 120f;
+    // Ajoute ces deux propriétés pour permettre au UIManager de lire/écrire les vitesses
+    public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = value; }
+    public float VerticalSpeed { get => verticalSpeed; set => verticalSpeed = value; }
 
     [Header("Vertical Clamp")]
     [SerializeField] private float minVerticalAngle = -40f;
@@ -46,6 +49,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         defaultFOV = _camComponent.fieldOfView;
         targetFOV = defaultFOV;
         yaw = target.eulerAngles.y;
+
     }
 
     private void LateUpdate()

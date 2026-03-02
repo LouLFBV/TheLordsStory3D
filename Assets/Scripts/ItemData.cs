@@ -25,6 +25,7 @@ public class ItemData : ScriptableObject
     public DamageType armorType;
 
     [Header("Attack Stats")]
+    public WeaponCombatData combatData;
     public float attackPoints;
     public HandWeapon handWeaponType;
     public DamageType damageType;

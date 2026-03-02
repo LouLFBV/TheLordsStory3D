@@ -12,11 +12,11 @@ public class PaletteSystem : MonoBehaviour
 
     [SerializeField] private EquipmentLibrary equipmentLibrary;
 
-    [SerializeField] private Equipment equipmentSystem;
+    [SerializeField] private EquipmentSystem equipmentSystem;
 
-    [SerializeField] private ItemActionsSystem itemActionsSystem;
+    [SerializeField] private NewItemActionsSystem itemActionsSystem;
 
-    [SerializeField] private InteractBehaviour interactBehaviour;
+    [SerializeField] private InteractSystem interactBehaviour;
 
 
     [Header("Palette Settings")]
@@ -288,19 +288,19 @@ public class PaletteSystem : MonoBehaviour
     {
         weapon2SlotDesequipButton.onClick.RemoveAllListeners();
         weapon2SlotDesequipButton.onClick.AddListener(delegate { DesequipWeapon(2); });
-        weapon2SlotDesequipButton.gameObject.SetActive((equipmentWeapon2Item != null && !isEquippedWeapon2) && Inventory.instance.isOpen);
+        weapon2SlotDesequipButton.gameObject.SetActive((equipmentWeapon2Item != null && !isEquippedWeapon2));
 
         weapon1SlotDesequipButton.onClick.RemoveAllListeners();
         weapon1SlotDesequipButton.onClick.AddListener(delegate { DesequipWeapon(1); });
-        weapon1SlotDesequipButton.gameObject.SetActive((equipmentWeapon1Item != null && !isEquippedWeapon1) && Inventory.instance.isOpen);
+        weapon1SlotDesequipButton.gameObject.SetActive((equipmentWeapon1Item != null && !isEquippedWeapon1));
 
         object2SlotDesequipButton.onClick.RemoveAllListeners();
         object2SlotDesequipButton.onClick.AddListener(delegate { DesequipObject(2); });
-        object2SlotDesequipButton.gameObject.SetActive((equipmentObject2Item != null && !isEquippedObject2) && Inventory.instance.isOpen);
+        object2SlotDesequipButton.gameObject.SetActive((equipmentObject2Item != null && !isEquippedObject2));
 
         object1SlotDesequipButton.onClick.RemoveAllListeners();
         object1SlotDesequipButton.onClick.AddListener(delegate { DesequipObject(1); });
-        object1SlotDesequipButton.gameObject.SetActive((equipmentObject1Item != null && !isEquippedObject1) && Inventory.instance.isOpen);
+        object1SlotDesequipButton.gameObject.SetActive((equipmentObject1Item != null && !isEquippedObject1));
     }
 
     public void DesequipWeapon(int numberOfWeapon)
@@ -321,17 +321,17 @@ public class PaletteSystem : MonoBehaviour
         if (numberOfWeapon == 1)
         {
             equipmentWeapon1Item = null;
-            weapon1SlotImage.sprite = Inventory.instance.emptySlotVisual;
+            weapon1SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
 
         }
         else
         {
             equipmentWeapon2Item = null;
-            weapon2SlotImage.sprite = Inventory.instance.emptySlotVisual;
+            weapon2SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
         }
 
         // remettre dans l'inventaire
-        Inventory.instance.AddItem(currentItem);
+        InventorySystem.instance.AddItem(currentItem);
         RemoveWeapon(numberOfWeapon);
         RefreshAffichage();
         UpdateImageSeleted();
@@ -350,13 +350,13 @@ public class PaletteSystem : MonoBehaviour
         if (numberOfObject == 1)
         {
             currentItem = equipmentObject1Item;
-            object1SlotImage.sprite = Inventory.instance.emptySlotVisual;
+            object1SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
             isEquippedObject1 = false;
         }
         else
         {
             currentItem = equipmentObject2Item;
-            object2SlotImage.sprite = Inventory.instance.emptySlotVisual;
+            object2SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
             isEquippedObject2 = false;
         }
 
@@ -369,7 +369,7 @@ public class PaletteSystem : MonoBehaviour
 
         if (currentItem)
         {
-            Inventory.instance.AddItem(currentItem);
+            InventorySystem.instance.AddItem(currentItem);
         }
         RemoveObject(numberOfObject);
         RefreshAffichage();
@@ -378,13 +378,13 @@ public class PaletteSystem : MonoBehaviour
 
     public void RefreshAffichage()
     {
-        weapon1SlotImage.sprite = equipmentWeapon1Item ? equipmentWeapon1Item.visual : Inventory.instance.emptySlotVisual;
-        weapon2SlotImage.sprite = equipmentWeapon2Item ? equipmentWeapon2Item.visual : Inventory.instance.emptySlotVisual;
+        weapon1SlotImage.sprite = equipmentWeapon1Item ? equipmentWeapon1Item.visual : InventorySystem.instance.emptySlotVisual;
+        weapon2SlotImage.sprite = equipmentWeapon2Item ? equipmentWeapon2Item.visual : InventorySystem.instance.emptySlotVisual;
 
-        object1SlotImage.sprite = equipmentObject1Item ? equipmentObject1Item.visual : Inventory.instance.emptySlotVisual;
+        object1SlotImage.sprite = equipmentObject1Item ? equipmentObject1Item.visual : InventorySystem.instance.emptySlotVisual;
         object1CountText.gameObject.SetActive(equipmentObject1Item);
 
-        object2SlotImage.sprite = equipmentObject2Item ? equipmentObject2Item.visual : Inventory.instance.emptySlotVisual;
+        object2SlotImage.sprite = equipmentObject2Item ? equipmentObject2Item.visual : InventorySystem.instance.emptySlotVisual;
         object2CountText.gameObject.SetActive(equipmentObject2Item);
         UpdateEquipmentsDesequipButtons();
     }
