@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -38,6 +39,10 @@ public class PlayerController : MonoBehaviour
     public HandWeapon PendingWeaponType { get; set; }
     public HandWeapon PendingUnequipType { get; set; }
 
+
+    [Header("Library")]
+    public EquipmentLibrary equipmentLibrary;
+    public EquipmentLibraryItem PendingLibraryItem { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
 
     private void Awake()
@@ -91,19 +96,34 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         StateMachine.Update();
-        PaletteSystem.instance.HandlePaletteLogic(this); 
-        Debug.Log($"Current State: {StateMachine.CurrentState.GetType().Name} | Inventory Pressed: {Input.InventoryPressed}");
-        if (Input.InventoryPressed && StateMachine.CurrentState != UIState)
+        PaletteSystem.instance.HandlePaletteLogic(this);
+
+        // --- OUVERTURE ---
+        if (StateMachine.CurrentState != UIState)
         {
-            Debug.Log("Inventory button pressed. Switching to UI State.");
-            StateMachine.ChangeState(PlayerStateType.UI);
-            Input.UseInventoryInput(); 
+            if (Input.InventoryPressed)
+            {
+                // Optionnel : Tu pourrais dire à ton UIState quel onglet ouvrir (Inventaire)
+                StateMachine.ChangeState(PlayerStateType.UI);
+                Input.UseInventoryInput();
+            }
+            else if (Input.MenuPressed)
+            {
+                // Optionnel : Tu pourrais dire à ton UIState quel onglet ouvrir (Options/Pause)
+                StateMachine.ChangeState(PlayerStateType.UI);
+                Input.UseMenuInput(); 
+            }
         }
-        else if (Input.ClosePressed && StateMachine.CurrentState == UIState)
+        // --- FERMETURE ---
+        else if (StateMachine.CurrentState == UIState)
         {
-            Debug.Log("Cancel button pressed. Returning to Idle State.");
-            StateMachine.ChangeState(PlayerStateType.Idle);
-            Input.UseCloseInput();
+            // Si l'une des deux touches de fermeture est pressée
+            if (Input.CloseMenuPressed || Input.CloseInventoryPressed)
+            {
+                StateMachine.ChangeState(PlayerStateType.Idle);
+                Input.UseCloseInventoryInput();
+                Input.UseCloseMenuInput();
+            }
         }
     }
 
@@ -125,5 +145,34 @@ public class PlayerController : MonoBehaviour
             Rigidbody.rotation * Animator.deltaRotation
         );
     }
+    public void AE_EquipWeapon() // AE pour Animation Event
+    {
+        // On délègue la logique à l'état actuel si c'est un état d'équipement
+        if (StateMachine.CurrentState is EquipState equip)
+        {
+            
+            equip.HandleWeaponSwitch();
+        }
+    }
 
+    public void AE_UnequipWeapon()
+    {
+        if (StateMachine.CurrentState is UnequipState unequip)
+        {
+            unequip.HandleWeaponRemoval();
+        }
+    }
+    public void PrepareEquip(ItemData data)
+    {
+        // On cherche l'item correspondant dans la librairie
+        PendingLibraryItem = equipmentLibrary.content.FirstOrDefault(x => x.itemData == data);
+
+        if (PendingLibraryItem != null)
+        {
+            PendingWeaponItem = data;
+
+            PendingWeaponType = data.handWeaponType;
+            StateMachine.ChangeState(PlayerStateType.Equip);
+        }
+    }
 }

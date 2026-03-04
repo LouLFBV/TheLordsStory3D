@@ -226,6 +226,42 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Weapon1"",
+                    ""type"": ""Button"",
+                    ""id"": ""a37aab71-7f84-493c-b313-95be52acf00b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Weapon2"",
+                    ""type"": ""Button"",
+                    ""id"": ""18b3665b-8deb-4bdd-803f-4259e8f40573"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Object1"",
+                    ""type"": ""Button"",
+                    ""id"": ""810087dd-9e5e-4074-95f0-91f83f6cfb7c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Object2"",
+                    ""type"": ""Button"",
+                    ""id"": ""753a01fe-089c-47de-8304-2f6bcf7ffc02"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -624,54 +660,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Menu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Palette"",
-            ""id"": ""56ef9daa-480d-437e-a0e1-5f1ab0602396"",
-            ""actions"": [
-                {
-                    ""name"": ""Weapon1"",
-                    ""type"": ""Button"",
-                    ""id"": ""0ff806b3-2118-4927-8f0f-5f873ed22640"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 },
-                {
-                    ""name"": ""Weapon2"",
-                    ""type"": ""Button"",
-                    ""id"": ""ab8490ab-7b55-41fc-9be5-56d6d2fd2f24"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Object1"",
-                    ""type"": ""Button"",
-                    ""id"": ""72acf862-b430-46ea-ab47-e036685457bd"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Object2"",
-                    ""type"": ""Button"",
-                    ""id"": ""26a1e3ce-b40b-4264-8fcd-76b02c148fa8"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""940f5b41-4cde-452c-a9d3-8af5656a3f27"",
+                    ""id"": ""d454d2e9-7d30-42d6-848f-860de163b6c2"",
                     ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -682,7 +674,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""70f97425-4acf-4c6d-9f1f-05b43030a954"",
+                    ""id"": ""cdc32ba1-681d-4b66-a9d7-371fbe470f54"",
                     ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -693,7 +685,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""fbf25d70-d220-4cb8-9340-86ace688897d"",
+                    ""id"": ""3ff11f94-5763-4cb8-a1f3-3805d942288d"",
                     ""path"": ""<Keyboard>/2"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -704,7 +696,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4502fe8f-3e10-469e-a418-82b4472514bd"",
+                    ""id"": ""9a3a0a02-60fa-46c7-9111-3e770ec03c54"",
                     ""path"": ""<Gamepad>/dpad/right"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -715,7 +707,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""0c4a2e87-6226-4536-9dec-724366e47fa2"",
+                    ""id"": ""c9d4ae44-6203-4966-a46b-e4ce1a858fa2"",
                     ""path"": ""<Keyboard>/3"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -726,7 +718,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4dcde068-00c9-404d-b824-5ba987789b6c"",
+                    ""id"": ""0b76ea98-8be8-43dc-8e42-93b62547343c"",
                     ""path"": ""<Gamepad>/dpad/up"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -737,7 +729,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""bcd304f5-b2b6-4e32-a9b6-ff2bdc262a2a"",
+                    ""id"": ""218c5ebe-2204-4a54-87af-8d72f0cf8e54"",
                     ""path"": ""<Keyboard>/4"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -748,7 +740,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""403e0445-f594-42fa-bf21-e857beeb49ae"",
+                    ""id"": ""847967fd-2a35-446a-96ba-20852dc87182"",
                     ""path"": ""<Gamepad>/dpad/down"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -791,9 +783,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Close"",
+                    ""name"": ""CloseMenu"",
                     ""type"": ""Button"",
                     ""id"": ""242b7add-0f96-4fdb-8e8a-6b50913e9c6a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""19fdf82f-73d8-44a9-9262-62b53d35ca68"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1072,7 +1073,29 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Close"",
+                    ""action"": ""CloseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""13434e60-31f8-464a-aa4d-d2c8039ef82d"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e6cf38f-d899-4f06-80ab-1a5f6927456c"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1098,24 +1121,22 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_ForwardRool = m_Player.FindAction("ForwardRool", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
-        // Palette
-        m_Palette = asset.FindActionMap("Palette", throwIfNotFound: true);
-        m_Palette_Weapon1 = m_Palette.FindAction("Weapon1", throwIfNotFound: true);
-        m_Palette_Weapon2 = m_Palette.FindAction("Weapon2", throwIfNotFound: true);
-        m_Palette_Object1 = m_Palette.FindAction("Object1", throwIfNotFound: true);
-        m_Palette_Object2 = m_Palette.FindAction("Object2", throwIfNotFound: true);
+        m_Player_Weapon1 = m_Player.FindAction("Weapon1", throwIfNotFound: true);
+        m_Player_Weapon2 = m_Player.FindAction("Weapon2", throwIfNotFound: true);
+        m_Player_Object1 = m_Player.FindAction("Object1", throwIfNotFound: true);
+        m_Player_Object2 = m_Player.FindAction("Object2", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
-        m_UI_Close = m_UI.FindAction("Close", throwIfNotFound: true);
+        m_UI_CloseMenu = m_UI.FindAction("CloseMenu", throwIfNotFound: true);
+        m_UI_CloseInventory = m_UI.FindAction("CloseInventory", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_Palette.enabled, "This will cause a leak and performance issues, PlayerControls.Palette.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
     }
 
@@ -1207,6 +1228,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ForwardRool;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Menu;
+    private readonly InputAction m_Player_Weapon1;
+    private readonly InputAction m_Player_Weapon2;
+    private readonly InputAction m_Player_Object1;
+    private readonly InputAction m_Player_Object2;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1279,6 +1304,22 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Menu => m_Wrapper.m_Player_Menu;
         /// <summary>
+        /// Provides access to the underlying input action "Player/Weapon1".
+        /// </summary>
+        public InputAction @Weapon1 => m_Wrapper.m_Player_Weapon1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Weapon2".
+        /// </summary>
+        public InputAction @Weapon2 => m_Wrapper.m_Player_Weapon2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Object1".
+        /// </summary>
+        public InputAction @Object1 => m_Wrapper.m_Player_Object1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Object2".
+        /// </summary>
+        public InputAction @Object2 => m_Wrapper.m_Player_Object2;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1349,6 +1390,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
+            @Weapon1.started += instance.OnWeapon1;
+            @Weapon1.performed += instance.OnWeapon1;
+            @Weapon1.canceled += instance.OnWeapon1;
+            @Weapon2.started += instance.OnWeapon2;
+            @Weapon2.performed += instance.OnWeapon2;
+            @Weapon2.canceled += instance.OnWeapon2;
+            @Object1.started += instance.OnObject1;
+            @Object1.performed += instance.OnObject1;
+            @Object1.canceled += instance.OnObject1;
+            @Object2.started += instance.OnObject2;
+            @Object2.performed += instance.OnObject2;
+            @Object2.canceled += instance.OnObject2;
         }
 
         /// <summary>
@@ -1405,6 +1458,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
+            @Weapon1.started -= instance.OnWeapon1;
+            @Weapon1.performed -= instance.OnWeapon1;
+            @Weapon1.canceled -= instance.OnWeapon1;
+            @Weapon2.started -= instance.OnWeapon2;
+            @Weapon2.performed -= instance.OnWeapon2;
+            @Weapon2.canceled -= instance.OnWeapon2;
+            @Object1.started -= instance.OnObject1;
+            @Object1.performed -= instance.OnObject1;
+            @Object1.canceled -= instance.OnObject1;
+            @Object2.started -= instance.OnObject2;
+            @Object2.performed -= instance.OnObject2;
+            @Object2.canceled -= instance.OnObject2;
         }
 
         /// <summary>
@@ -1439,142 +1504,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
 
-    // Palette
-    private readonly InputActionMap m_Palette;
-    private List<IPaletteActions> m_PaletteActionsCallbackInterfaces = new List<IPaletteActions>();
-    private readonly InputAction m_Palette_Weapon1;
-    private readonly InputAction m_Palette_Weapon2;
-    private readonly InputAction m_Palette_Object1;
-    private readonly InputAction m_Palette_Object2;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "Palette".
-    /// </summary>
-    public struct PaletteActions
-    {
-        private @PlayerControls m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public PaletteActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "Palette/Weapon1".
-        /// </summary>
-        public InputAction @Weapon1 => m_Wrapper.m_Palette_Weapon1;
-        /// <summary>
-        /// Provides access to the underlying input action "Palette/Weapon2".
-        /// </summary>
-        public InputAction @Weapon2 => m_Wrapper.m_Palette_Weapon2;
-        /// <summary>
-        /// Provides access to the underlying input action "Palette/Object1".
-        /// </summary>
-        public InputAction @Object1 => m_Wrapper.m_Palette_Object1;
-        /// <summary>
-        /// Provides access to the underlying input action "Palette/Object2".
-        /// </summary>
-        public InputAction @Object2 => m_Wrapper.m_Palette_Object2;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Palette; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="PaletteActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(PaletteActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="PaletteActions" />
-        public void AddCallbacks(IPaletteActions instance)
-        {
-            if (instance == null || m_Wrapper.m_PaletteActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PaletteActionsCallbackInterfaces.Add(instance);
-            @Weapon1.started += instance.OnWeapon1;
-            @Weapon1.performed += instance.OnWeapon1;
-            @Weapon1.canceled += instance.OnWeapon1;
-            @Weapon2.started += instance.OnWeapon2;
-            @Weapon2.performed += instance.OnWeapon2;
-            @Weapon2.canceled += instance.OnWeapon2;
-            @Object1.started += instance.OnObject1;
-            @Object1.performed += instance.OnObject1;
-            @Object1.canceled += instance.OnObject1;
-            @Object2.started += instance.OnObject2;
-            @Object2.performed += instance.OnObject2;
-            @Object2.canceled += instance.OnObject2;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="PaletteActions" />
-        private void UnregisterCallbacks(IPaletteActions instance)
-        {
-            @Weapon1.started -= instance.OnWeapon1;
-            @Weapon1.performed -= instance.OnWeapon1;
-            @Weapon1.canceled -= instance.OnWeapon1;
-            @Weapon2.started -= instance.OnWeapon2;
-            @Weapon2.performed -= instance.OnWeapon2;
-            @Weapon2.canceled -= instance.OnWeapon2;
-            @Object1.started -= instance.OnObject1;
-            @Object1.performed -= instance.OnObject1;
-            @Object1.canceled -= instance.OnObject1;
-            @Object2.started -= instance.OnObject2;
-            @Object2.performed -= instance.OnObject2;
-            @Object2.canceled -= instance.OnObject2;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PaletteActions.UnregisterCallbacks(IPaletteActions)" />.
-        /// </summary>
-        /// <seealso cref="PaletteActions.UnregisterCallbacks(IPaletteActions)" />
-        public void RemoveCallbacks(IPaletteActions instance)
-        {
-            if (m_Wrapper.m_PaletteActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="PaletteActions.AddCallbacks(IPaletteActions)" />
-        /// <seealso cref="PaletteActions.RemoveCallbacks(IPaletteActions)" />
-        /// <seealso cref="PaletteActions.UnregisterCallbacks(IPaletteActions)" />
-        public void SetCallbacks(IPaletteActions instance)
-        {
-            foreach (var item in m_Wrapper.m_PaletteActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_PaletteActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="PaletteActions" /> instance referencing this action map.
-    /// </summary>
-    public PaletteActions @Palette => new PaletteActions(this);
-
     // UI
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Navigate;
     private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Cancel;
-    private readonly InputAction m_UI_Close;
+    private readonly InputAction m_UI_CloseMenu;
+    private readonly InputAction m_UI_CloseInventory;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1599,9 +1536,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
         /// <summary>
-        /// Provides access to the underlying input action "UI/Close".
+        /// Provides access to the underlying input action "UI/CloseMenu".
         /// </summary>
-        public InputAction @Close => m_Wrapper.m_UI_Close;
+        public InputAction @CloseMenu => m_Wrapper.m_UI_CloseMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/CloseInventory".
+        /// </summary>
+        public InputAction @CloseInventory => m_Wrapper.m_UI_CloseInventory;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1637,9 +1578,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Cancel.started += instance.OnCancel;
             @Cancel.performed += instance.OnCancel;
             @Cancel.canceled += instance.OnCancel;
-            @Close.started += instance.OnClose;
-            @Close.performed += instance.OnClose;
-            @Close.canceled += instance.OnClose;
+            @CloseMenu.started += instance.OnCloseMenu;
+            @CloseMenu.performed += instance.OnCloseMenu;
+            @CloseMenu.canceled += instance.OnCloseMenu;
+            @CloseInventory.started += instance.OnCloseInventory;
+            @CloseInventory.performed += instance.OnCloseInventory;
+            @CloseInventory.canceled += instance.OnCloseInventory;
         }
 
         /// <summary>
@@ -1660,9 +1604,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Cancel.started -= instance.OnCancel;
             @Cancel.performed -= instance.OnCancel;
             @Cancel.canceled -= instance.OnCancel;
-            @Close.started -= instance.OnClose;
-            @Close.performed -= instance.OnClose;
-            @Close.canceled -= instance.OnClose;
+            @CloseMenu.started -= instance.OnCloseMenu;
+            @CloseMenu.performed -= instance.OnCloseMenu;
+            @CloseMenu.canceled -= instance.OnCloseMenu;
+            @CloseInventory.started -= instance.OnCloseInventory;
+            @CloseInventory.performed -= instance.OnCloseInventory;
+            @CloseInventory.canceled -= instance.OnCloseInventory;
         }
 
         /// <summary>
@@ -1808,14 +1755,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMenu(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Palette" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="PaletteActions.AddCallbacks(IPaletteActions)" />
-    /// <seealso cref="PaletteActions.RemoveCallbacks(IPaletteActions)" />
-    public interface IPaletteActions
-    {
         /// <summary>
         /// Method invoked when associated input action "Weapon1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -1874,11 +1813,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancel(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Close" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "CloseMenu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnClose(InputAction.CallbackContext context);
+        void OnCloseMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseInventory(InputAction.CallbackContext context);
     }
 }

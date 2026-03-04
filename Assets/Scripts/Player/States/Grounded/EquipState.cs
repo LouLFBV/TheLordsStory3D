@@ -43,4 +43,18 @@ public class EquipState : GroundedState
                 ? PlayerStateType.Move : PlayerStateType.Idle);
         }
     }
+
+    public void HandleWeaponSwitch()
+    {
+        if (player.PendingLibraryItem != null)
+        {
+            // Activer le nouveau prefab
+            player.PendingLibraryItem.itemPrefab.SetActive(true);
+            // Désactiver les éléments visuels inutiles (ex: carquois si arc, etc.)
+            foreach (var element in player.PendingLibraryItem.elementsToDisable)
+            {
+                element.SetActive(false);
+            }
+        }
+    }
 }

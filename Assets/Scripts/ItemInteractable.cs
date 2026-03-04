@@ -1,4 +1,3 @@
-using Unity.AI.Navigation;
 using UnityEngine;
 
 public class ItemInteractable : InteractableBase

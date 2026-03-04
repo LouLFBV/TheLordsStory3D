@@ -140,6 +140,42 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Weapon1",
+                    "type": "Button",
+                    "id": "a37aab71-7f84-493c-b313-95be52acf00b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Weapon2",
+                    "type": "Button",
+                    "id": "18b3665b-8deb-4bdd-803f-4259e8f40573",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Object1",
+                    "type": "Button",
+                    "id": "810087dd-9e5e-4074-95f0-91f83f6cfb7c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Object2",
+                    "type": "Button",
+                    "id": "753a01fe-089c-47de-8304-2f6bcf7ffc02",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -538,54 +574,10 @@
                     "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Palette",
-            "id": "56ef9daa-480d-437e-a0e1-5f1ab0602396",
-            "actions": [
-                {
-                    "name": "Weapon1",
-                    "type": "Button",
-                    "id": "0ff806b3-2118-4927-8f0f-5f873ed22640",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 },
-                {
-                    "name": "Weapon2",
-                    "type": "Button",
-                    "id": "ab8490ab-7b55-41fc-9be5-56d6d2fd2f24",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Object1",
-                    "type": "Button",
-                    "id": "72acf862-b430-46ea-ab47-e036685457bd",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Object2",
-                    "type": "Button",
-                    "id": "26a1e3ce-b40b-4264-8fcd-76b02c148fa8",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
                 {
                     "name": "",
-                    "id": "940f5b41-4cde-452c-a9d3-8af5656a3f27",
+                    "id": "d454d2e9-7d30-42d6-848f-860de163b6c2",
                     "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
@@ -596,7 +588,7 @@
                 },
                 {
                     "name": "",
-                    "id": "70f97425-4acf-4c6d-9f1f-05b43030a954",
+                    "id": "cdc32ba1-681d-4b66-a9d7-371fbe470f54",
                     "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
@@ -607,7 +599,7 @@
                 },
                 {
                     "name": "",
-                    "id": "fbf25d70-d220-4cb8-9340-86ace688897d",
+                    "id": "3ff11f94-5763-4cb8-a1f3-3805d942288d",
                     "path": "<Keyboard>/2",
                     "interactions": "",
                     "processors": "",
@@ -618,7 +610,7 @@
                 },
                 {
                     "name": "",
-                    "id": "4502fe8f-3e10-469e-a418-82b4472514bd",
+                    "id": "9a3a0a02-60fa-46c7-9111-3e770ec03c54",
                     "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
@@ -629,7 +621,7 @@
                 },
                 {
                     "name": "",
-                    "id": "0c4a2e87-6226-4536-9dec-724366e47fa2",
+                    "id": "c9d4ae44-6203-4966-a46b-e4ce1a858fa2",
                     "path": "<Keyboard>/3",
                     "interactions": "",
                     "processors": "",
@@ -640,7 +632,7 @@
                 },
                 {
                     "name": "",
-                    "id": "4dcde068-00c9-404d-b824-5ba987789b6c",
+                    "id": "0b76ea98-8be8-43dc-8e42-93b62547343c",
                     "path": "<Gamepad>/dpad/up",
                     "interactions": "",
                     "processors": "",
@@ -651,7 +643,7 @@
                 },
                 {
                     "name": "",
-                    "id": "bcd304f5-b2b6-4e32-a9b6-ff2bdc262a2a",
+                    "id": "218c5ebe-2204-4a54-87af-8d72f0cf8e54",
                     "path": "<Keyboard>/4",
                     "interactions": "",
                     "processors": "",
@@ -662,7 +654,7 @@
                 },
                 {
                     "name": "",
-                    "id": "403e0445-f594-42fa-bf21-e857beeb49ae",
+                    "id": "847967fd-2a35-446a-96ba-20852dc87182",
                     "path": "<Gamepad>/dpad/down",
                     "interactions": "",
                     "processors": "",
@@ -705,9 +697,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Close",
+                    "name": "CloseMenu",
                     "type": "Button",
                     "id": "242b7add-0f96-4fdb-8e8a-6b50913e9c6a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CloseInventory",
+                    "type": "Button",
+                    "id": "19fdf82f-73d8-44a9-9262-62b53d35ca68",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -986,7 +987,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Close",
+                    "action": "CloseMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "13434e60-31f8-464a-aa4d-d2c8039ef82d",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2e6cf38f-d899-4f06-80ab-1a5f6927456c",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseInventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

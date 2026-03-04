@@ -136,6 +136,7 @@ public class PaletteSystem : MonoBehaviour
 
             // On passe l'info au player et on change d'état
             player.PendingWeaponType = item.handWeaponType;
+            player.PrepareEquip(item);
             player.StateMachine.ChangeState(PlayerStateType.Equip);
 
             UseWeapon(slot, player);
@@ -148,7 +149,6 @@ public class PaletteSystem : MonoBehaviour
         }
         UpdateImageSeleted();
     }
-
     private void DesequipCurrentActiveWeapon(int slot, PlayerController player)
     {
         ItemData item = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
@@ -258,7 +258,7 @@ public class PaletteSystem : MonoBehaviour
     private void UseWeapon(int slot, PlayerController player)
     {
         ItemData itemToEquip = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
-
+        player.PendingWeaponItem = itemToEquip;
         // 1. On cache les consommables
         DisableObject(equipmentObject1Item);
         DisableObject(equipmentObject2Item);
@@ -269,11 +269,12 @@ public class PaletteSystem : MonoBehaviour
         if (slot == 1 && isEquippedWeapon2) ForceDesequipWeapon(equipmentWeapon2Item, ref isEquippedWeapon2, player);
         if (slot == 2 && isEquippedWeapon1) ForceDesequipWeapon(equipmentWeapon1Item, ref isEquippedWeapon1, player);
 
-        // 3. On prépare les data pour le script qui gère l'apparition du mesh
-        EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
-        interactBehaviour.SetCurrentEquippedItem(libItem);
-        PlayerStats.instance.equipmentToEquip = libItem;
+        //// 3. On prépare les data pour le script qui gère l'apparition du mesh
+        //EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
+        //interactBehaviour.SetCurrentEquippedItem(libItem);
+        //player.instance.equipmentToEquip = libItem;
 
+        player.PrepareEquip(itemToEquip);
         // Note: Le mesh apparaîtra via un Animation Event ou la logique de ton EquipmentSystem
 
         //StartCoroutine(EquipAfterDesequip(itemToEquip.handWeaponType, 0.01f));

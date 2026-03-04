@@ -45,4 +45,19 @@ public class UnequipState : GroundedState
                 ? PlayerStateType.Move : PlayerStateType.Idle);
         }
     }
+
+    public void HandleWeaponRemoval()
+    {
+        if (player.PendingLibraryItem != null)
+        {
+            // Activer le nouveau prefab
+            player.PendingLibraryItem.itemPrefab.SetActive(false);
+
+            // Désactiver les éléments visuels inutiles (ex: carquois si arc, etc.)
+            foreach (var element in player.PendingLibraryItem.elementsToDisable)
+            {
+                element.SetActive(true);
+            }
+        }
+    }
 }

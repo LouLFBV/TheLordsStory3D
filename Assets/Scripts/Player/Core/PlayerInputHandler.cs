@@ -22,7 +22,8 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 NavigationInput { get; private set; }
     public bool SubmitPressed { get; private set; }
     public bool CancelPressed { get; private set; }
-    public bool ClosePressed { get; private set; }
+    public bool CloseMenuPressed { get; private set; }
+    public bool CloseInventoryPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -94,8 +95,11 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Cancel"].performed += ctx => CancelPressed = true;
         input.actions["Cancel"].canceled += ctx => CancelPressed = false;
 
-        input.actions["Close"].performed += ctx => ClosePressed = true;
-        input.actions["Close"].canceled += ctx => ClosePressed = false;
+        input.actions["CloseMenu"].performed += ctx => CloseMenuPressed = true;
+        input.actions["CloseMenu"].canceled += ctx => CloseMenuPressed = false;
+
+        input.actions["CloseInventory"].performed += ctx => CloseInventoryPressed = true;
+        input.actions["CloseInventory"].canceled += ctx => CloseInventoryPressed = false;
     }
 
     // --- LA MÉTHODE PRO ---
@@ -118,5 +122,7 @@ public class PlayerInputHandler : MonoBehaviour
         Object2Pressed = false;
     }
     public void UseInventoryInput() => InventoryPressed = false;
-    public void UseCloseInput() => ClosePressed = false;
+    public void UseMenuInput() => MenuPressed = false;
+    public void UseCloseMenuInput() => CloseMenuPressed = false;
+    public void UseCloseInventoryInput() => CloseInventoryPressed = false;
 }
