@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
     public EquipmentLibraryItem PendingLibraryItem { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
 
+    [Header("Others")]
+    public UIPanelType RequestedPanelType { get; set; }
+
     private void Awake()
     {
         Input = GetComponent<PlayerInputHandler>();
@@ -103,17 +106,18 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.InventoryPressed)
             {
-                // Optionnel : Tu pourrais dire à ton UIState quel onglet ouvrir (Inventaire)
-                StateMachine.ChangeState(PlayerStateType.UI);
+                RequestedPanelType = UIPanelType.Inventory; // On définit le type
+                StateMachine.ChangeState(PlayerStateType.UI); // On change d'état
                 Input.UseInventoryInput();
             }
             else if (Input.MenuPressed)
             {
-                // Optionnel : Tu pourrais dire à ton UIState quel onglet ouvrir (Options/Pause)
+                RequestedPanelType = UIPanelType.PauseMenu;
                 StateMachine.ChangeState(PlayerStateType.UI);
-                Input.UseMenuInput(); 
+                Input.UseMenuInput();
             }
         }
+
         // --- FERMETURE ---
         else if (StateMachine.CurrentState == UIState)
         {

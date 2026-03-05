@@ -18,7 +18,7 @@ public class AttackState : GroundedState
         // 1. Sécurité : Vérifier si l'arme est nulle
         if (player.PendingWeaponItem == null)
         {
-            Debug.LogError("Tentative d'attaque sans arme assignée dans PendingWeaponItem !");
+            Debug.LogWarning("Tentative d'attaque sans arme assignée dans PendingWeaponItem !");
             player.StateMachine.ChangeState(PlayerStateType.Idle);
             return;
         }

@@ -19,7 +19,12 @@ public class InventorySystem : MonoBehaviour
     [Header("Inventory System Variables")]
     [SerializeField] private List<ItemInInventory> content = new List<ItemInInventory>();
     [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private Transform inventorySlotsParent;
+
+    [SerializeField] private Transform inventoryRessourcesSlotsParent;
+
+    [SerializeField] private Transform inventoryEquipmentSlotsParent;
+
+    [SerializeField] private Transform inventoryCraftSlotsParent;
 
     public Sprite emptySlotVisual;
 
@@ -164,10 +169,16 @@ public class InventorySystem : MonoBehaviour
 
     public void RefreshContent()
     {
+        RefreshCraftContent();
+        RefreshRessourcesContent();
+        RefreshEquipmentContent();
+    }
+    public void RefreshCraftContent()
+    {
         //On vide tous les slots / visuels
-        for (int i = 0; i < inventorySlotsParent.childCount; i++)
+        for (int i = 0; i < inventoryCraftSlotsParent.childCount; i++)
         {
-            Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
+            Slot currentSlot = inventoryCraftSlotsParent.GetChild(i).GetComponent<Slot>();
 
             currentSlot.item = null;
             currentSlot.itemVisual.sprite = emptySlotVisual;
@@ -177,7 +188,71 @@ public class InventorySystem : MonoBehaviour
         //On peuple le visuel des slots selon le contenu de l'inventaire
         for (int i = 0; i < content.Count; i++)
         {
-            Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
+            Slot currentSlot = inventoryCraftSlotsParent.GetChild(i).GetComponent<Slot>();
+            if (content[i].itemData == null)
+            {
+                RemoveItem(content[i].itemData);
+                continue;
+            }
+            currentSlot.item = content[i].itemData;
+            currentSlot.itemVisual.sprite = content[i].itemData.visual;
+
+            if (currentSlot.item.stackable)
+            {
+                currentSlot.countTexte.text = content[i].count.ToString();
+                currentSlot.countTexte.enabled = true;
+            }
+        }
+        equipment.UpdateEquipmentsDesequipButtons();
+    }
+    public void RefreshRessourcesContent()
+    {
+        //On vide tous les slots / visuels
+        for (int i = 0; i < inventoryRessourcesSlotsParent.childCount; i++)
+        {
+            Slot currentSlot = inventoryRessourcesSlotsParent.GetChild(i).GetComponent<Slot>();
+
+            currentSlot.item = null;
+            currentSlot.itemVisual.sprite = emptySlotVisual;
+            currentSlot.countTexte.enabled = false;
+        }
+
+        //On peuple le visuel des slots selon le contenu de l'inventaire
+        for (int i = 0; i < content.Count; i++)
+        {
+            Slot currentSlot = inventoryRessourcesSlotsParent.GetChild(i).GetComponent<Slot>();
+            if (content[i].itemData == null)
+            {
+                RemoveItem(content[i].itemData);
+                continue;
+            }
+            currentSlot.item = content[i].itemData;
+            currentSlot.itemVisual.sprite = content[i].itemData.visual;
+
+            if (currentSlot.item.stackable)
+            {
+                currentSlot.countTexte.text = content[i].count.ToString();
+                currentSlot.countTexte.enabled = true;
+            }
+        }
+        equipment.UpdateEquipmentsDesequipButtons();
+    }
+    public void RefreshEquipmentContent()
+    {
+        //On vide tous les slots / visuels
+        for (int i = 0; i < inventoryEquipmentSlotsParent.childCount; i++)
+        {
+            Slot currentSlot = inventoryEquipmentSlotsParent.GetChild(i).GetComponent<Slot>();
+
+            currentSlot.item = null;
+            currentSlot.itemVisual.sprite = emptySlotVisual;
+            currentSlot.countTexte.enabled = false;
+        }
+
+        //On peuple le visuel des slots selon le contenu de l'inventaire
+        for (int i = 0; i < content.Count; i++)
+        {
+            Slot currentSlot = inventoryEquipmentSlotsParent.GetChild(i).GetComponent<Slot>();
             if (content[i].itemData == null)
             {
                 RemoveItem(content[i].itemData);
@@ -210,6 +285,7 @@ public class InventorySystem : MonoBehaviour
         return content.Any(i => i.itemData == itemData);
     }
 
+    #region SaveSystem
     public InventorySaveData GetSaveData()
     {
         InventorySaveData data = new InventorySaveData();
@@ -252,7 +328,7 @@ public class InventorySystem : MonoBehaviour
 
         RefreshContent();
     }
-
+    #endregion
 }
 
 //[System.Serializable]
