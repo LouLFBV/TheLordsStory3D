@@ -5,12 +5,10 @@ public class UIState : PlayerState
 
     public override void Enter()
     {
-        base.Enter();
-        // 1. On ouvre visuellement l'inventaire
-        InventorySystem.instance.OpenInventory();
-        Debug.Log("Entered UI State: Inventory opened.");
+        base.Enter(); 
+        Time.timeScale = 0f;
+        UIManagerSystem.instance.OpenPanel(player.RequestedPanelType);
 
-        // 2. On configure l'input et la caméra (via ton SwitchActionMap)
         player.Input.SwitchActionMap("UI");
         UIManagerSystem.instance.ToggleCursor(true);
     }
@@ -27,11 +25,21 @@ public class UIState : PlayerState
     public override void Exit()
     {
         base.Exit();
-        // 1. On ferme visuellement
-        InventorySystem.instance.CloseInventory();
-
-        // 2. On rend les contrôles au joueur
+        Time.timeScale = 1f;
+        UIManagerSystem.instance.CloseAll();
         player.Input.SwitchActionMap("Player");
         UIManagerSystem.instance.ToggleCursor(false);
     }
+}
+
+public enum UIPanelType
+{
+    Inventory,
+    Equipment,
+    Map,
+    Quests,
+    PauseMenu,
+    Options,
+    Commandes,
+    None
 }
