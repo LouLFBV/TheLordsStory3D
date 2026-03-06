@@ -241,67 +241,67 @@ public class Inventory : MonoBehaviour
         return content.Any(i => i.itemData == itemData);    
     }
 
-    public InventorySaveData GetSaveData()
-    {
-        InventorySaveData data = new InventorySaveData();
-        data.content = new List<ItemInInventorySave>();
+    //public InventorySaveData GetSaveData()
+    //{
+    //    InventorySaveData data = new InventorySaveData();
+    //    data.content = new List<ItemInInventorySave>();
 
-        foreach (var item in content)
-        {
-            data.content.Add(new ItemInInventorySave
-            {
-                itemID = item.itemData.itemID,
-                count = item.count
-            });
-        }
+    //    foreach (var item in content)
+    //    {
+    //        data.content.Add(new ItemInInventorySave
+    //        {
+    //            itemID = item.itemData.itemID,
+    //            count = item.count
+    //        });
+    //    }
 
-        return data;
-    }
+    //    return data;
+    //}
 
 
-    public void LoadSaveData(InventorySaveData data)
-    {
-        if (data == null || data.content == null)
-        {
-            Debug.LogWarning("InventorySaveData is null");
-            return;
-        }
+    //public void LoadSaveData(InventorySaveData data)
+    //{
+    //    if (data == null || data.content == null)
+    //    {
+    //        Debug.LogWarning("InventorySaveData is null");
+    //        return;
+    //    }
 
-        content.Clear();
+    //    content.Clear();
 
-        foreach (var savedItem in data.content)
-        {
-            ItemData itemData = itemDatabase.GetItemByID(savedItem.itemID);
-            if (itemData == null) continue;
+    //    foreach (var savedItem in data.content)
+    //    {
+    //        ItemData itemData = itemDatabase.GetItemByID(savedItem.itemID);
+    //        if (itemData == null) continue;
 
-            content.Add(new ItemInInventory
-            {
-                itemData = itemData,
-                count = savedItem.count
-            });
-        }
+    //        content.Add(new ItemInInventory
+    //        {
+    //            itemData = itemData,
+    //            count = savedItem.count
+    //        });
+    //    }
 
-        RefreshContent();
-    }
+    //    RefreshContent();
+    //}
 
 }
 
-[System.Serializable]
-public class ItemInInventory
-{
-    public ItemData itemData;
-    public int count;
-}
+//[System.Serializable]
+//public class ItemInInventory
+//{
+//    public ItemData itemData;
+//    public int count;
+//}
 
-[System.Serializable]
-public class ItemInInventorySave
-{
-    public string itemID;
-    public int count;
-}
+//[System.Serializable]
+//public class ItemInInventorySave
+//{
+//    public string itemID;
+//    public int count;
+//}
 
-[System.Serializable]
-public class InventorySaveData
-{
-    public List<ItemInInventorySave> content;
-}
+//[System.Serializable]
+//public class InventorySaveData
+//{
+//    public List<ItemInInventorySave> content;
+//}

@@ -36,7 +36,7 @@ public class InteractSystem : MonoBehaviour
     {
         if (isBusy) return;
 
-        if (inventory.IsFull())
+        if (IsInventoryFull(item.itemData))
         {
             Debug.LogWarning("Inventaire plein !");
             return;
@@ -69,11 +69,11 @@ public class InteractSystem : MonoBehaviour
             // Ajout standard
             for (int i = 0; i < currentItem.amount; i++)
             {
-                if (!inventory.IsFull())
-                {
-                    inventory.AddItem(currentItem.itemData);
-                    QuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
-                }
+                if (IsInventoryFull(currentItem.itemData))
+                    break;
+
+                inventory.AddItem(currentItem.itemData);
+                QuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
             }
         }
 
@@ -90,6 +90,7 @@ public class InteractSystem : MonoBehaviour
         }
 
         Transform itemTransform = currentItem.transform;
+
         Destroy(currentItem.gameObject);
         RespawnObject(itemTransform);
 
@@ -211,6 +212,7 @@ public class InteractSystem : MonoBehaviour
     }
     public void AddItemToInventory()
     {
+        if (currentItem == null) return;
         if (currentItem.itemData.itemType == ItemType.Recipe)
         {
             currentItem.GetComponent<BookRecipe>().OpenCanvasRecipeBook();
@@ -227,7 +229,7 @@ public class InteractSystem : MonoBehaviour
         {
             for (int i = 0; i < currentItem.amount; i++)
             {
-                if (!inventory.IsFull())
+                if (!IsInventoryFull(currentItem.itemData))
                 {
                     inventory.AddItem(currentItem.itemData);
                     QuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
@@ -250,22 +252,40 @@ public class InteractSystem : MonoBehaviour
         RespawnObject(currentItem.transform);
     }
 
-    private void EnableToolGameObjectFromTool(Tool toolType)
-    {
-        switch (toolType)
-        {
-            case Tool.Pickaxe:
-                audioSource.clip = pickaxeSound;
-                break;
-            case Tool.Axe:
-                audioSource.clip = axeSound;
-                break;
-        }
-    }
+    //private void EnableToolGameObjectFromTool(Tool toolType)
+    //{
+    //    switch (toolType)
+    //    {
+    //        case Tool.Pickaxe:
+    //            audioSource.clip = pickaxeSound;
+    //            break;
+    //        case Tool.Axe:
+    //            audioSource.clip = axeSound;
+    //            break;
+    //    }
+    //}
 
     public void PlayHarvestingSoundEffect()
     {
         audioSource.Play();
     }
 
+    bool IsInventoryFull(ItemData itemData)
+    {
+        switch (itemData.itemType)
+        {
+            case ItemType.Ressource:
+                return inventory.IsFullRessources();
+
+            case ItemType.Craft:
+                return inventory.IsFullCraft();
+
+            case ItemType.Equipment:
+            case ItemType.Consumable:
+                return inventory.IsFullEquipment();
+
+            default:
+                return false;
+        }
+    }
 }

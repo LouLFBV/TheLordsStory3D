@@ -58,7 +58,8 @@ public enum ItemType
     Destructible,
     Recipe,
     Map,
-    None
+    None, 
+    Craft
 }
 
 public enum EquipmentType
