@@ -7,6 +7,7 @@ public class ItemDataDatabase : MonoBehaviour
 
     public List<ItemData> items;
 
+    private Dictionary<string, ItemData> itemLookup;
 
     private void Awake()
     {
@@ -17,10 +18,37 @@ public class ItemDataDatabase : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
+        }
+
+        BuildDatabase();
+    }
+
+    void BuildDatabase()
+    {
+        itemLookup = new Dictionary<string, ItemData>();
+
+        foreach (var item in items)
+        {
+            if (!itemLookup.ContainsKey(item.itemID))
+            {
+                itemLookup.Add(item.itemID, item);
+            }
+            else
+            {
+                Debug.LogWarning($"Duplicate ItemID detected: {item.itemID}");
+            }
         }
     }
+
     public ItemData GetItemByID(string id)
     {
-        return items.Find(item => item.itemID == id);
+        if (itemLookup.TryGetValue(id, out ItemData item))
+        {
+            return item;
+        }
+
+        Debug.LogWarning($"Item with ID {id} not found in database.");
+        return null;
     }
 }

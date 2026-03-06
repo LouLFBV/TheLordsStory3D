@@ -27,7 +27,7 @@ public class NewItemActionsSystem : MonoBehaviour
 
     [HideInInspector] public ItemData itemCurrentlySelected;
 
-    public void OpenActionPanel(ItemData item, Vector3 slotPosition)
+    public void OpenActionPanel(ItemData item)
     {
         itemCurrentlySelected = item;
         if (item == null)
@@ -63,6 +63,7 @@ public class NewItemActionsSystem : MonoBehaviour
                 destroyItemButton.gameObject.SetActive(false);
                 break;
             case ItemType.Ressource:
+            case ItemType.Craft:
                 useItemButton.gameObject.SetActive(false);
                 equipmentItemButton.gameObject.SetActive(false);
                 dropItemButton.gameObject.SetActive(true);
@@ -75,7 +76,7 @@ public class NewItemActionsSystem : MonoBehaviour
                 destroyItemButton.gameObject.SetActive(true);
                 break;
         }
-        actionPanel.transform.position = slotPosition;
+        //actionPanel.transform.position = slotPosition;
         actionPanel.SetActive(true);
     }
 

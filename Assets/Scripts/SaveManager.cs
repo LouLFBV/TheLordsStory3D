@@ -38,7 +38,7 @@ public class SaveManager : MonoBehaviour
 
         SaveData data = new SaveData();
         data.playerStats = PlayerStats.instance.GetSaveData();
-        data.inventory = Inventory.instance.GetSaveData();
+        data.inventory = InventorySystem.instance.GetSaveData();
         data.palette = Palette.instance.GetSaveData();
         data.world = WorldStateManager.Instance.GetSaveData();
         data.sceneName = SceneManager.GetActiveScene().name;
@@ -83,7 +83,7 @@ public class SaveManager : MonoBehaviour
         PlayerStats.instance.LoadSaveData(data.playerStats);
 
         if (data.inventory != null)
-            Inventory.instance.LoadSaveData(data.inventory);
+            InventorySystem.instance.LoadSaveData(data.inventory);
 
         if (data.palette != null)
             Palette.instance.LoadSaveData(data.palette);

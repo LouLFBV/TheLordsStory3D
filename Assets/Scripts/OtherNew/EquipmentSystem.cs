@@ -98,7 +98,7 @@ public class EquipmentSystem : MonoBehaviour
 
     public void DesequipEquipment(EquipmentType equipmentType)
     {
-        if (InventorySystem.instance.IsFull())
+        if (InventorySystem.instance.IsFullEquipment())
         {
             Debug.LogWarning("Cannot desequip item, inventory is full.");
             return;
