@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,14 +28,29 @@ public class NewItemActionsSystem : MonoBehaviour
 
     [HideInInspector] public ItemData itemCurrentlySelected;
 
+    [Header("item Description")]
+    [SerializeField] private TextMeshProUGUI itemNameText;
+    [SerializeField] private TextMeshProUGUI itemDescriptionText;
+
+    [SerializeField] private TextMeshProUGUI itemDegatsText;
+    [SerializeField] private TextMeshProUGUI itemEffetText;
+    [SerializeField] private TextMeshProUGUI itemTypeDeResistanceText;
+
+
     public void OpenActionPanel(ItemData item)
     {
         itemCurrentlySelected = item;
+
         if (item == null)
         {
             actionPanel.SetActive(false);
             return;
         }
+
+        itemDegatsText.gameObject.SetActive(false);
+        itemEffetText.gameObject.SetActive(false);
+        itemTypeDeResistanceText.gameObject.SetActive(false);
+
         switch (item.itemType)
         {
             case ItemType.Consumable:
@@ -77,6 +93,33 @@ public class NewItemActionsSystem : MonoBehaviour
                 break;
         }
         //actionPanel.transform.position = slotPosition;
+        itemNameText.text = item.itemName;
+        itemDescriptionText.text = item.description;
+
+        if (item.attackPoints > 0)
+        {
+            itemDegatsText.text = $"Degats : {item.attackPoints}";
+            itemDegatsText.gameObject.SetActive(true);
+
+            itemEffetText.text = $"Effet : {item.damageType}";
+            itemEffetText.gameObject.SetActive(true);
+        }
+        if (item.armorPoints > 0)
+        {
+
+            itemDegatsText.text = $"Pourcentage de reduction : {item.attackPoints}";
+            itemDegatsText.gameObject.SetActive(true);
+            itemTypeDeResistanceText.text = $"Type de Resistance : {item.armorType}";
+            itemTypeDeResistanceText.gameObject.SetActive(true);
+            itemEffetText.gameObject.SetActive(false);
+        }
+        if (item.healthEffect > 0)
+        {
+            itemDegatsText.text = $"Capacité de soin : +{item.healthEffect} PV";
+            itemDegatsText.gameObject.SetActive(true);
+            itemEffetText.gameObject.SetActive(false);
+            itemTypeDeResistanceText.gameObject.SetActive(false);
+        }
         actionPanel.SetActive(true);
     }
 
@@ -88,6 +131,7 @@ public class NewItemActionsSystem : MonoBehaviour
 
     public void UseActionButton()
     {
+        Debug.Log("Using item: " + itemCurrentlySelected.itemName);
         player.Health.Heal(itemCurrentlySelected.healthEffect);
         InventorySystem.instance.RemoveItem(itemCurrentlySelected);
         CloseActionPanel();
@@ -95,6 +139,7 @@ public class NewItemActionsSystem : MonoBehaviour
 
     public void EquipActionButton()
     {
+        Debug.Log("Equiping item: " + itemCurrentlySelected.itemName);
         equipment.EquipAction();
     }
 
