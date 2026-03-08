@@ -170,6 +170,24 @@ public class NewItemActionsSystem : MonoBehaviour
     public void DesequipActionButton()
     {
         Debug.Log("Desequiping item: " + itemCurrentlySelected.itemName);
-        //equipment.UnequipAction();
+        if (itemCurrentlySelected.equipmentType == EquipmentType.Weapon)
+        {
+            if (palette.weapon1Slot.slotItemData == itemCurrentlySelected)            
+                palette.DesequipWeapon(1);
+            else
+                palette.DesequipWeapon(2);
+            
+        }
+        else if (itemCurrentlySelected.itemType == ItemType.Consumable)
+        {
+           if (palette.object1Slot.slotItemData == itemCurrentlySelected)
+                palette.DesequipObject(1);
+           else 
+                palette.DesequipObject(2);
+        }
+        else
+            equipment.DesequipEquipment(itemCurrentlySelected.equipmentType);
+
+        CloseActionPanel();
     }
 }

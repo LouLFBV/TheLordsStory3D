@@ -50,10 +50,10 @@ public class UnequipState : GroundedState
     {
         if (player.PendingLibraryItem != null)
         {
-            // Activer le nouveau prefab
+            // Désactiver le nouveau prefab
             player.PendingLibraryItem.itemPrefab.SetActive(false);
 
-            // Désactiver les éléments visuels inutiles (ex: carquois si arc, etc.)
+            // Activer les éléments visuels inutiles (ex: carquois si arc, etc.)
             foreach (var element in player.PendingLibraryItem.elementsToDisable)
             {
                 element.SetActive(true);
