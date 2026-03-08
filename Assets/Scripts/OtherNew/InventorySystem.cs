@@ -244,7 +244,6 @@ public class InventorySystem : MonoBehaviour
                 currentSlot.countTexte.enabled = true;
             }
         }
-        equipment.UpdateEquipmentsDesequipButtons();
     }
     public void RefreshRessourcesContent()
     {
@@ -276,7 +275,6 @@ public class InventorySystem : MonoBehaviour
                 currentSlot.countTexte.enabled = true;
             }
         }
-        equipment.UpdateEquipmentsDesequipButtons();
     }
     public void RefreshEquipmentContent()
     {
@@ -308,7 +306,6 @@ public class InventorySystem : MonoBehaviour
                 currentSlot.countTexte.enabled = true;
             }
         }
-        equipment.UpdateEquipmentsDesequipButtons();
     }
 
     public bool IsFullRessources()

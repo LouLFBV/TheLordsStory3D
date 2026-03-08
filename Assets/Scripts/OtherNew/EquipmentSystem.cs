@@ -170,7 +170,7 @@ public class EquipmentSystem : MonoBehaviour
             }
             else
                 InventorySystem.instance.AddItem(currentItem);
-            UpdateEquipmentsDesequipButtons();
+            //UpdateEquipmentsDesequipButtons();
         }
     }
 
@@ -180,32 +180,32 @@ public class EquipmentSystem : MonoBehaviour
         arrowText.text = arrowItemInInventory.count.ToString();
     }
 
-    public void UpdateEquipmentsDesequipButtons()
-    {
-        headSlotDesequipButton.onClick.RemoveAllListeners();
-        headSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Head); });
-        headSlotDesequipButton.gameObject.SetActive(equipmentHeadItem);
+    //public void UpdateEquipmentsDesequipButtons()
+    //{
+    //    headSlotDesequipButton.onClick.RemoveAllListeners();
+    //    headSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Head); });
+    //    headSlotDesequipButton.gameObject.SetActive(equipmentHeadItem);
 
-        chestSlotDesequipButton.onClick.RemoveAllListeners();
-        chestSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Chest); });
-        chestSlotDesequipButton.gameObject.SetActive(equipmentChestItem);
+    //    chestSlotDesequipButton.onClick.RemoveAllListeners();
+    //    chestSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Chest); });
+    //    chestSlotDesequipButton.gameObject.SetActive(equipmentChestItem);
 
-        handsSlotDesequipButton.onClick.RemoveAllListeners();
-        handsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Hands); });
-        handsSlotDesequipButton.gameObject.SetActive(equipmentHandsItem);
+    //    handsSlotDesequipButton.onClick.RemoveAllListeners();
+    //    handsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Hands); });
+    //    handsSlotDesequipButton.gameObject.SetActive(equipmentHandsItem);
 
-        legsSlotDesequipButton.onClick.RemoveAllListeners();
-        legsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Legs); });
-        legsSlotDesequipButton.gameObject.SetActive(equipmentLegsItem);
+    //    legsSlotDesequipButton.onClick.RemoveAllListeners();
+    //    legsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Legs); });
+    //    legsSlotDesequipButton.gameObject.SetActive(equipmentLegsItem);
 
-        feetSlotDesequipButton.onClick.RemoveAllListeners();
-        feetSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Feet); });
-        feetSlotDesequipButton.gameObject.SetActive(equipmentFeetItem);
+    //    feetSlotDesequipButton.onClick.RemoveAllListeners();
+    //    feetSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Feet); });
+    //    feetSlotDesequipButton.gameObject.SetActive(equipmentFeetItem);
 
-        arrowSlotDesequipButton.onClick.RemoveAllListeners();
-        arrowSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Arrow); });
-        arrowSlotDesequipButton.gameObject.SetActive(arrowItemInInventory.itemData);
-    }
+    //    arrowSlotDesequipButton.onClick.RemoveAllListeners();
+    //    arrowSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Arrow); });
+    //    arrowSlotDesequipButton.gameObject.SetActive(arrowItemInInventory.itemData);
+    //}
 
     public void EquipAction(ItemData equipment = null)
     {
@@ -300,7 +300,7 @@ public class EquipmentSystem : MonoBehaviour
         }
 
         itemActionsSystem.CloseActionPanel();
-        UpdateEquipmentsDesequipButtons();
+        //UpdateEquipmentsDesequipButtons();
     }
 
     public EquipmentSaveData GetSaveData()
@@ -362,8 +362,7 @@ public class EquipmentSystem : MonoBehaviour
             BowBehaviour.instance.UpdateQuiverVisual(data.arrowCount);
         }
 
-        UpdateEquipmentsDesequipButtons();
-        //playerStats.UpddateArmorText();
+        //UpdateEquipmentsDesequipButtons();
 
         isLoading = false;
     }

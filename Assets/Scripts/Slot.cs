@@ -1,11 +1,12 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
+//using UnityEngine.EventSystems;
 using UnityEngine.UI;
 public class Slot : MonoBehaviour/*, IPointerEnterHandler, IPointerExitHandler*/
 {
     public ItemData item;
     public Image itemVisual;
     public Text countTexte;
+    [SerializeField] private bool isEquipmentSlot;
 
     [SerializeField]
     //private ItemActionsSystem itemActionsSystem;
@@ -23,6 +24,6 @@ public class Slot : MonoBehaviour/*, IPointerEnterHandler, IPointerExitHandler*/
 
     public void ClickOnSlot()
     {
-        itemActionsSystem.OpenActionPanel(item/*, transform.position - new Vector3(0, 15, 0)*/);
+        itemActionsSystem.OpenActionPanel(item,isEquipmentSlot/*, transform.position - new Vector3(0, 15, 0)*/);
     }
 }
