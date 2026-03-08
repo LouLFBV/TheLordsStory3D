@@ -79,9 +79,9 @@ public class GroundedState : PlayerState
         if (player.Input.AttackPressed && player.Stamina.HasStamina())
         {
             // On vérifie quelle arme la palette a activé
-            ItemData activeWeapon = PaletteSystem.instance.isEquippedWeapon1 ?
-                                     PaletteSystem.instance.equipmentWeapon1Item :
-                                     PaletteSystem.instance.equipmentWeapon2Item;
+            ItemData activeWeapon = PaletteSystem.instance.weapon1Slot.isEquipped ?
+                                     PaletteSystem.instance.weapon1Slot.slotItemData :
+                                     PaletteSystem.instance.weapon1Slot.slotItemData;
 
             if (activeWeapon != null)
             {

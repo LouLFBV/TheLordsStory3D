@@ -84,11 +84,6 @@ public class NewItemActionsSystem : MonoBehaviour
                     break;
                 case ItemType.Ressource:
                 case ItemType.Craft:
-                    useItemButton.gameObject.SetActive(false);
-                    equipmentItemButton.gameObject.SetActive(false);
-                    dropItemButton.gameObject.SetActive(true);
-                    destroyItemButton.gameObject.SetActive(true);
-                    break;
                 case ItemType.Key:
                     useItemButton.gameObject.SetActive(false);
                     equipmentItemButton.gameObject.SetActive(false);
@@ -96,6 +91,7 @@ public class NewItemActionsSystem : MonoBehaviour
                     destroyItemButton.gameObject.SetActive(true);
                     break;
             }
+            desequipmentItemButton.gameObject.SetActive(false);
         }
         else
         {
@@ -103,7 +99,7 @@ public class NewItemActionsSystem : MonoBehaviour
             equipmentItemButton.gameObject.SetActive(false);
             dropItemButton.gameObject.SetActive(false);
             destroyItemButton.gameObject.SetActive(false);
-            equipmentItemButton.gameObject.SetActive(true);
+            desequipmentItemButton.gameObject.SetActive(true);
         }
         //actionPanel.transform.position = slotPosition;
         itemNameText.text = item.itemName;
