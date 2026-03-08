@@ -31,7 +31,7 @@ public class EquipmentSystem : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI arrowText;
 
-    [SerializeField] private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
+    //[SerializeField] private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
 
     [HideInInspector] public AudioSource audioSource;
 
@@ -250,7 +250,6 @@ public class EquipmentSystem : MonoBehaviour
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Weapon:
-                    palette.AddWeapon(itemToEquip);
                     // 1. On l'ajoute à la palette (logique de données)
                     palette.AddWeapon(itemToEquip);
 

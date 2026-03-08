@@ -1,8 +1,6 @@
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class PaletteSystem : MonoBehaviour
 {
@@ -25,52 +23,14 @@ public class PaletteSystem : MonoBehaviour
 
     public ItemInInventory[] objects = new ItemInInventory[2];
 
-    #region Weapons And Objects Data
-    [Header("Weapon 1")]
+    [Header("Weapons And Objects Data")]
+    public PaletteSlot weapon1Slot;
+    public PaletteSlot weapon2Slot;
+    public PaletteSlot object1Slot;
+    public PaletteSlot object2Slot;
 
-    public Button weapon1SlotDesequipButton;
-    public ItemData equipmentWeapon1Item;
-    public Image weapon1SlotImage;
-    public Image weapon1SlotInInventory;
-    public Image iconeInputWeapon1;
-    public bool isEquippedWeapon1 = false;
-    public GameObject weapon1ImageSelected;
-
-    [Header("Weapon 2")]
-
-    public Button weapon2SlotDesequipButton;
-    public ItemData equipmentWeapon2Item;
-    public Image weapon2SlotImage;
-    public Image weapon2SlotInInventory;
-    public Image iconeInputWeapon2;
-    public bool isEquippedWeapon2 = false;
-    public GameObject weapon2ImageSelected;
-
-    [Header("Object 1")]
-
-    public Button object1SlotDesequipButton;
-    public ItemData equipmentObject1Item;
-    public Image object1SlotImage;
-    public Image object1SlotInInventory;
-    public Image iconeInputObject1;
-    public bool isEquippedObject1 = false;
-    public TextMeshProUGUI object1CountText;
-    public GameObject object1ImageSelected;
-
-
-    [Header("Object 2")]
-
-    public Button object2SlotDesequipButton;
-    public ItemData equipmentObject2Item;
-    public Image object2SlotImage;
-    public Image object2SlotInInventory;
-    public Image iconeInputObject2;
-    public bool isEquippedObject2 = false;
-    public TextMeshProUGUI object2CountText;
-    public GameObject object2ImageSelected;
-
-    #endregion
-
+    private PaletteSlot[] weaponSlots;
+    private PaletteSlot[] objectSlots;
 
     private void Awake()
     {
@@ -82,6 +42,9 @@ public class PaletteSystem : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        weaponSlots = new[] { weapon1Slot, weapon2Slot };
+        objectSlots = new[] { object1Slot, object2Slot };
     }
 
     //void OnEnable()
@@ -108,22 +71,23 @@ public class PaletteSystem : MonoBehaviour
     public void HandlePaletteLogic(PlayerController player)
     {
         // On ne permet pas le switch si on est déjà en train d'équiper ou si on n'est pas au sol
-        if (player.StateMachine.CurrentState is not GroundedState || player.StateMachine.CurrentState is EquipState)
+        if (player.StateMachine.CurrentState is not GroundedState ||
+            player.StateMachine.CurrentState is EquipState)
             return;
 
-        if (player.Input.Weapon1Pressed && equipmentWeapon1Item != null)
+        if (player.Input.Weapon1Pressed && weapon1Slot.slotItemData != null)
         {
             ToggleWeapon(1, player);
         }
-        else if (player.Input.Weapon2Pressed && equipmentWeapon2Item != null)
+        else if (player.Input.Weapon2Pressed && weapon2Slot.slotItemData != null)
         {
             ToggleWeapon(2, player);
         }
-        else if (player.Input.Object1Pressed && equipmentObject1Item != null)
+        else if (player.Input.Object1Pressed && object1Slot.slotItemData != null)
         {
             ToggleObject(1, player);
         }
-        else if (player.Input.Object2Pressed && equipmentObject2Item != null)
+        else if (player.Input.Object2Pressed && object2Slot.slotItemData != null)
         {
             ToggleObject(2, player);
         }
@@ -131,12 +95,13 @@ public class PaletteSystem : MonoBehaviour
 
     private void ToggleWeapon(int slot, PlayerController player)
     {
-        bool isCurrentlyEquipped = (slot == 1) ? isEquippedWeapon1 : isEquippedWeapon2;
-        ItemData item = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
+        bool isCurrentlyEquipped = (slot == 1) ? weapon1Slot.isEquipped : weapon2Slot.isEquipped;
+        ItemData item = (slot == 1) ? weapon1Slot.slotItemData : weapon2Slot.slotItemData;
 
         if (!isCurrentlyEquipped)
         {
-            if (slot == 1) isEquippedWeapon1 = true; else isEquippedWeapon2 = true;
+            weapon1Slot.isEquipped = slot == 1;
+            weapon2Slot.isEquipped = slot == 2;
 
             // On passe l'info au player et on change d'état
             player.PendingWeaponType = item.handWeaponType;
@@ -155,15 +120,14 @@ public class PaletteSystem : MonoBehaviour
     }
     private void DesequipCurrentActiveWeapon(int slot, PlayerController player)
     {
-        ItemData item = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
+        ItemData item = (slot == 1) ? weapon1Slot.slotItemData : weapon2Slot.slotItemData;
         if (item == null) return;
 
-        // On passe par une version qui prend le player pour l'animator
-        if (slot == 1) ForceDesequipWeapon(item, ref isEquippedWeapon1, player);
-        else ForceDesequipWeapon(item, ref isEquippedWeapon2, player);
+        PaletteSlot slotData = weaponSlots[slot - 1];
+        ForceDesequipWeapon(item, ref slotData.isEquipped, player);
 
-        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == item);
-        lib.itemPrefab.SetActive(false);
+        EquipmentLibraryItem lib = equipmentLibrary.Get(item);
+        lib.itemPrefab.SetActive(false);    
     }
 
     private void ForceDesequipWeapon(ItemData weaponData, ref bool equippedFlag, PlayerController player)
@@ -177,19 +141,19 @@ public class PaletteSystem : MonoBehaviour
         player.StateMachine.ChangeState(PlayerStateType.Unequip);
 
         // On garde la logique de Data
-        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == weaponData);
+        EquipmentLibraryItem lib = equipmentLibrary.Get(weaponData);
         PlayerStats.instance.equipmentToDesequip = lib;
 
         equippedFlag = false;
     }
     private void ToggleObject(int slot, PlayerController player)
     {
-        bool isCurrentlyEquipped = (slot == 1) ? isEquippedObject1 : isEquippedObject2;
+        bool isCurrentlyEquipped = (slot == 1) ? object1Slot.isEquipped : object2Slot.isEquipped;
 
         if (!isCurrentlyEquipped)
         {
-            isEquippedObject1 = (slot == 1);
-            isEquippedObject2 = (slot == 2);
+            object1Slot.isEquipped = (slot == 1);
+            object2Slot.isEquipped = (slot == 2);
 
             player.StateMachine.ChangeState(PlayerStateType.Equip);
             UseObject(slot, player);
@@ -197,9 +161,10 @@ public class PaletteSystem : MonoBehaviour
         else
         {
             // Déséquipement de l'objet
-            if (slot == 1) isEquippedObject1 = false; else isEquippedObject2 = false;
+            PaletteSlot slotData = objectSlots[slot - 1];
+            slotData.isEquipped = false;
 
-            var item = (slot == 1) ? equipmentObject1Item : equipmentObject2Item;
+            var item = (slot == 1) ? object1Slot.slotItemData : object2Slot.slotItemData;
             DisableObject(item);
             player.Animator.SetBool("CarryingConsumable", false);
         }
@@ -217,60 +182,52 @@ public class PaletteSystem : MonoBehaviour
 
     private void UseObject(int numberOfObject, PlayerController player)
     {
-        isEquippedWeapon1 = false;
-        isEquippedWeapon2 = false;
+        weapon1Slot.isEquipped = false;
+        weapon2Slot.isEquipped = false;
         player.Animator.SetBool("CarryingConsumable", true);
         player.Animator.SetBool("IsTwoHandedWeapon", false);
         player.Animator.SetBool("IsOneHandedWeapon", false);
         if (numberOfObject == 1)
         {
-            EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).First();
+            EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.Get(object1Slot.slotItemData);
             equipmentLibraryItem1.itemPrefab.SetActive(true);
 
             interactBehaviour.SetCurrentEquippedItem(equipmentLibraryItem1);
 
-            EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).FirstOrDefault();
+            EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.Get(object2Slot.slotItemData);
+
             if (equipmentLibraryItem2 != null && equipmentLibraryItem2.itemData != objects[0].itemData) equipmentLibraryItem2.itemPrefab.SetActive(false);
 
 
-            EquipmentLibraryItem equipmentLibraryWeapon1 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).FirstOrDefault();
-            equipmentLibraryWeapon1?.itemPrefab.SetActive(false);
-
-            EquipmentLibraryItem equipmentLibraryWeapon2 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).FirstOrDefault();
-            equipmentLibraryWeapon2?.itemPrefab.SetActive(false);
+            DisableWeapon(weapon1Slot.slotItemData);
+            DisableWeapon(weapon2Slot.slotItemData);
 
         }
         else
         {
-            EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject2Item).First();
+            EquipmentLibraryItem equipmentLibraryItem2 = equipmentLibrary.Get(object2Slot.slotItemData);
             equipmentLibraryItem2.itemPrefab.SetActive(true);
             interactBehaviour.SetCurrentEquippedItem(equipmentLibraryItem2);
 
 
-            EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.content.Where(x => x.itemData == equipmentObject1Item).FirstOrDefault();
+            EquipmentLibraryItem equipmentLibraryItem1 = equipmentLibrary.Get(object1Slot.slotItemData);
             if (equipmentLibraryItem1 != null && equipmentLibraryItem1.itemData != objects[1].itemData) equipmentLibraryItem1.itemPrefab.SetActive(false);
 
-            EquipmentLibraryItem equipmentLibraryWeapon1 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon1Item).FirstOrDefault();
-            equipmentLibraryWeapon1?.itemPrefab.SetActive(false);
-
-            EquipmentLibraryItem equipmentLibraryWeapon2 = equipmentLibrary.content.Where(x => x.itemData == equipmentWeapon2Item).FirstOrDefault();
-            equipmentLibraryWeapon2?.itemPrefab.SetActive(false);
+            DisableWeapon(weapon1Slot.slotItemData);
+            DisableWeapon(weapon2Slot.slotItemData);
         }
     }
 
     private void UseWeapon(int slot, PlayerController player)
     {
-        ItemData itemToEquip = (slot == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
+        ItemData itemToEquip = (slot == 1) ? weapon1Slot.slotItemData : weapon2Slot.slotItemData;
         player.PendingWeaponItem = itemToEquip;
         // 1. On cache les consommables
-        DisableObject(equipmentObject1Item);
-        DisableObject(equipmentObject2Item);
-        isEquippedObject1 = isEquippedObject2 = false;
+        DisableObject(object1Slot.slotItemData);
+        DisableObject(object2Slot.slotItemData);
+        object1Slot.isEquipped = object2Slot.isEquipped = false;
         player.Animator.SetBool("CarryingConsumable", false);
 
-        // 2. On force le rangement de l'AUTRE arme si elle était sortie
-        if (slot == 1 && isEquippedWeapon2) ForceDesequipWeapon(equipmentWeapon2Item, ref isEquippedWeapon2, player);
-        if (slot == 2 && isEquippedWeapon1) ForceDesequipWeapon(equipmentWeapon1Item, ref isEquippedWeapon1, player);
 
         //// 3. On prépare les data pour le script qui gère l'apparition du mesh
         //EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
@@ -293,23 +250,29 @@ public class PaletteSystem : MonoBehaviour
             return;
         }
 
-        ItemData currentItem = (numberOfWeapon == 1) ? equipmentWeapon1Item : equipmentWeapon2Item;
+        ItemData currentItem = (numberOfWeapon == 1) ? weapon1Slot.slotItemData : weapon2Slot.slotItemData;
 
-        EquipmentLibraryItem lib = equipmentLibrary.content.First(x => x.itemData == currentItem);
+        EquipmentLibraryItem lib = equipmentLibrary.Get(currentItem);
 
         // animations + model disable
 
         // remettre le slot visuellement vide
         if (numberOfWeapon == 1)
         {
-            equipmentWeapon1Item = null;
-            weapon1SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon1Slot.slotItemData = null;
+            weapon1Slot.slotInEquipment.item = null;
+            weapon1Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon1Slot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon1Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
 
         }
         else
         {
-            equipmentWeapon2Item = null;
-            weapon2SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon2Slot.slotItemData = null;
+            weapon2Slot.slotInEquipment.item = null;
+            weapon2Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon2Slot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            weapon2Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
         }
 
         // remettre dans l'inventaire
@@ -331,21 +294,22 @@ public class PaletteSystem : MonoBehaviour
         ItemData currentItem = null;
         if (numberOfObject == 1)
         {
-            currentItem = equipmentObject1Item;
-            object1SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-            isEquippedObject1 = false;
+            currentItem = object1Slot.slotItemData;
+            object1Slot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            object1Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+            object1Slot.isEquipped = false;
         }
         else
         {
-            currentItem = equipmentObject2Item;
-            object2SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-            isEquippedObject2 = false;
+            currentItem = object2Slot.slotItemData;
+            object2Slot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            object2Slot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+            object2Slot.isEquipped = false;
         }
 
 
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == currentItem).FirstOrDefault();
-
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(currentItem);
         if (equipmentLibraryItem != null)
             equipmentLibraryItem?.itemPrefab.SetActive(false);
 
@@ -360,51 +324,51 @@ public class PaletteSystem : MonoBehaviour
 
     public void RefreshAffichage()
     {
-        weapon1SlotImage.sprite = equipmentWeapon1Item ? equipmentWeapon1Item.visual : InventorySystem.instance.emptySlotVisual;
-        weapon2SlotImage.sprite = equipmentWeapon2Item ? equipmentWeapon2Item.visual : InventorySystem.instance.emptySlotVisual;
+        PaletteSlot[] allSlots =
+        {
+            weapon1Slot,
+            weapon2Slot,
+            object1Slot,
+            object2Slot
+        };
 
-        weapon1SlotInInventory.sprite = equipmentWeapon1Item ? equipmentWeapon1Item.visual : InventorySystem.instance.emptySlotVisual;
-        weapon2SlotInInventory.sprite = equipmentWeapon2Item ? equipmentWeapon2Item.visual : InventorySystem.instance.emptySlotVisual;
+        foreach (var slot in allSlots)
+            RefreshSlot(slot);
+    }
 
-        object1SlotImage.sprite = equipmentObject1Item ? equipmentObject1Item.visual : InventorySystem.instance.emptySlotVisual;
-        object1SlotInInventory.sprite = equipmentObject1Item ? equipmentObject1Item.visual : InventorySystem.instance.emptySlotVisual;
-        object1CountText.gameObject.SetActive(equipmentObject1Item);
+    void RefreshSlot(PaletteSlot slot)
+    {
+        var item = slot.slotItemData;
 
-        object2SlotImage.sprite = equipmentObject2Item ? equipmentObject2Item.visual : InventorySystem.instance.emptySlotVisual;
-        object2SlotInInventory.sprite = equipmentObject2Item ? equipmentObject2Item.visual : InventorySystem.instance.emptySlotVisual;
-        object2CountText.gameObject.SetActive(equipmentObject2Item);
+        slot.SlotImage.sprite = item ? item.visual : InventorySystem.instance.emptySlotVisual;
+        slot.slotInEquipment.itemVisual.sprite = slot.SlotImage.sprite;
+        slot.slotInEquipment.item = item;
+
+        if (slot.countText != null)
+            slot.countText.gameObject.SetActive(item);
     }
 
     public void AddWeapon(ItemData item)
     {
-        if (equipmentWeapon1Item == null)
+        for (int i = 0; i < weaponSlots.Length; i++)
         {
-            equipmentWeapon1Item = item;
-            ItemInInventory newWeapon1 =
-                    new ItemInInventory
-                    {
-                        itemData = item,
-                        count = 1
-                    };
-            weapons[0] = newWeapon1;
+            if (weaponSlots[i].slotItemData == null)
+            {
+                weaponSlots[i].slotItemData = item;
+
+                weapons[i] = new ItemInInventory
+                {
+                    itemData = item,
+                    count = 1
+                };
+
+                RefreshAffichage();
+                return;
+            }
+
+            if (weaponSlots[i].slotItemData == item)
+                return;
         }
-        else if (equipmentWeapon2Item == null)
-        {
-            equipmentWeapon2Item = item;
-            ItemInInventory newWeapon2 =
-                    new ItemInInventory
-                    {
-                        itemData = item,
-                        count = 1
-                    };
-            weapons[1] = newWeapon2;
-        }
-        else if (equipmentWeapon1Item == item || equipmentWeapon2Item == item)
-        {
-            // If the weapon is already equipped, we do nothing
-            return;
-        }
-        RefreshAffichage();
     }
 
     public void AddObject(ItemData item)
@@ -427,7 +391,7 @@ public class PaletteSystem : MonoBehaviour
 
     public bool IsValidForSlot(int slotIndex, ItemData item)
     {
-        var equippedItem = slotIndex == 0 ? equipmentObject1Item : equipmentObject2Item;
+        var equippedItem = slotIndex == 0 ? object1Slot.slotItemData : object2Slot.slotItemData;
         var obj = objects[slotIndex];
 
         // Si le slot est vide
@@ -454,8 +418,10 @@ public class PaletteSystem : MonoBehaviour
         {
             Debug.Log("Creating new ItemInInventory for slot " + slotIndex);
             objects[slotIndex] = new ItemInInventory { itemData = item, count = 1 };
-            if (slotIndex == 0) equipmentObject1Item = item;
-            else equipmentObject2Item = item;
+
+            PaletteSlot slotData = objectSlots[slotIndex];
+            slotData.slotItemData = item;
+            slotData.slotInEquipment.item = item;
         }
         else if (inventoryItem.itemData == item)
         {
@@ -471,25 +437,27 @@ public class PaletteSystem : MonoBehaviour
 
     private void UpdateSlotUI(int slotIndex, int count)
     {
-        if (slotIndex == 0)
-            object1CountText.text = count.ToString();
-        else
-            object2CountText.text = count.ToString();
+        PaletteSlot slotData = objectSlots[slotIndex];
+        slotData.countText.text = count.ToString();
+        slotData.slotInEquipment.countTexte.text = count.ToString();
     }
 
     public void RemoveWeapon(int numberOfWeapon)
     {
         if (numberOfWeapon == 1)
         {
-            equipmentWeapon1Item = null;
+            weapon1Slot.slotItemData = null;
             weapons[0].itemData = null;
             weapons[0].count = 0;
+            weapon1Slot.slotInEquipment.item = null;
+
         }
         else
         {
-            equipmentWeapon2Item = null;
+            weapon2Slot.slotItemData = null;
             weapons[1].itemData = null;
             weapons[1].count = 0;
+            weapon2Slot.slotInEquipment.item = null;
         }
         RefreshAffichage();
     }
@@ -502,13 +470,17 @@ public class PaletteSystem : MonoBehaviour
             if (objects[0].count > 1)
             {
                 objects[0].count--;
-                object1CountText.text = objects[0].count.ToString();
+                object1Slot.countText.text = objects[0].count.ToString();
+                object1Slot.slotInEquipment.countTexte.text = objects[0].count.ToString();
             }
             else
             {
                 objects[0].itemData = null;
                 objects[0].count = 0;
-                equipmentObject1Item = null;
+                object1Slot.slotItemData = null;
+
+                object1Slot.slotInEquipment.item = null;
+                object1Slot.slotInEquipment.countTexte.text = "";
             }
         }
         else
@@ -516,13 +488,16 @@ public class PaletteSystem : MonoBehaviour
             if (objects[1].count > 1)
             {
                 objects[1].count--;
-                object2CountText.text = objects[1].count.ToString();
+                object2Slot.countText.text = objects[1].count.ToString();
+                object2Slot.slotInEquipment.countTexte.text = objects[1].count.ToString();
             }
             else
             {
                 objects[1].itemData = null;
                 objects[1].count = 0;
-                equipmentObject2Item = null;
+                object2Slot.slotItemData = null;
+                object2Slot.slotInEquipment.item = null;
+                object2Slot.slotInEquipment.countTexte.text = "";
             }
         }
         RefreshAffichage();
@@ -530,53 +505,58 @@ public class PaletteSystem : MonoBehaviour
 
     public void UpdateImageSeleted()
     {
-        weapon1ImageSelected.SetActive(isEquippedWeapon1);
-        weapon2ImageSelected.SetActive(isEquippedWeapon2);
-        object1ImageSelected.SetActive(isEquippedObject1);
-        object2ImageSelected.SetActive(isEquippedObject2);
+        weapon1Slot.imageSelected.SetActive(weapon1Slot.isEquipped);
+        weapon2Slot.imageSelected.SetActive(weapon2Slot.isEquipped);
+        object1Slot.imageSelected.SetActive(object1Slot.isEquipped);
+        object2Slot.imageSelected.SetActive(object2Slot.isEquipped);
     }
     public bool WeaponsAreFull()
     {
-        return weapons.All(w => w.itemData != null);
+        return weapons[0].itemData != null && weapons[1].itemData != null;
     }
 
     public bool ObjectsAreFull(ItemData item)
     {
-        return !Enumerable.Range(0, 2).Any(slot => IsValidForSlot(slot, item));
+        return !IsValidForSlot(0, item) && !IsValidForSlot(1, item);
     }
 
     public bool IfPlayerHasWeaponEquipped()
     {
-        return isEquippedWeapon1 || isEquippedWeapon2;
+        return weapon1Slot.isEquipped || weapon2Slot.isEquipped;
     }
 
     private void DisableObject(ItemData item)
     {
         if (item == null) return;
 
-        EquipmentLibraryItem lib = equipmentLibrary.content
-            .FirstOrDefault(x => x.itemData == item);
-
-        lib?.itemPrefab.SetActive(false);
+        var lib = equipmentLibrary.Get(item);
+        if (lib?.itemPrefab.activeSelf == true)
+            lib.itemPrefab.SetActive(false);
     }
 
+    private void DisableWeapon(ItemData item)
+    {
+        if (item == null) return;
 
+        var lib = equipmentLibrary.Get(item);
+        lib?.itemPrefab.SetActive(false);
+    }
 
     public PaletteSaveData GetSaveData()
     {
         return new PaletteSaveData
         {
-            weapon1 = CreateSlotSave(equipmentWeapon1Item, weapons[0], isEquippedWeapon1),
-            weapon2 = CreateSlotSave(equipmentWeapon2Item, weapons[1], isEquippedWeapon2),
+            weapon1 = CreateSlotSave(weapon1Slot.slotItemData, weapons[0], weapon1Slot.isEquipped),
+            weapon2 = CreateSlotSave(weapon2Slot.slotItemData, weapons[1], weapon2Slot.isEquipped),
 
-            object1 = CreateSlotSave(equipmentObject1Item, objects[0], isEquippedObject1),
-            object2 = CreateSlotSave(equipmentObject2Item, objects[1], isEquippedObject2),
+            object1 = CreateSlotSave(object1Slot.slotItemData, objects[0], object1Slot.isEquipped),
+            object2 = CreateSlotSave(object2Slot.slotItemData, objects[1], object2Slot.isEquipped),
         };
     }
 
     private PaletteSlotSave CreateSlotSave(ItemData item, ItemInInventory slot, bool equipped)
     {
-        if (item == null)
+        if (item == null || slot == null)
             return null;
 
         return new PaletteSlotSave
@@ -607,15 +587,15 @@ public class PaletteSystem : MonoBehaviour
 
     private void ClearPalette()
     {
-        equipmentWeapon1Item = null;
-        equipmentWeapon2Item = null;
-        equipmentObject1Item = null;
-        equipmentObject2Item = null;
+        weapon1Slot.slotItemData = null;
+        weapon2Slot.slotItemData = null;
+        object1Slot.slotItemData = null;
+        object2Slot.slotItemData = null;
 
-        isEquippedWeapon1 = false;
-        isEquippedWeapon2 = false;
-        isEquippedObject1 = false;
-        isEquippedObject2 = false;
+        weapon1Slot.isEquipped = false;
+        weapon2Slot.isEquipped = false;
+        object1Slot.isEquipped = false;
+        object2Slot.isEquipped = false;
 
         weapons = new ItemInInventory[2]
         {
@@ -646,16 +626,9 @@ public class PaletteSystem : MonoBehaviour
             count = save.count
         };
 
-        if (slot == 1)
-        {
-            equipmentWeapon1Item = item;
-            isEquippedWeapon1 = save.isEquipped;
-        }
-        else
-        {
-            equipmentWeapon2Item = item;
-            isEquippedWeapon2 = save.isEquipped;
-        }
+        PaletteSlot slotData = weaponSlots[slot - 1];
+        slotData.slotItemData = item;
+        slotData.isEquipped = save.isEquipped;
     }
 
 
@@ -674,52 +647,45 @@ public class PaletteSystem : MonoBehaviour
             count = save.count
         };
 
-        if (slot == 1)
-        {
-            equipmentObject1Item = item;
-            isEquippedObject1 = save.isEquipped;
-        }
-        else
-        {
-            equipmentObject2Item = item;
-            isEquippedObject2 = save.isEquipped;
-        }
+        PaletteSlot slotData = objectSlots[slot - 1];
+        slotData.slotItemData = item;
+        slotData.isEquipped = save.isEquipped;
         UpdateSlotUI(index, save.count);
     }
 
     private void ApplyEquippedStateAfterLoad()
     {
         // Priorité aux armes
-        if (isEquippedWeapon1 && equipmentWeapon1Item != null)
+        if (weapon1Slot.isEquipped && weapon1Slot.slotItemData != null)
         {
-            EquipFromSave(equipmentWeapon1Item);
+            EquipFromSave(weapon1Slot.slotItemData);
         }
-        else if (isEquippedWeapon2 && equipmentWeapon2Item != null)
+        else if (weapon2Slot.isEquipped && weapon2Slot.slotItemData != null)
         {
-            EquipFromSave(equipmentWeapon2Item);
+            EquipFromSave(weapon2Slot.slotItemData);
         }
         // Sinon objets
-        else if (isEquippedObject1 && equipmentObject1Item != null)
+        else if (object1Slot.isEquipped && object1Slot.slotItemData != null)
         {
-            EquipObjectFromSave(equipmentObject1Item);
+            EquipObjectFromSave(object1Slot.slotItemData);
         }
-        else if (isEquippedObject2 && equipmentObject2Item != null)
+        else if (object2Slot.isEquipped && object2Slot.slotItemData != null)
         {
-            EquipObjectFromSave(equipmentObject2Item);
+            EquipObjectFromSave(object2Slot.slotItemData);
         }
     }
 
     private void EquipFromSave(ItemData item)
     {
         // Désactiver tout
-        DisableObject(equipmentObject1Item);
-        DisableObject(equipmentObject2Item);
+        DisableObject(object1Slot.slotItemData);
+        DisableObject(object2Slot.slotItemData);
 
-        EquipmentLibraryItem libItem =
-            equipmentLibrary.content.First(x => x.itemData == item);
+        EquipmentLibraryItem libItem = equipmentLibrary.Get(item);
 
         // Activer le prefab
-        libItem.itemPrefab.SetActive(true);
+        if (!libItem.itemPrefab.activeSelf)
+            libItem.itemPrefab.SetActive(true);
 
         // Informer les systèmes
         interactBehaviour.SetCurrentEquippedItem(libItem);
@@ -733,10 +699,11 @@ public class PaletteSystem : MonoBehaviour
 
     private void EquipObjectFromSave(ItemData item)
     {
-        EquipmentLibraryItem libItem =
-            equipmentLibrary.content.First(x => x.itemData == item);
 
-        libItem.itemPrefab.SetActive(true);
+        EquipmentLibraryItem libItem = equipmentLibrary.Get(item);
+
+        if (!libItem.itemPrefab.activeSelf)
+            libItem.itemPrefab.SetActive(true);
         interactBehaviour.SetCurrentEquippedItem(libItem);
 
         //animator.SetBool("CarryingConsumable", true);
@@ -763,3 +730,15 @@ public class PaletteSystem : MonoBehaviour
 //    public int count;
 //    public bool isEquipped;
 //}
+
+[System.Serializable]
+public class PaletteSlot
+{
+    public ItemData slotItemData;
+    public Image SlotImage;
+    public Image iconeInput;
+    public bool isEquipped = false;
+    public TextMeshProUGUI countText;
+    public GameObject imageSelected;
+    public Slot slotInEquipment;
+}
