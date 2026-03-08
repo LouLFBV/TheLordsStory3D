@@ -24,6 +24,8 @@ public class NewItemActionsSystem : MonoBehaviour
 
     [SerializeField] private Button destroyItemButton;
 
+    [SerializeField] private Button desequipmentItemButton;
+
     [SerializeField] private Transform dropPoint;
 
     [HideInInspector] public ItemData itemCurrentlySelected;
@@ -37,7 +39,7 @@ public class NewItemActionsSystem : MonoBehaviour
     [SerializeField] private TextMeshProUGUI itemTypeDeResistanceText;
 
 
-    public void OpenActionPanel(ItemData item)
+    public void OpenActionPanel(ItemData item, bool isEquipped)
     {
         itemCurrentlySelected = item;
 
@@ -51,46 +53,57 @@ public class NewItemActionsSystem : MonoBehaviour
         itemEffetText.gameObject.SetActive(false);
         itemTypeDeResistanceText.gameObject.SetActive(false);
 
-        switch (item.itemType)
+        if (!isEquipped)
         {
-            case ItemType.Consumable:
-                useItemButton.gameObject.SetActive(true);
-                equipmentItemButton.gameObject.SetActive(!palette.ObjectsAreFull(item));
-                dropItemButton.gameObject.SetActive(true);
-                destroyItemButton.gameObject.SetActive(true);
-                break;
-            case ItemType.Equipment:
-                useItemButton.gameObject.SetActive(false);
-                if (item.equipmentType != EquipmentType.Weapon)
-                {
-                    equipmentItemButton.gameObject.SetActive(true);
-                }
-                else
-                {
-                    equipmentItemButton.gameObject.SetActive(!palette.WeaponsAreFull());
-                }
-                dropItemButton.gameObject.SetActive(true);
-                destroyItemButton.gameObject.SetActive(true);
-                break;
-            case ItemType.QuestItem:
-                useItemButton.gameObject.SetActive(false);
-                equipmentItemButton.gameObject.SetActive(false);
-                dropItemButton.gameObject.SetActive(false);
-                destroyItemButton.gameObject.SetActive(false);
-                break;
-            case ItemType.Ressource:
-            case ItemType.Craft:
-                useItemButton.gameObject.SetActive(false);
-                equipmentItemButton.gameObject.SetActive(false);
-                dropItemButton.gameObject.SetActive(true);
-                destroyItemButton.gameObject.SetActive(true);
-                break;
-            case ItemType.Key:
-                useItemButton.gameObject.SetActive(false);
-                equipmentItemButton.gameObject.SetActive(false);
-                dropItemButton.gameObject.SetActive(true);
-                destroyItemButton.gameObject.SetActive(true);
-                break;
+            switch (item.itemType)
+            {
+                case ItemType.Consumable:
+                    useItemButton.gameObject.SetActive(true);
+                    equipmentItemButton.gameObject.SetActive(!palette.ObjectsAreFull(item));
+                    dropItemButton.gameObject.SetActive(true);
+                    destroyItemButton.gameObject.SetActive(true);
+                    break;
+                case ItemType.Equipment:
+                    useItemButton.gameObject.SetActive(false);
+                    if (item.equipmentType != EquipmentType.Weapon)
+                    {
+                        equipmentItemButton.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        equipmentItemButton.gameObject.SetActive(!palette.WeaponsAreFull());
+                    }
+                    dropItemButton.gameObject.SetActive(true);
+                    destroyItemButton.gameObject.SetActive(true);
+                    break;
+                case ItemType.QuestItem:
+                    useItemButton.gameObject.SetActive(false);
+                    equipmentItemButton.gameObject.SetActive(false);
+                    dropItemButton.gameObject.SetActive(false);
+                    destroyItemButton.gameObject.SetActive(false);
+                    break;
+                case ItemType.Ressource:
+                case ItemType.Craft:
+                    useItemButton.gameObject.SetActive(false);
+                    equipmentItemButton.gameObject.SetActive(false);
+                    dropItemButton.gameObject.SetActive(true);
+                    destroyItemButton.gameObject.SetActive(true);
+                    break;
+                case ItemType.Key:
+                    useItemButton.gameObject.SetActive(false);
+                    equipmentItemButton.gameObject.SetActive(false);
+                    dropItemButton.gameObject.SetActive(true);
+                    destroyItemButton.gameObject.SetActive(true);
+                    break;
+            }
+        }
+        else
+        {
+            useItemButton.gameObject.SetActive(false);
+            equipmentItemButton.gameObject.SetActive(false);
+            dropItemButton.gameObject.SetActive(false);
+            destroyItemButton.gameObject.SetActive(false);
+            equipmentItemButton.gameObject.SetActive(true);
         }
         //actionPanel.transform.position = slotPosition;
         itemNameText.text = item.itemName;
@@ -156,5 +169,11 @@ public class NewItemActionsSystem : MonoBehaviour
         InventorySystem.instance.RemoveItem(itemCurrentlySelected);
         CloseActionPanel();
         InventorySystem.instance.RefreshContent();
+    }
+
+    public void DesequipActionButton()
+    {
+        Debug.Log("Desequiping item: " + itemCurrentlySelected.itemName);
+        //equipment.UnequipAction();
     }
 }
