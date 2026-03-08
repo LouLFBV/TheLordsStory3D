@@ -112,8 +112,6 @@ public class PaletteSystem : MonoBehaviour
         }
         else
         {
-            // Pour le déséquipement, on pourrait aussi créer un "UnequipState" 
-            // ou simplement appeler la logique via le player
             DesequipCurrentActiveWeapon(slot, player);
         }
         UpdateImageSeleted();
@@ -124,27 +122,11 @@ public class PaletteSystem : MonoBehaviour
         if (item == null) return;
 
         PaletteSlot slotData = weaponSlots[slot - 1];
-        ForceDesequipWeapon(item, ref slotData.isEquipped, player);
+        player.PendingUnequipType = item.handWeaponType;
 
-        EquipmentLibraryItem lib = equipmentLibrary.Get(item);
-        lib.itemPrefab.SetActive(false);    
-    }
-
-    private void ForceDesequipWeapon(ItemData weaponData, ref bool equippedFlag, PlayerController player)
-    {
-        if (weaponData == null) return;
-
-        // On prépare les infos pour l'état
-        player.PendingUnequipType = weaponData.handWeaponType;
-
-        // On change d'état (Cela lancera l'animation proprement)
         player.StateMachine.ChangeState(PlayerStateType.Unequip);
+        slotData.isEquipped = false;
 
-        // On garde la logique de Data
-        EquipmentLibraryItem lib = equipmentLibrary.Get(weaponData);
-        PlayerStats.instance.equipmentToDesequip = lib;
-
-        equippedFlag = false;
     }
     private void ToggleObject(int slot, PlayerController player)
     {
@@ -244,7 +226,7 @@ public class PaletteSystem : MonoBehaviour
 
     public void DesequipWeapon(int numberOfWeapon)
     {
-        if (Inventory.instance.IsFull())
+        if (InventorySystem.instance.IsFullEquipment())
         {
             Debug.LogWarning("Cannot desequip item, inventory is full.");
             return;
@@ -252,7 +234,7 @@ public class PaletteSystem : MonoBehaviour
 
         ItemData currentItem = (numberOfWeapon == 1) ? weapon1Slot.slotItemData : weapon2Slot.slotItemData;
 
-        EquipmentLibraryItem lib = equipmentLibrary.Get(currentItem);
+        //EquipmentLibraryItem lib = equipmentLibrary.Get(currentItem);
 
         // animations + model disable
 
@@ -285,7 +267,7 @@ public class PaletteSystem : MonoBehaviour
 
     public void DesequipObject(int numberOfObject)
     {
-        if (Inventory.instance.IsFull())
+        if (InventorySystem.instance.IsFullEquipment())
         {
             Debug.LogWarning("Cannot desequip item, inventory is full.");
             return;
@@ -414,14 +396,15 @@ public class PaletteSystem : MonoBehaviour
     {
         var inventoryItem = objects[slotIndex];
         Debug.Log("Current item in slot " + slotIndex + ": " + (inventoryItem.itemData != null ? inventoryItem.itemData.name : "null"));
+        PaletteSlot slotData = objectSlots[slotIndex];
         if (inventoryItem.itemData == null)
         {
             Debug.Log("Creating new ItemInInventory for slot " + slotIndex);
             objects[slotIndex] = new ItemInInventory { itemData = item, count = 1 };
 
-            PaletteSlot slotData = objectSlots[slotIndex];
             slotData.slotItemData = item;
             slotData.slotInEquipment.item = item;
+            slotData.slotInEquipment.countTexte.text = "1";
         }
         else if (inventoryItem.itemData == item)
         {
@@ -429,6 +412,7 @@ public class PaletteSystem : MonoBehaviour
             if (inventoryItem.count < item.maxStack)
             {
                 inventoryItem.count++;
+                slotData.slotInEquipment.countTexte.text = inventoryItem.count.ToString();
             }
         }
 

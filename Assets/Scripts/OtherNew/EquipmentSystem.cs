@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EquipmentSystem : MonoBehaviour
 {
@@ -21,17 +18,12 @@ public class EquipmentSystem : MonoBehaviour
 
     [SerializeField] private EquipmentLibrary equipmentLibrary;
 
-    [SerializeField] private Image headSlotImage, chestSlotImage, handsSlotImage, legslotImage, feetSlotImage, arrowSlotImage;
+    public Slot headSlot, chestSlot, handsSlot, legsSlot, feetSlot, arrowSlot;
 
-    [HideInInspector]
-    public ItemData equipmentHeadItem, equipmentChestItem, equipmentHandsItem, equipmentLegsItem, equipmentFeetItem;
 
     [HideInInspector]
     public ItemInInventory arrowItemInInventory;
 
-    [SerializeField] private TextMeshProUGUI arrowText;
-
-    //[SerializeField] private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
 
     [HideInInspector] public AudioSource audioSource;
 
@@ -54,11 +46,11 @@ public class EquipmentSystem : MonoBehaviour
     }
     public bool IsEquipped(ItemData item)
     {
-        return equipmentHeadItem == item ||
-               equipmentChestItem == item ||
-               equipmentHandsItem == item ||
-               equipmentLegsItem == item ||
-               equipmentFeetItem == item ||
+        return headSlot.item == item ||
+               chestSlot.item == item ||
+               handsSlot.item == item ||
+               legsSlot.item == item ||
+               feetSlot.item == item ||
                arrowItemInInventory.itemData == item;
     }
     private void DisablePreviousEquipedEquipment(ItemData itemToDisable)
@@ -109,38 +101,38 @@ public class EquipmentSystem : MonoBehaviour
         switch (equipmentType)
         {
             case EquipmentType.Head:
-                currentItem = equipmentHeadItem;
-                headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentHeadItem = null;
+                currentItem = headSlot.item;
+                headSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                headSlot.item = null;
                 break;
             case EquipmentType.Chest:
-                currentItem = equipmentChestItem;
-                chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentChestItem = null;
+                currentItem = chestSlot.item;
+                chestSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                chestSlot.item = null;
                 break;
             case EquipmentType.Hands:
-                currentItem = equipmentHandsItem;
-                handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentHandsItem = null;
+                currentItem = handsSlot.item;
+                handsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                handsSlot.item = null;
                 break;
             case EquipmentType.Legs:
-                currentItem = equipmentLegsItem;
-                legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentLegsItem = null;
+                currentItem = legsSlot.item;
+                legsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                legsSlot.item = null;
                 break;
             case EquipmentType.Feet:
-                currentItem = equipmentFeetItem;
-                feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentFeetItem = null;
+                currentItem = feetSlot.item;
+                feetSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                feetSlot.item = null;
                 break;
             case EquipmentType.Arrow:
                 currentItem = arrowItemInInventory.itemData;
-                arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+                arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 arrowItemInInventory.itemData = null;
                 break;
         }
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == currentItem).FirstOrDefault();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(currentItem);
 
         if (equipmentLibraryItem != null)
         {
@@ -176,36 +168,9 @@ public class EquipmentSystem : MonoBehaviour
 
     public void UpdateArrowsText()
     {
-        arrowText.gameObject.SetActive(arrowItemInInventory.itemData != null);
-        arrowText.text = arrowItemInInventory.count.ToString();
+        arrowSlot.countTexte.gameObject.SetActive(arrowItemInInventory.itemData != null);
+        arrowSlot.countTexte.text = arrowItemInInventory.count.ToString();
     }
-
-    //public void UpdateEquipmentsDesequipButtons()
-    //{
-    //    headSlotDesequipButton.onClick.RemoveAllListeners();
-    //    headSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Head); });
-    //    headSlotDesequipButton.gameObject.SetActive(equipmentHeadItem);
-
-    //    chestSlotDesequipButton.onClick.RemoveAllListeners();
-    //    chestSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Chest); });
-    //    chestSlotDesequipButton.gameObject.SetActive(equipmentChestItem);
-
-    //    handsSlotDesequipButton.onClick.RemoveAllListeners();
-    //    handsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Hands); });
-    //    handsSlotDesequipButton.gameObject.SetActive(equipmentHandsItem);
-
-    //    legsSlotDesequipButton.onClick.RemoveAllListeners();
-    //    legsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Legs); });
-    //    legsSlotDesequipButton.gameObject.SetActive(equipmentLegsItem);
-
-    //    feetSlotDesequipButton.onClick.RemoveAllListeners();
-    //    feetSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Feet); });
-    //    feetSlotDesequipButton.gameObject.SetActive(equipmentFeetItem);
-
-    //    arrowSlotDesequipButton.onClick.RemoveAllListeners();
-    //    arrowSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Arrow); });
-    //    arrowSlotDesequipButton.gameObject.SetActive(arrowItemInInventory.itemData);
-    //}
 
     public void EquipAction(ItemData equipment = null)
     {
@@ -220,33 +185,34 @@ public class EquipmentSystem : MonoBehaviour
             switch (itemToEquip.equipmentType)
             {
                 case EquipmentType.Head:
-                    DisablePreviousEquipedEquipment(equipmentHeadItem);
-                    headSlotImage.sprite = itemToEquip.visual;
-                    equipmentHeadItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(headSlot.item);
+                    headSlot.itemVisual.sprite = itemToEquip.visual;
+                    headSlot.item = itemToEquip;
+                    headSlot.item = itemToEquip;
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Chest:
-                    DisablePreviousEquipedEquipment(equipmentChestItem);
-                    chestSlotImage.sprite = itemToEquip.visual;
-                    equipmentChestItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(chestSlot.item);
+                    chestSlot.itemVisual.sprite = itemToEquip.visual;
+                    chestSlot.item = itemToEquip;
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Hands:
-                    DisablePreviousEquipedEquipment(equipmentHandsItem);
-                    handsSlotImage.sprite = itemToEquip.visual;
-                    equipmentHandsItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(handsSlot.item);
+                    handsSlot.itemVisual.sprite = itemToEquip.visual;
+                    handsSlot.item = itemToEquip;
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Legs:
-                    DisablePreviousEquipedEquipment(equipmentLegsItem);
-                    legslotImage.sprite = itemToEquip.visual;
-                    equipmentLegsItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(legsSlot.item);
+                    legsSlot.itemVisual.sprite = itemToEquip.visual;
+                    legsSlot.item = itemToEquip;
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Feet:
-                    DisablePreviousEquipedEquipment(equipmentFeetItem);
-                    feetSlotImage.sprite = itemToEquip.visual;
-                    equipmentFeetItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(feetSlot.item);
+                    feetSlot.itemVisual.sprite = itemToEquip.visual;
+                    feetSlot.item = itemToEquip;
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Weapon:
@@ -271,7 +237,7 @@ public class EquipmentSystem : MonoBehaviour
                     break;
                 case EquipmentType.Arrow:
                     DisablePreviousEquipedEquipment(arrowItemInInventory.itemData);
-                    arrowSlotImage.sprite = itemToEquip.visual;
+                    arrowSlot.itemVisual.sprite = itemToEquip.visual;
                     arrowItemInInventory.itemData = itemToEquip;
                     arrowItemInInventory.count = InventorySystem.instance.GetContent().Find(x => x.itemData == itemToEquip).count;
                     for (int i = 0; i < arrowItemInInventory.count; i++)
@@ -306,11 +272,11 @@ public class EquipmentSystem : MonoBehaviour
     {
         return new EquipmentSaveData
         {
-            headID = equipmentHeadItem ? equipmentHeadItem.itemID : null,
-            chestID = equipmentChestItem ? equipmentChestItem.itemID : null,
-            handsID = equipmentHandsItem ? equipmentHandsItem.itemID : null,
-            legsID = equipmentLegsItem ? equipmentLegsItem.itemID : null,
-            feetID = equipmentFeetItem ? equipmentFeetItem.itemID : null,
+            headID = headSlot.item ? headSlot.item.itemID : null,
+            chestID = chestSlot.item ? chestSlot.item.itemID : null,
+            handsID = handsSlot.item ? handsSlot.item.itemID : null,
+            legsID = legsSlot.item ? legsSlot.item.itemID : null,
+            feetID = feetSlot.item ? feetSlot.item.itemID : null,
 
             arrowID = arrowItemInInventory.itemData ? arrowItemInInventory.itemData.itemID : null,
             arrowCount = arrowItemInInventory.count
@@ -322,21 +288,21 @@ public class EquipmentSystem : MonoBehaviour
         isLoading = true;
 
         // Reset interne SANS toucher l'inventaire
-        equipmentHeadItem = null;
-        equipmentChestItem = null;
-        equipmentHandsItem = null;
-        equipmentLegsItem = null;
-        equipmentFeetItem = null;
+        headSlot.item = null;
+        chestSlot.item = null;
+        handsSlot.item = null;
+        legsSlot.item = null;
+        feetSlot.item = null;
 
         arrowItemInInventory.itemData = null;
         arrowItemInInventory.count = 0;
 
-        headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        headSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        chestSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        handsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        legsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        feetSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
 
         if (data == null)
         {
@@ -356,7 +322,7 @@ public class EquipmentSystem : MonoBehaviour
             arrowItemInInventory.itemData = arrow;
             arrowItemInInventory.count = data.arrowCount;
 
-            arrowSlotImage.sprite = arrow.visual;
+            arrowSlot.itemVisual.sprite = arrow.visual;
             UpdateArrowsText();
             BowBehaviour.instance.UpdateQuiverVisual(data.arrowCount);
         }
