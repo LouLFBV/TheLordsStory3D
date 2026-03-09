@@ -403,6 +403,8 @@ public class PaletteSystem : MonoBehaviour
             objects[slotIndex] = new ItemInInventory { itemData = item, count = 1 };
 
             slotData.slotItemData = item;
+            slotData.SlotImage.sprite = item.visual;
+            slotData.countText.text = "1";
             slotData.slotInEquipment.item = item;
             slotData.slotInEquipment.countTexte.text = "1";
         }
