@@ -153,11 +153,3 @@ public class QuestLog : MonoBehaviour
     }
 
 }
-
-[System.Serializable]
-public class QuestLogSaveData
-{
-    public string activeQuestName;
-    public bool isQuestToggleOn;
-}
-

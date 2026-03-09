@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class QuestManager : MonoBehaviour
+public class NewQuestManager : MonoBehaviour
 {
-    public static QuestManager instance;
+    public static NewQuestManager instance;
 
     public List<QuestInstance> activeQuests = new List<QuestInstance>();
-    public List<QuestInstance> completedQuests = new List<QuestInstance>();
 
     private void Awake()
     {
@@ -17,9 +16,6 @@ public class QuestManager : MonoBehaviour
     // Ajouter une quête
     public void AddQuest(QuestSO questData)
     {
-        if (completedQuests.Exists(q => q.data == questData))
-            return;
-
         if (activeQuests.Exists(q => q.data == questData))
             return;
 
@@ -29,6 +25,7 @@ public class QuestManager : MonoBehaviour
             status = QuestStatus.InProgress,
             currentCount = 0
         });
+        NewQuestLog.instance.CreateQuestButton(activeQuests[activeQuests.Count - 1]);
     }
 
     public void MarkInteractionDone(QuestSO quest)
@@ -39,21 +36,10 @@ public class QuestManager : MonoBehaviour
         q.interactionDone = true;
     }
 
-    [ContextMenu("DEBUG Print Quests")]
-    public void DebugPrintQuests()
-    {
-        Debug.Log("=== ACTIVE QUESTS ===");
-        foreach (var q in activeQuests)
-            Debug.Log($"{q.data.questName} ({q.currentCount})");
-
-        Debug.Log("=== COMPLETED QUESTS ===");
-        foreach (var q in completedQuests)
-            Debug.Log(q.data.questName);
-    }
 
     public QuestInstance GetQuestInstance(QuestSO questData)
     {
-        return activeQuests.Find(q => q.data == questData) ?? completedQuests.Find(q => q.data == questData);
+        return activeQuests.Find(q => q.data == questData);
     }
 
     // Vérifier progression (ex : ramasser un objet, tuer un ennemi…)
@@ -83,11 +69,11 @@ public class QuestManager : MonoBehaviour
     {
         if (quest == null || quest.status != QuestStatus.InProgress)
             return false;
-        if(quest.data.questType == QuestType.Interaction)
-        { 
+        if (quest.data.questType == QuestType.Interaction)
+        {
             quest = activeQuests.Find(q => q.data == quest.data);
         }
-        return quest.data.IsComplete(quest.currentCount ,quest.interactionDone, quest.escortFinished);
+        return quest.data.IsComplete(quest.currentCount, quest.interactionDone, quest.escortFinished);
     }
 
 
@@ -96,7 +82,6 @@ public class QuestManager : MonoBehaviour
     public void CompleteQuest(QuestInstance quest)
     {
         quest.status = QuestStatus.Completed;
-        completedQuests.Add(quest);
         QuestInstance toRemove = activeQuests.Find(q => q.data == quest.data);
         if (toRemove != null)
             activeQuests.Remove(toRemove);
@@ -120,6 +105,7 @@ public class QuestManager : MonoBehaviour
         questInstane.rewardsGiven = true;
     }
 
+    #region Save/Load
     public QuestSaveData GetSaveData()
     {
         QuestSaveData data = new QuestSaveData();
@@ -127,11 +113,6 @@ public class QuestManager : MonoBehaviour
         foreach (var quest in activeQuests)
         {
             data.activeQuests.Add(ToSaveData(quest));
-        }
-
-        foreach (var quest in completedQuests)
-        {
-            data.completedQuests.Add(ToSaveData(quest));
         }
 
         return data;
@@ -155,19 +136,9 @@ public class QuestManager : MonoBehaviour
         if (data == null) return;
 
         activeQuests.Clear();
-        completedQuests.Clear();
 
         HashSet<string> completedIDs = new();
 
-        foreach (var questData in data.completedQuests)
-        {
-            QuestInstance quest = FromSaveData(questData);
-            if (quest != null)
-            {
-                completedQuests.Add(quest);
-                completedIDs.Add(quest.data.questID);
-            }
-        }
 
         foreach (var questData in data.activeQuests)
         {
@@ -200,5 +171,12 @@ public class QuestManager : MonoBehaviour
             rewardsGiven = data.rewardsGiven
         };
     }
+    #endregion
+}
 
+[System.Serializable]
+public class QuestSaveData
+{
+    public List<QuestInstanceSaveData> activeQuests = new();
+    public List<QuestInstanceSaveData> completedQuests = new();
 }

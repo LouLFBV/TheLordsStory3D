@@ -12,6 +12,7 @@ public class UIManagerSystem : MonoBehaviour
     [SerializeField] private GameObject questsPanel;
     [SerializeField] private GameObject equipmentPanel;
     [SerializeField] private GameObject mapPanel;
+    [SerializeField] private GameObject tooltipPanel;
 
     [SerializeField] private GameObject pauseMenuPanel;
 
@@ -67,6 +68,7 @@ public class UIManagerSystem : MonoBehaviour
         questsPanel.SetActive(false);
         equipmentPanel.SetActive(false);
         mapPanel.SetActive(false);
+        tooltipPanel.SetActive(false);
     }
 
     #region --- Méthodes d'ouverture spécifiques pour les boutons de l'UI ---

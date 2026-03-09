@@ -55,7 +55,7 @@ public class PNJ : InteractableBase
 
     private void Start()
     {
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        //playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
         jumpBehaviour = playerTransform.GetComponent<JumpBehaviour>();
         aimBehaviour = playerTransform.GetComponent<AimBehaviourBasic>();

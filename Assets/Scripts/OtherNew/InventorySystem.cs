@@ -12,7 +12,7 @@ public class InventorySystem : MonoBehaviour
 
     [Header("Other scripts References")]
     [SerializeField] private EquipmentSystem equipment;
-    [SerializeField] private NewItemActionsSystem itemActionsSystem;
+    public NewItemActionsSystem itemActionsSystem;
     [SerializeField] private PlayerController player;
 
     [Header("Inventory System Variables")]
