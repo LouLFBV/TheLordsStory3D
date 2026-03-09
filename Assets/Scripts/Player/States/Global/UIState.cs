@@ -29,6 +29,7 @@ public class UIState : PlayerState
         UIManagerSystem.instance.CloseAll();
         player.Input.SwitchActionMap("Player");
         UIManagerSystem.instance.ToggleCursor(false);
+        InventorySystem.instance.itemActionsSystem.CloseActionPanel();
     }
 }
 
@@ -41,5 +42,6 @@ public enum UIPanelType
     PauseMenu,
     Options,
     Commandes,
+    Dialogue,
     None
 }
