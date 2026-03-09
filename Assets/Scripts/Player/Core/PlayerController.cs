@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -153,8 +152,7 @@ public class PlayerController : MonoBehaviour
     {
         // On délègue la logique à l'état actuel si c'est un état d'équipement
         if (StateMachine.CurrentState is EquipState equip)
-        {
-            
+        {            
             equip.HandleWeaponSwitch();
         }
     }

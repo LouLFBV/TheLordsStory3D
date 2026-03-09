@@ -99,7 +99,7 @@ public class NewItemActionsSystem : MonoBehaviour
             equipmentItemButton.gameObject.SetActive(false);
             dropItemButton.gameObject.SetActive(false);
             destroyItemButton.gameObject.SetActive(false);
-            desequipmentItemButton.gameObject.SetActive(true);
+            desequipmentItemButton.gameObject.SetActive(!InventorySystem.instance.IsFullEquipment());
         }
         //actionPanel.transform.position = slotPosition;
         itemNameText.text = item.itemName;
@@ -169,21 +169,20 @@ public class NewItemActionsSystem : MonoBehaviour
 
     public void DesequipActionButton()
     {
-        Debug.Log("Desequiping item: " + itemCurrentlySelected.itemName);
         if (itemCurrentlySelected.equipmentType == EquipmentType.Weapon)
         {
             if (palette.slotManager.weaponSlots[0].slotItemData == itemCurrentlySelected)            
-                palette.equipmentManager.DesequipWeapon(1);
+                palette.equipmentManager.DesequipWeapon(0);
             else
-                palette.equipmentManager.DesequipWeapon(2);
+                palette.equipmentManager.DesequipWeapon(1);
             
         }
         else if (itemCurrentlySelected.itemType == ItemType.Consumable)
         {
            if (palette.slotManager.objectSlots[0].slotItemData == itemCurrentlySelected)
-                palette.equipmentManager.DesequipObject(1);
+                palette.equipmentManager.DesequipObject(1, player);
            else 
-                palette.equipmentManager.DesequipObject(2);
+                palette.equipmentManager.DesequipObject(2, player);
         }
         else
             equipment.DesequipEquipment(itemCurrentlySelected.equipmentType);

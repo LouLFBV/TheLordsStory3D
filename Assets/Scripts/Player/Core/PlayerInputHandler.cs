@@ -125,4 +125,8 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseMenuInput() => MenuPressed = false;
     public void UseCloseMenuInput() => CloseMenuPressed = false;
     public void UseCloseInventoryInput() => CloseInventoryPressed = false;
+    public void UseWeapon1Pressed() => Weapon1Pressed = false;
+    public void UseWeapon2Pressed() => Weapon2Pressed = false;
+    public void UseObject1Pressed() => Object1Pressed = false;
+    public void UseObject2Pressed() => Object2Pressed = false;
 }

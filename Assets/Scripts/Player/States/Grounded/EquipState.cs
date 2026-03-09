@@ -1,18 +1,19 @@
 using UnityEngine;
 public class EquipState : GroundedState
 {
-    private float timer;
-    private float duration = 0.8f; // Ajuste selon la longueur de tes anims
 
     public EquipState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
         base.Enter();
-        timer = 0;
         player.Rigidbody.linearVelocity = Vector3.zero;
 
-        // On déclenche l'animation selon le type stocké
+        if (player.PendingWeaponItem.itemType == ItemType.Consumable)
+        {
+            player.Animator.SetBool("CarryingConsumable", true);
+            return;
+        }
         PlayEquipAnimation(player.PendingWeaponType);
     }
 
@@ -33,17 +34,6 @@ public class EquipState : GroundedState
         }
     }
 
-    public override void Update()
-    {
-        base.Update();
-        timer += Time.deltaTime;
-        if (timer >= duration)
-        {
-            player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
-                ? PlayerStateType.Move : PlayerStateType.Idle);
-        }
-    }
-
     public void HandleWeaponSwitch()
     {
         if (player.PendingLibraryItem != null)
@@ -55,6 +45,8 @@ public class EquipState : GroundedState
             {
                 element.SetActive(false);
             }
+            player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
+                ? PlayerStateType.Move : PlayerStateType.Idle);
         }
     }
 }
