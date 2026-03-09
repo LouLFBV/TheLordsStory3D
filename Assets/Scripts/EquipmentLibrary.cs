@@ -12,14 +12,31 @@ public class EquipmentLibrary : MonoBehaviour
 
         foreach (var item in content)
         {
+            if (item.itemData == null)
+            {
+                Debug.LogWarning("EquipmentLibraryItem has null ItemData");
+                continue;
+            }
+
             lookup[item.itemData] = item;
         }
     }
 
     public EquipmentLibraryItem Get(ItemData item)
     {
-        lookup.TryGetValue(item, out var result);
-        return result;
+        if (item == null)
+        {
+            Debug.LogError("EquipmentLibrary.Get called with NULL ItemData");
+            return null;
+        }
+
+        if (lookup.TryGetValue(item, out var result))
+        {
+            return result;
+        }
+
+        Debug.LogWarning($"Item {item.itemName} not found in EquipmentLibrary.");
+        return null;
     }
 }
 
