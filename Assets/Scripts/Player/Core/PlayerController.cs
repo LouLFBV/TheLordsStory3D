@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
     public void PrepareEquip(ItemData data)
     {
         // On cherche l'item correspondant dans la librairie
-        PendingLibraryItem = equipmentLibrary.content.FirstOrDefault(x => x.itemData == data);
+        PendingLibraryItem = equipmentLibrary.Get(data);
 
         if (PendingLibraryItem != null)
         {

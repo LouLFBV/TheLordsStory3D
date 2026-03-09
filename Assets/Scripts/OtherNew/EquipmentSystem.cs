@@ -217,7 +217,7 @@ public class EquipmentSystem : MonoBehaviour
                     break;
                 case EquipmentType.Weapon:
                     // 1. On l'ajoute à la palette (logique de données)
-                    palette.AddWeapon(itemToEquip);
+                    palette.slotManager.AddWeapon(itemToEquip);
 
                     //// 2. Si on n'est pas en train de charger une sauvegarde, on déclenche l'animation
                     //if (!isLoading)
@@ -251,7 +251,7 @@ public class EquipmentSystem : MonoBehaviour
             }
             if (itemToEquip.itemType == ItemType.Consumable)
             {
-                palette.AddObject(itemToEquip);
+                palette.slotManager.AddObject(itemToEquip);
             }
 
             if (!isLoading && itemToEquip.equipmentType != EquipmentType.Arrow)

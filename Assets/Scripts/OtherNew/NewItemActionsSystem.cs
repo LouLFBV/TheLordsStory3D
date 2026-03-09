@@ -59,7 +59,7 @@ public class NewItemActionsSystem : MonoBehaviour
             {
                 case ItemType.Consumable:
                     useItemButton.gameObject.SetActive(true);
-                    equipmentItemButton.gameObject.SetActive(!palette.ObjectsAreFull(item));
+                    equipmentItemButton.gameObject.SetActive(!palette.slotManager.ObjectsAreFull(item));
                     dropItemButton.gameObject.SetActive(true);
                     destroyItemButton.gameObject.SetActive(true);
                     break;
@@ -71,7 +71,7 @@ public class NewItemActionsSystem : MonoBehaviour
                     }
                     else
                     {
-                        equipmentItemButton.gameObject.SetActive(!palette.WeaponsAreFull());
+                        equipmentItemButton.gameObject.SetActive(!palette.slotManager.WeaponsAreFull());
                     }
                     dropItemButton.gameObject.SetActive(true);
                     destroyItemButton.gameObject.SetActive(true);
@@ -172,18 +172,18 @@ public class NewItemActionsSystem : MonoBehaviour
         Debug.Log("Desequiping item: " + itemCurrentlySelected.itemName);
         if (itemCurrentlySelected.equipmentType == EquipmentType.Weapon)
         {
-            if (palette.weapon1Slot.slotItemData == itemCurrentlySelected)            
-                palette.DesequipWeapon(1);
+            if (palette.slotManager.weaponSlots[0].slotItemData == itemCurrentlySelected)            
+                palette.equipmentManager.DesequipWeapon(1);
             else
-                palette.DesequipWeapon(2);
+                palette.equipmentManager.DesequipWeapon(2);
             
         }
         else if (itemCurrentlySelected.itemType == ItemType.Consumable)
         {
-           if (palette.object1Slot.slotItemData == itemCurrentlySelected)
-                palette.DesequipObject(1);
+           if (palette.slotManager.objectSlots[0].slotItemData == itemCurrentlySelected)
+                palette.equipmentManager.DesequipObject(1);
            else 
-                palette.DesequipObject(2);
+                palette.equipmentManager.DesequipObject(2);
         }
         else
             equipment.DesequipEquipment(itemCurrentlySelected.equipmentType);

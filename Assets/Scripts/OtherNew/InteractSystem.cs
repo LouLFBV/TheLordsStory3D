@@ -29,7 +29,6 @@ public class InteractSystem : MonoBehaviour
     private Harvestable currentHarvestable;
     private Tool currentTool;
 
-    private EquipmentLibraryItem equipmentToDesactiveAndActive;
 
     private Vector3 spawnItemOffset = new Vector3(0, 0.5f, 0);
     public void DoPickUp(Item item)
@@ -183,33 +182,9 @@ public class InteractSystem : MonoBehaviour
 
     public void SetCurrentEquippedItem(EquipmentLibraryItem equippedItem)
     {
-        equipmentToDesactiveAndActive = equippedItem;
+        //equipmentToDesactiveAndActive = equippedItem;
     }
 
-    public void EnableTwoHand()
-    {
-        if (equipmentToDesactiveAndActive == null) return;
-        if (player.Animator == null) return; // <- protection supplémentaire
-        if (equipmentToDesactiveAndActive.itemData == null) return;
-
-        if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
-
-        if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
-
-        player.Animator.SetBool("IsTwoHandedWeapon", true);
-
-    }
-    public void DisableTwoHand()
-    {
-        if (equipmentToDesactiveAndActive == null) return;
-        if (player.Animator == null) return; // <- protection supplémentaire
-        if (equipmentToDesactiveAndActive.itemData == null) return;
-        if (equipmentToDesactiveAndActive.itemData.handWeaponType == HandWeapon.OneHanded) return;
-        if (equipmentToDesactiveAndActive.itemData.handWeaponType != HandWeapon.TwoHanded) return;
-
-        player.Animator.SetBool("IsTwoHandedWeapon", false);
-
-    }
     public void AddItemToInventory()
     {
         if (currentItem == null) return;
