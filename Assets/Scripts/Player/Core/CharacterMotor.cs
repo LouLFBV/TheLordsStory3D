@@ -13,7 +13,8 @@ public class CharacterMotor : MonoBehaviour
     }
     private void Start()
     {
-        cameraTransform = ThirdPersonCameraController.Instance.GetTransform();
+        if (cameraTransform == null)
+            cameraTransform = ThirdPersonCameraController.Instance.GetTransform();
     }
     public void RotateTowardsInput(Vector2 input)
     {
