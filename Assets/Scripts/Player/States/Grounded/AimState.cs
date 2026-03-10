@@ -9,9 +9,9 @@ public class AimState : GroundedState
     public override void Enter()
     {
         base.Enter();
-        player.Animator.applyRootMotion = true;
         player.Animator.SetBool(aimBool, true);
         // Ici tu pourrais aussi activer ton GameObject Crosshair
+        ThirdPersonCameraController.Instance.SetAimState(true);
     }
 
     public override void Update()
@@ -46,7 +46,8 @@ public class AimState : GroundedState
     public override void Exit()
     {
         base.Exit();
-        player.Animator.SetBool(aimBool, false);
+        player.Animator.SetBool(aimBool, false); 
+        ThirdPersonCameraController.Instance.SetAimState(false);
     }
 
     private void RotateTowardsCamera()

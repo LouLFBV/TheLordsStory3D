@@ -6,50 +6,69 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     [Header("Target")]
     [SerializeField] private Transform target;
+    [SerializeField] private float smoothTime = 10f;
 
     [Header("Orbit Settings")]
-    [SerializeField] private float distance = 3f;
-    [SerializeField] private float height = 1.7f;
+    [SerializeField] private float defaultDistance = 3f;
+    [SerializeField] private Vector3 defaultPivotOffset = new Vector3(0f, 1.7f, 0f);
+    [SerializeField] private Vector3 defaultCamOffset = new Vector3(0f, 0f, -3f);
+    [SerializeField] private float distance = 3f; // Gardé selon ta demande
+    [SerializeField] private float height = 1.7f; // Gardé selon ta demande
+
+    [Header("Speeds")]
     [SerializeField] private float rotationSpeed = 180f;
     [SerializeField] private float verticalSpeed = 120f;
-    // Ajoute ces deux propriétés pour permettre au UIManager de lire/écrire les vitesses
     public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = value; }
     public float VerticalSpeed { get => verticalSpeed; set => verticalSpeed = value; }
+
+    [Header("FOV Settings")]
+    public float SprintFOV { get; private set; }
+    [SerializeField] private float sprintFOV = 80f;
+    [SerializeField] private float fovLerpSpeed = 8f;
+
+    [Header("Aim Settings")]
+    [SerializeField] private Vector3 aimPivotOffset = new Vector3(0.5f, 1.7f, 0f);
+    [SerializeField] private Vector3 aimCamOffset = new Vector3(0f, 0f, -1.2f);
 
     [Header("Vertical Clamp")]
     [SerializeField] private float minVerticalAngle = -40f;
     [SerializeField] private float maxVerticalAngle = 60f;
 
-     public float SprintFOV { get; private set; }
-    [SerializeField] private float sprintFOV = 80f;
-    private float defaultFOV;                                          // Champ de vision (Field of View) par défaut.
-    private float targetFOV;                                           // Champ de vision cible.
+    [Header("Collision Settings")]
+    [SerializeField] private LayerMask collisionLayers;
+    [SerializeField] private float cameraRadius = 0.2f;
+    [SerializeField] private float minCollisionDistance = 0.5f;
 
-    [SerializeField] private float fovLerpSpeed = 8f;
+    // Valeurs de travail
+    private Vector3 currentPivotOffset;
+    private Vector3 currentCamOffset;
+    private Vector3 targetPivotOffset;
+    private Vector3 targetCamOffset;
+    private Vector3 smoothCamVelocity; // Pour un lissage plus stable en collision
+
+    private float targetFOV;
+    private float defaultFOV;
     private Camera _camComponent;
-
     private PlayerInputHandler input;
     private float yaw;
     private float pitch;
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-
-        if (target == null)
-            Debug.LogError("ThirdPersonCameraController: Target not assigned!");
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
         input = target.GetComponent<PlayerInputHandler>();
         _camComponent = GetComponent<Camera>();
-        SprintFOV = sprintFOV;
 
         defaultFOV = _camComponent.fieldOfView;
         targetFOV = defaultFOV;
-        yaw = target.eulerAngles.y;
+        SprintFOV = sprintFOV;
 
+        currentPivotOffset = targetPivotOffset = defaultPivotOffset;
+        currentCamOffset = targetCamOffset = defaultCamOffset;
+
+        yaw = target.eulerAngles.y;
     }
 
     private void LateUpdate()
@@ -61,41 +80,57 @@ public class ThirdPersonCameraController : MonoBehaviour
     private void HandleInput()
     {
         Vector2 look = input.mouseLook + input.gamepadLook;
-
         yaw += look.x * rotationSpeed * Time.deltaTime;
         pitch -= look.y * verticalSpeed * Time.deltaTime;
-
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
     }
 
     private void UpdateCameraPosition()
     {
-        Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
-        Vector3 pivot = target.position + Vector3.up * height;
+        // 1. Interpolation fluide des offsets
+        // On utilise Lerp pour passer doucement de l'offset "Idle" à l'offset "Aim"
+        currentPivotOffset = Vector3.Lerp(currentPivotOffset, targetPivotOffset, Time.deltaTime * smoothTime);
 
+        // CORRECTION ICI : On lerp vers targetCamOffset pour que le zoom/décalage soit fluide
+        currentCamOffset = Vector3.Lerp(currentCamOffset, targetCamOffset, Time.deltaTime * smoothTime);
 
-        // Met à jour le champ de vision.
         _camComponent.fieldOfView = Mathf.Lerp(_camComponent.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
 
-        // position caméra derrière le pivot
-        Vector3 desiredPosition = pivot - rot * Vector3.forward * distance;
+        // 2. Calcul des rotations
+        Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
+        Quaternion yawRot = Quaternion.Euler(0, yaw, 0);
 
-        transform.position = desiredPosition;
-        transform.LookAt(pivot);
-    }
-    public Transform GetTransform()
-    {
-        return transform;
-    }
-    // Définit un champ de vision personnalisé.
-    public void SetFOV(float customFOV)
-    {
-        this.targetFOV = customFOV;
+        // 3. Calcul du pivot dynamique (le point que la caméra regarde)
+        // On applique le pivot offset relativement à la rotation horizontale du joueur
+        Vector3 pivotPos = target.position + yawRot * currentPivotOffset;
+
+        // 4. Calcul de la distance souhaitée avec collision
+        float desiredDistance = currentCamOffset.magnitude;
+        Vector3 direction = rot * Vector3.back; // Direction arrière de la caméra
+
+        Vector3 desiredPos = pivotPos + direction * desiredDistance;
+
+        // 5. Check des collisions
+        RaycastHit hit;
+        if (Physics.SphereCast(pivotPos, cameraRadius, direction, out hit, desiredDistance, collisionLayers))
+        {
+            float hitDistance = Mathf.Max(minCollisionDistance, hit.distance);
+            desiredPos = pivotPos + direction * hitDistance;
+        }
+
+        // 6. Application
+        transform.position = desiredPos;
+        transform.LookAt(pivotPos);
     }
 
-    // Réinitialise le champ de vision à la valeur par défaut.
-    public void ResetFOV()
+    public Transform GetTransform() => transform;
+
+    public void SetAimState(bool isAiming)
     {
-        this.targetFOV = defaultFOV;
+        targetPivotOffset = isAiming ? aimPivotOffset : defaultPivotOffset;
+        targetCamOffset = isAiming ? aimCamOffset : defaultCamOffset;
     }
+
+    public void SetFOV(float fov) => targetFOV = fov;
+    public void ResetFOV() => targetFOV = defaultFOV;
 }
