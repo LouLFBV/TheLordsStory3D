@@ -6,8 +6,11 @@ public class UIState : PlayerState
     public override void Enter()
     {
         base.Enter(); 
-        Time.timeScale = 0f;
-        UIManagerSystem.instance.OpenPanel(player.RequestedPanelType);
+        if (player.RequestedPanelType != UIPanelType.Dialogue)
+        {
+            Time.timeScale = 0f;
+            UIManagerSystem.instance.OpenPanel(player.RequestedPanelType);
+        }
 
         player.Input.SwitchActionMap("UI");
         UIManagerSystem.instance.ToggleCursor(true);
@@ -25,8 +28,11 @@ public class UIState : PlayerState
     public override void Exit()
     {
         base.Exit();
-        Time.timeScale = 1f;
-        UIManagerSystem.instance.CloseAll();
+        if (player.RequestedPanelType != UIPanelType.Dialogue)
+        {
+            Time.timeScale = 1f;
+            UIManagerSystem.instance.CloseAll();
+        }
         player.Input.SwitchActionMap("Player");
         UIManagerSystem.instance.ToggleCursor(false);
         InventorySystem.instance.itemActionsSystem.CloseActionPanel();

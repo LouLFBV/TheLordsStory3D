@@ -19,6 +19,6 @@ public class Coin : InteractableBase
 
     public override void OnInteract(PlayerInteractor player)
     {
-        Collect(player.PlayerTransform.GetComponent<PlayerStats>());
+        //Collect(player.transform.GetComponent<PlayerStats>());
     }
 }

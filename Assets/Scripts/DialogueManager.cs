@@ -118,6 +118,7 @@ public class DialogueManager : MonoBehaviour
 
     public void ActiveDesactiveDialoguePanel(Animator animator)
     {
+        Debug.Log("Toggling dialogue panel. Current state: " + animator.GetBool("PanelIsOpen"));
         bool isOpen = animator.GetBool("PanelIsOpen");
         animator.SetBool("PanelIsOpen", !isOpen);
         forUIManager.SetActive(animatorDialoguePanel.GetBool("PanelIsOpen") || animatorDialoguePlayerPanel.GetBool("PanelIsOpen"));
