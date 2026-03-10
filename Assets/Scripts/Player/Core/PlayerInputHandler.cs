@@ -106,14 +106,15 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["CloseInventory"].canceled += ctx => CloseInventoryPressed = false;
 
 
-        input.actions["Dialogue"].performed += ctx => DialogueNextPressed = true;
-        input.actions["Dialogue"].canceled += ctx => DialogueNextPressed = false;
+        input.actions["DialogueNext"].performed += ctx => DialogueNextPressed = true;
+        input.actions["DialogueNext"].canceled += ctx => DialogueNextPressed = false;
 
     }
 
     // --- LA MÉTHODE PRO ---
     public void SwitchActionMap(string mapName)
     {
+        Debug.Log($"Switching to action map: {mapName}");
         input.SwitchCurrentActionMap(mapName);
 
         // Reset des valeurs pour éviter que le perso continue de courir 

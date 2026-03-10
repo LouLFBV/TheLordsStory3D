@@ -88,6 +88,13 @@ public class MoveState : GroundedState
         player.Motor.RotateTowardsInput(cachedInput);
     }
 
+    public override void Exit()
+    {
+        base.Exit();
+        ThirdPersonCameraController.Instance.ResetFOV();
+        changedFOV = false;
+    }
+
     private bool CanSprint(Vector2 input)
     {
         return input.magnitude > 0.1f

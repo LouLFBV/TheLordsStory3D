@@ -1,25 +1,66 @@
+using UnityEngine;
+
 public class AimState : GroundedState
 {
+    private readonly int aimBool = Animator.StringToHash("Aim");
+
     public AimState(PlayerController player) : base(player) { }
+
     public override void Enter()
     {
         base.Enter();
-        // Activer l'animation de visée
-        player.Animator.SetBool("IsAiming", true);
+        player.Animator.applyRootMotion = true;
+        player.Animator.SetBool(aimBool, true);
+        // Ici tu pourrais aussi activer ton GameObject Crosshair
     }
+
     public override void Update()
     {
         base.Update();
-        // Rester en AimState tant que le bouton de visée est maintenu
+
+        // Sortie de l'état si on relâche le bouton
         if (!player.Input.AimHeld)
         {
             player.StateMachine.ChangeState(PlayerStateType.Idle);
+            return;
         }
+
+        // --- GESTION DE L'ANIMATION ---
+        // En visée (strafe), on envoie l'input X et Y brut à l'animator 
+        // pour faire des pas de côté (Blend Tree 2D)
+        player.Animator.SetFloat("H", player.Input.MoveInput.x, 0.1f, Time.deltaTime);
+        player.Animator.SetFloat("V", player.Input.MoveInput.y, 0.1f, Time.deltaTime);
     }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        // 1. ROTATION : Toujours face à la caméra
+        RotateTowardsCamera();
+
+        // 2. DÉPLACEMENT : Utilise ta méthode existante pour avoir la direction relative cam
+        Vector3 moveDir = player.Motor.GetDirectionFromInput(player.Input.MoveInput);
+    }
+
     public override void Exit()
     {
         base.Exit();
-        // Désactiver l'animation de visée
-        player.Animator.SetBool("IsAiming", false);
+        player.Animator.SetBool(aimBool, false);
+    }
+
+    private void RotateTowardsCamera()
+    {
+        // On récupère le forward de la caméra via ton controller
+        Vector3 camForward = Camera.main.transform.forward;
+        camForward.y = 0;
+        camForward.Normalize();
+
+        if (camForward != Vector3.zero)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(camForward);
+            // On utilise Slerp pour une rotation fluide
+            player.Rigidbody.MoveRotation(Quaternion.Slerp(player.Rigidbody.rotation, targetRot, 15f * Time.fixedDeltaTime));
+        }
     }
 }
