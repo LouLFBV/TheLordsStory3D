@@ -328,7 +328,7 @@ public class PNJ : InteractableBase
         animator.SetBool("isTalking", true);
         index = 0;
         currentDialogue = currentQuestSO.sentencesQuestAccepted;
-        NewQuestLog.instance.ActiveDesactiveQuestText(currentQuestSO.questName);
+        NewQuestLog.instance.ActiveDesactiveQuestText(currentQuestSO);
         Debug.Log("Quest accepted: " + currentQuestSO.questName);
         NextLine();
     }

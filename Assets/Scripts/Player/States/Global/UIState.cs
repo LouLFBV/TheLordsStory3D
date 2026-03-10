@@ -8,11 +8,20 @@ public class UIState : PlayerState
         base.Enter(); 
         if (player.RequestedPanelType != UIPanelType.Dialogue)
         {
+            
             Time.timeScale = 0f;
             UIManagerSystem.instance.OpenPanel(player.RequestedPanelType);
         }
+        else
+        {
+            if (player.Animator != null)
+            {
+                player.Animator.SetFloat("Speed", 0f);
+                // Si tu as des paramètres Horizontal/Vertical, mets les aussi à 0
+            }
+        }
 
-        player.Input.SwitchActionMap("UI");
+            player.Input.SwitchActionMap("UI");
         UIManagerSystem.instance.ToggleCursor(true);
     }
 

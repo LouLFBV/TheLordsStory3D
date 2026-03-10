@@ -47,6 +47,9 @@ public class PlayerController : MonoBehaviour
     [Header("Others")]
     public UIPanelType RequestedPanelType { get; set; }
 
+
+    private UIPanelType? _previousPanelType = null; 
+
     private void Awake()
     {
         Input = GetComponent<PlayerInputHandler>();
@@ -95,37 +98,57 @@ public class PlayerController : MonoBehaviour
         StateMachine.Initialize(PlayerStateType.Idle);
     }
 
+
     private void Update()
     {
         StateMachine.Update();
         PaletteSystem.instance.HandlePaletteLogic(this);
 
-        // --- OUVERTURE ---
-        if (StateMachine.CurrentState != UIState)
+        // --- LOGIQUE D'OUVERTURE ---
+        if (Input.MenuPressed || Input.InventoryPressed)
         {
-            if (Input.InventoryPressed)
+            UIPanelType newType = Input.MenuPressed ? UIPanelType.PauseMenu : UIPanelType.Inventory;
+
+            // SI on est déjà en dialogue, on sauvegarde cet état
+            if (StateMachine.CurrentState == UIState && RequestedPanelType == UIPanelType.Dialogue)
             {
-                RequestedPanelType = UIPanelType.Inventory; // On définit le type
-                StateMachine.ChangeState(PlayerStateType.UI); // On change d'état
-                Input.UseInventoryInput();
+                _previousPanelType = UIPanelType.Dialogue;
             }
-            else if (Input.MenuPressed)
-            {
-                RequestedPanelType = UIPanelType.PauseMenu;
-                StateMachine.ChangeState(PlayerStateType.UI);
-                Input.UseMenuInput();
-            }
+
+            RequestedPanelType = newType;
+            StateMachine.ChangeState(PlayerStateType.UI);
+            Input.UseMenuInput();
+            Input.UseInventoryInput();
         }
 
-        // --- FERMETURE ---
+        // --- LOGIQUE DE FERMETURE ---
         else if (StateMachine.CurrentState == UIState)
         {
-            // Si l'une des deux touches de fermeture est pressée
             if (Input.CloseMenuPressed || Input.CloseInventoryPressed)
             {
-                StateMachine.ChangeState(PlayerStateType.Idle);
+                // Si on avait un dialogue en cours avant la pause
+                if (_previousPanelType == UIPanelType.Dialogue)
+                {
+                    RequestedPanelType = UIPanelType.Dialogue;
+                    _previousPanelType = null;
+
+                    // On force le rafraîchissement de l'UIState sans repasser par Idle
+                    UIState.Enter();
+                }
+                else if (RequestedPanelType != UIPanelType.Dialogue)
+                {
+                    StateMachine.ChangeState(PlayerStateType.Idle);
+                }
+
                 Input.UseCloseInventoryInput();
                 Input.UseCloseMenuInput();
+            }
+        }
+        if (Input.AimHeld)
+        {
+            if (StateMachine.CurrentState != AimState && StateMachine.CurrentState != UIState)
+            {
+                StateMachine.ChangeState(PlayerStateType.Aim);
             }
         }
     }

@@ -25,9 +25,9 @@ public class EquipmentSystem : MonoBehaviour
     public ItemInInventory arrowItemInInventory;
 
 
-    [HideInInspector] public AudioSource audioSource;
+    public AudioSource audioSource;
 
-    [HideInInspector] public AudioClip equipSound;
+    public AudioClip equipSound;
 
     private bool isLoading = false;
 

@@ -69,6 +69,7 @@ public class UIManagerSystem : MonoBehaviour
         equipmentPanel.SetActive(false);
         mapPanel.SetActive(false);
         tooltipPanel.SetActive(false);
+        NewQuestLog.instance.DesactivePanel();
     }
 
     #region --- Méthodes d'ouverture spécifiques pour les boutons de l'UI ---
