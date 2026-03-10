@@ -72,7 +72,7 @@ public class InteractSystem : MonoBehaviour
                     break;
 
                 inventory.AddItem(currentItem.itemData);
-                QuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
+                NewQuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
             }
         }
 
@@ -207,7 +207,7 @@ public class InteractSystem : MonoBehaviour
                 if (!IsInventoryFull(currentItem.itemData))
                 {
                     inventory.AddItem(currentItem.itemData);
-                    QuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
+                    NewQuestManager.instance.UpdateQuestProgress("", 1, currentItem.itemData);
                 }
             }
         }

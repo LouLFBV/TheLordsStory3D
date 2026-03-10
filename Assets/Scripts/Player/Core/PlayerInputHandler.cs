@@ -24,6 +24,8 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CancelPressed { get; private set; }
     public bool CloseMenuPressed { get; private set; }
     public bool CloseInventoryPressed { get; private set; }
+    public bool InteractPressed { get; private set; }
+    public bool DialogueNextPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -58,6 +60,8 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Menu"].performed += ctx => MenuPressed = true;
         input.actions["Menu"].canceled += ctx => MenuPressed = false;
 
+        input.actions["Interact"].performed += ctx => InteractPressed = true;
+        input.actions["Interact"].canceled += ctx => InteractPressed = false;
 
         // Souris
         input.actions["LookMouse"].performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
@@ -100,6 +104,11 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["CloseInventory"].performed += ctx => CloseInventoryPressed = true;
         input.actions["CloseInventory"].canceled += ctx => CloseInventoryPressed = false;
+
+
+        input.actions["Dialogue"].performed += ctx => DialogueNextPressed = true;
+        input.actions["Dialogue"].canceled += ctx => DialogueNextPressed = false;
+
     }
 
     // --- LA MÉTHODE PRO ---
@@ -129,4 +138,6 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseWeapon2Pressed() => Weapon2Pressed = false;
     public void UseObject1Pressed() => Object1Pressed = false;
     public void UseObject2Pressed() => Object2Pressed = false;
+    public void UseInteractInput() => InteractPressed = false;
+    public void UseDialogueNextInput() => DialogueNextPressed = false;
 }
