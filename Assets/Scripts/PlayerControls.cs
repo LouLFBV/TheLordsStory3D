@@ -174,7 +174,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ForwardRool"",
+                    ""name"": ""ForwardRoll"",
                     ""type"": ""Button"",
                     ""id"": ""6fbfdc24-b80e-4dd5-baf7-97c176ec3122"",
                     ""expectedControlType"": """",
@@ -492,7 +492,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ForwardRool"",
+                    ""action"": ""ForwardRoll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -503,7 +503,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""ForwardRool"",
+                    ""action"": ""ForwardRoll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1146,7 +1146,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_LookGamepad = m_Player.FindAction("LookGamepad", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
         m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
-        m_Player_ForwardRool = m_Player.FindAction("ForwardRool", throwIfNotFound: true);
+        m_Player_ForwardRoll = m_Player.FindAction("ForwardRoll", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_Weapon1 = m_Player.FindAction("Weapon1", throwIfNotFound: true);
@@ -1254,7 +1254,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_LookGamepad;
     private readonly InputAction m_Player_Emote;
     private readonly InputAction m_Player_Dodge;
-    private readonly InputAction m_Player_ForwardRool;
+    private readonly InputAction m_Player_ForwardRoll;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_Weapon1;
@@ -1312,9 +1312,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Dodge => m_Wrapper.m_Player_Dodge;
         /// <summary>
-        /// Provides access to the underlying input action "Player/ForwardRool".
+        /// Provides access to the underlying input action "Player/ForwardRoll".
         /// </summary>
-        public InputAction @ForwardRool => m_Wrapper.m_Player_ForwardRool;
+        public InputAction @ForwardRoll => m_Wrapper.m_Player_ForwardRoll;
         /// <summary>
         /// Provides access to the underlying input action "Player/Inventory".
         /// </summary>
@@ -1404,9 +1404,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dodge.started += instance.OnDodge;
             @Dodge.performed += instance.OnDodge;
             @Dodge.canceled += instance.OnDodge;
-            @ForwardRool.started += instance.OnForwardRool;
-            @ForwardRool.performed += instance.OnForwardRool;
-            @ForwardRool.canceled += instance.OnForwardRool;
+            @ForwardRoll.started += instance.OnForwardRoll;
+            @ForwardRoll.performed += instance.OnForwardRoll;
+            @ForwardRoll.canceled += instance.OnForwardRoll;
             @Inventory.started += instance.OnInventory;
             @Inventory.performed += instance.OnInventory;
             @Inventory.canceled += instance.OnInventory;
@@ -1472,9 +1472,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dodge.started -= instance.OnDodge;
             @Dodge.performed -= instance.OnDodge;
             @Dodge.canceled -= instance.OnDodge;
-            @ForwardRool.started -= instance.OnForwardRool;
-            @ForwardRool.performed -= instance.OnForwardRool;
-            @ForwardRool.canceled -= instance.OnForwardRool;
+            @ForwardRoll.started -= instance.OnForwardRoll;
+            @ForwardRoll.performed -= instance.OnForwardRoll;
+            @ForwardRoll.canceled -= instance.OnForwardRoll;
             @Inventory.started -= instance.OnInventory;
             @Inventory.performed -= instance.OnInventory;
             @Inventory.canceled -= instance.OnInventory;
@@ -1757,12 +1757,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDodge(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "ForwardRool" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ForwardRoll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnForwardRool(InputAction.CallbackContext context);
+        void OnForwardRoll(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Inventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

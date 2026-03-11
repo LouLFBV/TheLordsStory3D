@@ -10,7 +10,7 @@ public class UIState : PlayerState
         {
             
             Time.timeScale = 0f;
-            UIManagerSystem.instance.OpenPanel(player.RequestedPanelType);
+            UIManagerSystem.Instance.OpenPanel(player.RequestedPanelType);
         }
         else
         {
@@ -22,7 +22,7 @@ public class UIState : PlayerState
         }
 
             player.Input.SwitchActionMap("UI");
-        UIManagerSystem.instance.ToggleCursor(true);
+        UIManagerSystem.Instance.ToggleCursor(true);
     }
 
     public override void Update()
@@ -40,10 +40,10 @@ public class UIState : PlayerState
         if (player.RequestedPanelType != UIPanelType.Dialogue)
         {
             Time.timeScale = 1f;
-            UIManagerSystem.instance.CloseAll();
+            UIManagerSystem.Instance.CloseAll();
         }
         player.Input.SwitchActionMap("Player");
-        UIManagerSystem.instance.ToggleCursor(false);
+        UIManagerSystem.Instance.ToggleCursor(false);
         InventorySystem.instance.itemActionsSystem.CloseActionPanel();
     }
 }

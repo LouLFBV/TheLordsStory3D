@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class UIManagerSystem : MonoBehaviour
 {
-    public static UIManagerSystem instance;
+    public static UIManagerSystem Instance;
 
     // On garde les valeurs en mémoire pour les rétablir plus tard
     private float _defaultRotationSpeed;
     private float _defaultVerticalSpeed;
+
+    [SerializeField] private GameObject crosshair;
 
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private GameObject questsPanel;
@@ -18,7 +20,7 @@ public class UIManagerSystem : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this;
+        if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
@@ -30,6 +32,7 @@ public class UIManagerSystem : MonoBehaviour
             _defaultRotationSpeed = ThirdPersonCameraController.Instance.RotationSpeed;
             _defaultVerticalSpeed = ThirdPersonCameraController.Instance.VerticalSpeed;
         }
+        ToggleCursor(false); // On commence sans le curseur
     }
 
     public void ToggleCursor(bool isVisible)
@@ -70,6 +73,15 @@ public class UIManagerSystem : MonoBehaviour
         mapPanel.SetActive(false);
         tooltipPanel.SetActive(false);
         NewQuestLog.instance.DesactivePanel();
+    }
+
+
+    public void ShowCrosshair(bool show)
+    {
+        if (crosshair != null)
+        {
+            crosshair.SetActive(show);
+        }
     }
 
     #region --- Méthodes d'ouverture spécifiques pour les boutons de l'UI ---

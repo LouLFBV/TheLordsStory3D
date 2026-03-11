@@ -42,8 +42,8 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Attack"].performed += ctx => AttackPressed = true;
         input.actions["Attack"].canceled += ctx => AttackPressed = false;
 
-        input.actions["ForwardRool"].performed += ctx => RollPressed = true;
-        input.actions["ForwardRool"].canceled += ctx => RollPressed = false;
+        input.actions["ForwardRoll"].performed += ctx => RollPressed = true;
+        input.actions["ForwardRoll"].canceled += ctx => RollPressed = false;
 
         input.actions["Sprint"].performed += ctx => SprintHeld = true;
         input.actions["Sprint"].canceled += ctx => SprintHeld = false;

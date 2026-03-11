@@ -7,14 +7,24 @@ public class CharacterMotor : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private Transform cameraTransform;
 
+
+    [Header("Roll Settings")]
+    [SerializeField] private float rollHeightMultiplier = 0.5f;
+    [SerializeField] private float rollCenterYOffset = -0.4f;
+    private float originalCapsuleHeight;
+    private Vector3 originalCapsuleCenter;
+    private CapsuleCollider capsule;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        capsule = GetComponent<CapsuleCollider>();
     }
     private void Start()
     {
         if (cameraTransform == null)
             cameraTransform = ThirdPersonCameraController.Instance.GetTransform();
+        InitCollider(capsule);
     }
     public void RotateTowardsInput(Vector2 input)
     {
@@ -48,10 +58,9 @@ public class CharacterMotor : MonoBehaviour
 
     public bool IsGrounded()
     {
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
-        Vector3 start = col.bounds.center;
-        float radius = col.radius * 0.9f;
-        float rayLength = (col.height / 2f) - radius + 0.2f;
+        Vector3 start = capsule.bounds.center;
+        float radius = capsule.radius * 0.9f;
+        float rayLength = (capsule.height / 2f) - radius + 0.2f;
 
         bool grounded = Physics.SphereCast(start, radius, Vector3.down, out _, rayLength, ~0, QueryTriggerInteraction.Ignore);
 
@@ -76,5 +85,25 @@ public class CharacterMotor : MonoBehaviour
 
         // 5. On combine avec l'input du joueur
         return (camForward * input.y + camRight * input.x).normalized;
+    }
+
+
+    public void InitCollider(CapsuleCollider col)
+    {
+        capsule = col;
+        originalCapsuleHeight = capsule.height;
+        originalCapsuleCenter = capsule.center;
+    }
+
+    public void StartRollCollider()
+    {
+        capsule.height = originalCapsuleHeight * rollHeightMultiplier;
+        capsule.center = originalCapsuleCenter + Vector3.up * rollCenterYOffset;
+    }
+
+    public void EndRollCollider()
+    {
+        capsule.height = originalCapsuleHeight;
+        capsule.center = originalCapsuleCenter;
     }
 }

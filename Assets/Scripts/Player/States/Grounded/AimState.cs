@@ -10,7 +10,7 @@ public class AimState : GroundedState
     {
         base.Enter();
         player.Animator.SetBool(aimBool, true);
-        // Ici tu pourrais aussi activer ton GameObject Crosshair
+        UIManagerSystem.Instance.ShowCrosshair(true);
         ThirdPersonCameraController.Instance.SetAimState(true);
     }
 
@@ -46,7 +46,8 @@ public class AimState : GroundedState
     public override void Exit()
     {
         base.Exit();
-        player.Animator.SetBool(aimBool, false); 
+        player.Animator.SetBool(aimBool, false);
+        UIManagerSystem.Instance.ShowCrosshair(false);
         ThirdPersonCameraController.Instance.SetAimState(false);
     }
 
