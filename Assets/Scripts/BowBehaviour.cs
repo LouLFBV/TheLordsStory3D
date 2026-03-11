@@ -53,20 +53,21 @@ public class BowBehaviour : MonoBehaviour
 
     public bool VerifIfCanShoot()
     {
-        arrowItem = Equipment.instance.arrowItemInInventory;
+        arrowItem = EquipmentSystem.instance.arrowItemInInventory;
         return arrowItem != null && arrowItem.count > 0;
     }
     public void PrepareArrow()
     {
         Debug.Log("Tirer une fleche");
 
-        weaponActive = Palette.instance.equipmentWeapon1Item ? Palette.instance.equipmentWeapon1Item : Palette.instance.equipmentWeapon2Item; ;
+        //weaponActive = Palette.instance.equipmentWeapon1Item ? Palette.instance.equipmentWeapon1Item : Palette.instance.equipmentWeapon2Item; ;
+        weaponActive = PaletteSystem.instance.slotManager.weapons[0].itemData ? PaletteSystem.instance.slotManager.weapons[0].itemData : PaletteSystem.instance.slotManager.weapons[1].itemData; ;
 
         // On crée une rotation horizontale alignée avec l’arc
         Quaternion flatRotation = Quaternion.Euler(0f, 0f, 0f);
 
         //  On instancie directement sans parent
-        switch (Equipment.instance.arrowItemInInventory.itemData.damageType)
+        switch (EquipmentSystem.instance.arrowItemInInventory.itemData.damageType)
         {
             case DamageType.Feu:
                 arrow = Instantiate(fireArrowPrefab, arrowSpawnPoint.position, flatRotation, arrowSpawnPoint);
@@ -125,7 +126,17 @@ public class BowBehaviour : MonoBehaviour
         weaponActive.range = endPower;
         weaponActive.damage = weaponActive.damageMax;
     }
+    // Remplace la coroutine ChargingBow par ceci :
+    public void UpdateChargeProgress(float t)
+    {
+        // t va de 0 à 1
+        float easedT = Mathf.Pow(t, 4f); // Ton t * t * t * t (Mathf.Pow(t,2) * Mathf.Pow(t,2))
 
+        weaponActive.range = Mathf.Lerp(weaponActive.rangeMin, weaponActive.rangeMax, t);
+        weaponActive.damage = Mathf.Lerp(weaponActive.damageMin, weaponActive.damageMax, t);
+
+        OnBowChargeProgress?.Invoke(easedT);
+    }
 
     public void ShootArrow()
     {
@@ -206,9 +217,9 @@ public class BowBehaviour : MonoBehaviour
     {
         arrow.SetActive(true);
         arrowItem.count--;
-        Equipment.instance.UpdateArrowsText();
+        EquipmentSystem.instance.UpdateArrowsText();
         if (arrowItem.count == 0)
-            Equipment.instance.DesequipEquipment(arrowItem.itemData.equipmentType);
+            EquipmentSystem.instance.DesequipEquipment(arrowItem.itemData.equipmentType);
         UpdateQuiverVisual(arrowItem.count);
     }
     public void ActiveCanShoot() { canShoot = true; }

@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInputHandler Input { get; private set; }
     public CharacterMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
+    public BowBehaviour Bow { get; private set; }
 
     [Header("States")]
     public IdleState IdleState { get; private set; }
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public AimState AimState { get; private set; }
     public EquipState EquipState { get; private set; }
     public UnequipState UnequipState { get; private set; }
+    public BowChargeState BowChargeState { get; private set; }
     public CrouchState CrouchState { get; private set; }
     public DeathState DeathState { get; private set; }
     public UIState UIState { get; private set; }
@@ -58,7 +60,8 @@ public class PlayerController : MonoBehaviour
         Armor = GetComponent<ArmorSystem>();
         Stamina = GetComponent<StaminaSystem>();
         Animator = GetComponent<Animator>();
-        Rigidbody = GetComponent<Rigidbody>(); // Ensure Rigidbody is assigned here
+        Rigidbody = GetComponent<Rigidbody>(); 
+        Bow = GetComponent<BowBehaviour>();
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
         AttackState = new AttackState(this);
@@ -71,24 +74,26 @@ public class PlayerController : MonoBehaviour
         AimState = new AimState(this);
         EquipState = new EquipState(this);
         UnequipState = new UnequipState(this);
+        BowChargeState = new BowChargeState(this);
         UIState = new UIState(this);
 
         StateMachine = new PlayerStateMachine(
             new System.Collections.Generic.Dictionary<PlayerStateType, PlayerState>
             {
-                { PlayerStateType.Idle, IdleState },
-                { PlayerStateType.Move, MoveState },
+                { PlayerStateType.Idle, IdleState},
+                { PlayerStateType.Move, MoveState},
                 { PlayerStateType.Attack, AttackState},
-                { PlayerStateType.Roll, RollState },
-                { PlayerStateType.Hit, HitState },
-                { PlayerStateType.Jump, JumpState },
+                { PlayerStateType.Roll, RollState},
+                { PlayerStateType.Hit, HitState},
+                { PlayerStateType.Jump, JumpState},
                 { PlayerStateType.Fall, FallState},
-                { PlayerStateType.Death, DeathState },
-                { PlayerStateType.Aim, AimState },
-                { PlayerStateType.Equip, EquipState },
-                { PlayerStateType.Unequip, UnequipState },
-                { PlayerStateType.Crouch, CrouchState },
-                { PlayerStateType.UI, UIState   }
+                { PlayerStateType.Death, DeathState},
+                { PlayerStateType.Aim, AimState},
+                { PlayerStateType.Equip, EquipState},
+                { PlayerStateType.Unequip, UnequipState},
+                { PlayerStateType.Crouch, CrouchState},
+                { PlayerStateType.UI, UIState},
+                { PlayerStateType.BowCharge, BowChargeState}
             }
         );
     }
@@ -142,13 +147,6 @@ public class PlayerController : MonoBehaviour
 
                 Input.UseCloseInventoryInput();
                 Input.UseCloseMenuInput();
-            }
-        }
-        if (Input.AimHeld)
-        {
-            if (StateMachine.CurrentState != AimState && StateMachine.CurrentState != UIState)
-            {
-                StateMachine.ChangeState(PlayerStateType.Aim);
             }
         }
     }

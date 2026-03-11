@@ -29,6 +29,9 @@ public class ThirdPersonCameraController : MonoBehaviour
     [Header("Aim Settings")]
     [SerializeField] private Vector3 aimPivotOffset = new Vector3(0.5f, 1.7f, 0f);
     [SerializeField] private Vector3 aimCamOffset = new Vector3(0f, 0f, -1.2f);
+    public Vector3 AimPivotOffset => aimPivotOffset;
+    public Vector3 AimCamOffset => aimCamOffset;
+    public Vector3 DefaultCamOffset => defaultCamOffset;
 
     [Header("Vertical Clamp")]
     [SerializeField] private float minVerticalAngle = -40f;
@@ -48,6 +51,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private float targetFOV;
     private float defaultFOV;
+    public float DefaultFOV => defaultFOV;
     private Camera _camComponent;
     private PlayerInputHandler input;
     private float yaw;
@@ -79,7 +83,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private void HandleInput()
     {
-        Vector2 look = input.mouseLook + input.gamepadLook;
+        Vector2 look = input.MouseLook + input.GamepadLook;
         yaw += look.x * rotationSpeed * Time.deltaTime;
         pitch -= look.y * verticalSpeed * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
@@ -131,6 +135,11 @@ public class ThirdPersonCameraController : MonoBehaviour
         targetCamOffset = isAiming ? aimCamOffset : defaultCamOffset;
     }
 
+    public void SetManualOffsets(Vector3 pivot, Vector3 cam)
+    {
+        targetPivotOffset = pivot;
+        targetCamOffset = cam;
+    }
     public void SetFOV(float fov) => targetFOV = fov;
     public void ResetFOV() => targetFOV = defaultFOV;
 }
