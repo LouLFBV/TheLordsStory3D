@@ -2,13 +2,10 @@ using UnityEngine;
 
 public class AttackState : GroundedState
 {
-    private AttackSO currentAttack;
     private float timer;
     private bool comboBuffered;
     private const int ATTACK_LAYER = 9; // On définit le layer une fois pour toutes
     public AttackState(PlayerController player) : base(player) { }
-
-    public void SetAttack(AttackSO attack) => currentAttack = attack;
 
     public override void Enter()
     {

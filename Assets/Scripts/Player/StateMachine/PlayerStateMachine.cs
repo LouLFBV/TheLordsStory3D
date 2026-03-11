@@ -61,6 +61,7 @@ public enum PlayerStateType
     Aim,
     Equip,
     Unequip,
+    BowCharge,
     Crouch,
     Death,
     UI

@@ -1,47 +1,4 @@
-//using UnityEngine;
-
-//public class GroundedState : PlayerState
-//{
-//    public AttackSO lightAttack1;
-//    public GroundedState(PlayerController player) : base(player) { }
-//    public override void Enter()
-//    {
-//        // On force l'Animator à revenir sur l'Idle du Layer 0 
-//        // et on fait un fondu pour effacer l'attaque du Layer 10
-//        player.Animator.CrossFadeInFixedTime("Idle", 0.2f, 0);
-
-//        // Si tu utilises un Layer 10 avec du poids (Weight), 
-//        // il faut parfois "vider" le layer 10 pour qu'il ne fige pas le perso
-//        player.Animator.SetLayerWeight(10, 0f);
-//    }
-//    public override void Update()
-//    {// Si on perd le sol, on force le passage en FallState
-//        if (!player.Motor.IsGrounded())
-//        {
-//            player.StateMachine.ChangeState(PlayerStateType.Fall); // à créer
-//            return;
-//        }
-//        if (player.Input.AttackPressed && player.Stamina.HasStamina())
-//        {
-//            if (player.StateMachine.CurrentState.GetType() != typeof(AttackState))
-//            {
-//                var attackState = (AttackState)player.StateMachine.GetState(PlayerStateType.Attack);
-//                attackState.SetAttack(player.defaultLightAttack);
-//                player.StateMachine.ChangeState(PlayerStateType.Attack);
-//            }
-//        }
-
-//        if (player.Input.JumpPressed && player.Stamina.HasStamina())
-//        {
-//            // On peut même consommer un peu de stamina pour le saut !
-//            player.Stamina.Spend(10f);
-//            player.StateMachine.ChangeState(PlayerStateType.Jump);
-//        }
-//    }
-//}
-
 using UnityEngine;
-
 public class GroundedState : PlayerState
 {
     public GroundedState(PlayerController player) : base(player) { }
@@ -69,35 +26,56 @@ public class GroundedState : PlayerState
         // 2. PRIORITÉ : Le Saut
         if (player.Input.JumpPressed && player.Stamina.HasStamina())
         {
-            // On consomme la stamina ici
-            player.Stamina.Spend(10f);
+            //player.Stamina.Spend(10f);
             player.StateMachine.ChangeState(PlayerStateType.Jump);
             return;
         }
 
-        // 3. PRIORITÉ : L'Attaque
+        // 3. PRIORITÉ : L'Attaque ou l'Arc
         if (player.Input.AttackPressed && player.Stamina.HasStamina())
         {
-            // On vérifie quelle arme la palette a activé
-            ItemData activeWeapon = PaletteSystem.instance.slotManager.weaponSlots[0].isEquipped ?
-                                     PaletteSystem.instance.slotManager.weaponSlots[0].slotItemData :
-                                     PaletteSystem.instance.slotManager.weaponSlots[1].slotItemData;
-
-            if (activeWeapon != null)
-            {
-                var attackState = (AttackState)player.StateMachine.GetState(PlayerStateType.Attack);
-                // On récupère l'AttackSO liée à l'objet de la palette
-                //attackState.SetAttack(activeWeapon.lightAttackSO);
-                attackState.SetAttack(player.defaultLightAttack);
-                player.StateMachine.ChangeState(PlayerStateType.Attack);
-            }
+            HandleAttackInput();
             return;
         }
-        // 4. PRIORITÉ : La Roulade (Si tu l'as déjà implémentée)
+
+        // 4. PRIORITÉ : La Visée (AimState)
+        // Si on n'attaque pas, mais qu'on maintient le bouton de visée
+        if (player.Input.AimHeld)
+        {
+            player.StateMachine.ChangeState(PlayerStateType.Aim);
+            return;
+        }
+
+        // 5. PRIORITÉ : La Roulade
         if (player.Input.RollPressed && player.Stamina.HasStamina())
         {
             player.StateMachine.ChangeState(PlayerStateType.Roll);
             return;
+        }
+    }
+
+    private void HandleAttackInput()
+    {
+        // On récupère l'arme active via ton PaletteSystem
+        ItemData activeWeapon = PaletteSystem.instance.slotManager.weaponSlots[0].isEquipped ?
+                                PaletteSystem.instance.slotManager.weaponSlots[0].slotItemData :
+                                PaletteSystem.instance.slotManager.weaponSlots[1].slotItemData;
+
+        if (activeWeapon == null) return;
+
+        // --- DISTINCTION ARC / MÊLÉE ---
+        if (activeWeapon.handWeaponType == HandWeapon.Bow)
+        {
+            // On vérifie les munitions via ton BowBehaviour
+            if (player.GetComponent<BowBehaviour>().VerifIfCanShoot())
+            {
+                Debug.Log("Passage en BowChargeState depuis GroundedState");
+                player.StateMachine.ChangeState(PlayerStateType.BowCharge);
+            }
+        }
+        else
+        {
+            player.StateMachine.ChangeState(PlayerStateType.Attack);
         }
     }
 }

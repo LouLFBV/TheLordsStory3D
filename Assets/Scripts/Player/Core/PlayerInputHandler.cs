@@ -5,8 +5,8 @@ public class PlayerInputHandler : MonoBehaviour
 {
     public Vector2 MoveInput { get; private set; }
 
-    public Vector2 mouseLook { get; private set; }
-    public Vector2 gamepadLook { get; private set; }
+    public Vector2 MouseLook { get; private set; }
+    public Vector2 GamepadLook { get; private set; }
     public bool AttackPressed { get; private set; }
     public bool RollPressed { get; private set; }
     public bool SprintHeld { get; private set; }
@@ -64,12 +64,12 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Interact"].canceled += ctx => InteractPressed = false;
 
         // Souris
-        input.actions["LookMouse"].performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
-        input.actions["LookMouse"].canceled += _ => mouseLook = Vector2.zero;
+        input.actions["LookMouse"].performed += ctx => MouseLook = ctx.ReadValue<Vector2>();
+        input.actions["LookMouse"].canceled += _ => MouseLook = Vector2.zero;
 
         // Gamepad
-        input.actions["LookGamepad"].performed += ctx => gamepadLook = ctx.ReadValue<Vector2>();
-        input.actions["LookGamepad"].canceled += _ => gamepadLook = Vector2.zero;
+        input.actions["LookGamepad"].performed += ctx => GamepadLook = ctx.ReadValue<Vector2>();
+        input.actions["LookGamepad"].canceled += _ => GamepadLook = Vector2.zero;
 
 
         input.actions["Aim"].performed += ctx => AimHeld = true;
