@@ -88,7 +88,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ForwardRool",
+                    "name": "ForwardRoll",
                     "type": "Button",
                     "id": "6fbfdc24-b80e-4dd5-baf7-97c176ec3122",
                     "expectedControlType": "",
@@ -406,7 +406,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ForwardRool",
+                    "action": "ForwardRoll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -417,7 +417,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ForwardRool",
+                    "action": "ForwardRoll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

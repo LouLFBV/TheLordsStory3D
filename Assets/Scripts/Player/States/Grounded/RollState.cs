@@ -2,50 +2,60 @@ using UnityEngine;
 
 public class RollState : GroundedState
 {
-	private float rollDuration = 0.8f;
-	private float iframeStart = 0.15f;
-	private float iframeEnd = 0.45f;
+    private float rollDuration = 0.8f; // À ajuster selon la longueur de ton animation
+    private float timer;
 
-	private float timer;
+    public RollState(PlayerController player) : base(player) { }
 
-	public RollState(PlayerController player) : base(player) { }
+    public override void Enter()
+    {
+        base.Enter();
+        Debug.Log("Enter: Roll");
+        // 1. Consommation de Stamina (déjà vérifiée dans GroundedState avant de switch)
+        player.Stamina.Spend(20f);
 
-	//public override void Enter()
-	//{
-	//	player.Stamina.Spend(20);
+        // 2. Déclenchement Animation
+        player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
+        player.Animator.applyRootMotion = true;
 
-	//	player.Animator.applyRootMotion = true;
-	//	player.Animator.SetTrigger("Roll");
+        // 3. Réduction du Collider (Ton ancienne logique)
+        player.Motor.StartRollCollider();
 
-	//	player.Motor.EnableRollCollider(true);
+        timer = 0;
 
-	//	timer = 0f;
-	//}
+        // 4. Rotation initiale : On oriente le joueur vers sa direction d'input
+        // pour qu'il roule là où il veut aller, pas juste devant lui.
+        RotateRollDirection();
+    }
 
-	//public override void Update()
-	//{
-	//	timer += Time.deltaTime;
+    public override void Update()
+    {
+        base.Update();
+        timer += Time.deltaTime;
 
-	//	if (timer >= iframeStart && timer <= iframeEnd)
-	//		player.SetInvincibility(true);
-	//	else
-	//		player.SetInvincibility(false);
+        // Sortie automatique de l'état après X temps 
+        // (ou via un Animation Event "OnRollEnd")
+        if (timer >= rollDuration)
+        {
+            player.StateMachine.ChangeState(PlayerStateType.Idle);
+        }
+    }
 
-	//	if (timer >= rollDuration)
-	//		player.StateMachine.ChangeState(player.IdleState);
+    public override void Exit()
+    {
+        base.Exit();
+        // On remet le collider à sa taille normale
+        player.Motor.EndRollCollider();
+    }
 
-	//	if (player.Input.AttackPressed)
-	//	{
-	//		player.BufferAction(() =>
-	//			player.StateMachine.ChangeState(player.AttackState));
-	//	}
-	//}
-
-	//public override void Exit()
-	//{
-	//	player.SetInvincibility(false);
-	//	player.Animator.applyRootMotion = false;
-	//	player.Motor.EnableRollCollider(false);
-	//	player.ExecuteBufferedAction();
-	//}
+    private void RotateRollDirection()
+    {
+        Vector2 input = player.Input.MoveInput;
+        if (input.sqrMagnitude > 0.1f)
+        {
+            // On récupère la direction par rapport à la caméra
+            Vector3 moveDir = player.Motor.GetDirectionFromInput(input);
+            player.transform.rotation = Quaternion.LookRotation(moveDir);
+        }
+    }
 }
