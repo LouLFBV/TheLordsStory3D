@@ -10,7 +10,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool AttackPressed { get; private set; }
     public bool RollPressed { get; private set; }
     public bool SprintHeld { get; private set; }
-    public bool CrouchHeld { get; private set; }
+    public bool CrouchPressed { get; private set; }
     public bool AimHeld { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool Weapon1Pressed { get; private set; }
@@ -48,8 +48,8 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Sprint"].performed += ctx => SprintHeld = true;
         input.actions["Sprint"].canceled += ctx => SprintHeld = false;
 
-        input.actions["Crouch"].performed += ctx => CrouchHeld = true;
-        input.actions["Crouch"].canceled += ctx => CrouchHeld = false;
+        input.actions["Crouch"].performed += ctx => CrouchPressed = true;
+        input.actions["Crouch"].canceled += ctx => CrouchPressed = false;
 
         input.actions["Jump"].performed += ctx => JumpPressed = true;
         input.actions["Jump"].canceled += ctx => JumpPressed = false;
@@ -123,7 +123,7 @@ public class PlayerInputHandler : MonoBehaviour
         AttackPressed = false;
         RollPressed = false;
         SprintHeld = false;
-        CrouchHeld = false;
+        CrouchPressed = false;
         AimHeld = false;
         JumpPressed = false;
         Weapon1Pressed = false;
@@ -141,4 +141,8 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseObject2Pressed() => Object2Pressed = false;
     public void UseInteractInput() => InteractPressed = false;
     public void UseDialogueNextInput() => DialogueNextPressed = false;
+    public void UseCrouchInput() => CrouchPressed = false;
+    public void UseJumpInput() => JumpPressed = false;
+    public void UseRollInput() => RollPressed = false;
+    public void UseAttackInput() => AttackPressed = false;
 }

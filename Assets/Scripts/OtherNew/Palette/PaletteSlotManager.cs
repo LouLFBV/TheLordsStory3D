@@ -8,6 +8,8 @@ public class PaletteSlotManager : MonoBehaviour
     public PaletteSlot[] weaponSlots = new PaletteSlot[2];
     public PaletteSlot[] objectSlots = new PaletteSlot[2];
 
+    public PaletteSlot arrowSlot;
+
 
     public bool WeaponsAreFull()
     {
@@ -57,6 +59,28 @@ public class PaletteSlotManager : MonoBehaviour
         }
 
         RefreshAffichage();
+    }
+
+    public void AddArrow(ItemData item)
+    {
+        arrowSlot.slotItemData = item;
+        arrowSlot.SlotImage.sprite = item.visual;
+        arrowSlot.slotInEquipment.itemVisual.sprite = item.visual;
+        arrowSlot.slotInEquipment.item = item;
+        arrowSlot.countText.gameObject.SetActive(true); ;
+    }
+    public  void UpdateCountArrow(int count)
+    {
+        if (count == 0)
+        {
+            arrowSlot.slotItemData = null;
+            arrowSlot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+            arrowSlot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+            arrowSlot.slotInEquipment.item = null;
+            arrowSlot.countText.gameObject.SetActive(false);
+        }
+        arrowSlot.countText.text = count.ToString();
+        arrowSlot.slotInEquipment.countTexte.text = count.ToString();
     }
     public void RefreshUI()
     {

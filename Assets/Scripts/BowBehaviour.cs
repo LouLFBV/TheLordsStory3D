@@ -217,6 +217,7 @@ public class BowBehaviour : MonoBehaviour
     {
         arrow.SetActive(true);
         arrowItem.count--;
+        PaletteSystem.instance.slotManager.UpdateCountArrow(arrowItem.count);
         EquipmentSystem.instance.UpdateArrowsText();
         if (arrowItem.count == 0)
             EquipmentSystem.instance.DesequipEquipment(arrowItem.itemData.equipmentType);

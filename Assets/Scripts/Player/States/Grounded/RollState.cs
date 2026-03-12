@@ -1,41 +1,34 @@
 using UnityEngine;
 
-public class RollState : GroundedState
+public class RollState : PlayerState
 {
-    private float rollDuration = 0.8f; // À ajuster selon la longueur de ton animation
-    private float timer;
+    private bool isRollFinished;
 
     public RollState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Enter: Roll");
-        // 1. Consommation de Stamina (déjà vérifiée dans GroundedState avant de switch)
+        isRollFinished = false;
+
+        // 1. Stamina
         player.Stamina.Spend(20f);
 
-        // 2. Déclenchement Animation
-        player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
+        // 2. Animation & Root Motion
         player.Animator.applyRootMotion = true;
+        player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
 
-        // 3. Réduction du Collider (Ton ancienne logique)
+        // 3. Collider & Invincibilité
         player.Motor.StartRollCollider();
+        player.Health.SetInvulnerable(true);
 
-        timer = 0;
-
-        // 4. Rotation initiale : On oriente le joueur vers sa direction d'input
-        // pour qu'il roule là où il veut aller, pas juste devant lui.
+        // 4. Direction
         RotateRollDirection();
     }
 
     public override void Update()
     {
-        base.Update();
-        timer += Time.deltaTime;
-
-        // Sortie automatique de l'état après X temps 
-        // (ou via un Animation Event "OnRollEnd")
-        if (timer >= rollDuration)
+        if (isRollFinished)
         {
             player.StateMachine.ChangeState(PlayerStateType.Idle);
         }
@@ -44,18 +37,23 @@ public class RollState : GroundedState
     public override void Exit()
     {
         base.Exit();
-        // On remet le collider à sa taille normale
         player.Motor.EndRollCollider();
+        player.Health.SetInvulnerable(false);
+    }
+
+    // Cette méthode sera appelée par le PlayerController via un Animation Event
+    public void OnRollAnimationEnd()
+    {
+        isRollFinished = true;
     }
 
     private void RotateRollDirection()
     {
         Vector2 input = player.Input.MoveInput;
-        if (input.sqrMagnitude > 0.1f)
-        {
-            // On récupère la direction par rapport à la caméra
-            Vector3 moveDir = player.Motor.GetDirectionFromInput(input);
-            player.transform.rotation = Quaternion.LookRotation(moveDir);
-        }
+        Vector3 rollDir = input.sqrMagnitude > 0.1f
+            ? player.Motor.GetDirectionFromInput(input)
+            : player.transform.forward;
+
+        player.transform.rotation = Quaternion.LookRotation(rollDir);
     }
 }
