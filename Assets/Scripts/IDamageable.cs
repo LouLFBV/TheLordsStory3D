@@ -1,5 +1,5 @@
-
-public interface IDamageable 
+public interface IDamageable
 {
-    public void TakeDamage(float damage, DamageType damageType);
+    // On passe tout ce qui est nécessaire pour un calcul complet
+    void TakeDamage(float damage, float poiseDamage, DamageType type);
 }

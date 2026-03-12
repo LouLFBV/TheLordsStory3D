@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System;
 using TMPro;
 using UnityEngine;
@@ -77,7 +78,7 @@ public class BossAI3 : EnemyParent
     }
 
 
-    public override void TakeDamage(float damage, DamageType damageType)
+    public override void TakeDamage(float damage, float poiseDamage, DamageType damageType)
     {
         if (isDefending || isAttacking || IsDead)
             return;

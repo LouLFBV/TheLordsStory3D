@@ -76,7 +76,7 @@ public class BossAI4 : EnemyParent
     }
 
 
-    public override void TakeDamage(float damage, DamageType damageType)
+    public override void TakeDamage(float damage, float poisedamage, DamageType damageType)
     {
         if (isDefending || isAttacking || IsDead)
             return;

@@ -60,7 +60,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
         player = playerStats.transform;
     }
 
-    public virtual void TakeDamage(float damage, DamageType damageType)
+    public virtual void TakeDamage(float damage, float poisedamage, DamageType damageType)
     {
         if (IsDead) return;
 

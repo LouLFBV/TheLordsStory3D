@@ -164,12 +164,12 @@ public class EnemyAI : EnemyParent
     }
 
 
-    public override void TakeDamage(float damage, DamageType damageType)
+    public override void TakeDamage(float damage, float poiseDamage, DamageType damageType)
     {
         if (IsDead) return;
         vie.SetActive(true);
         beAttacked = true;
-        base.TakeDamage(damage, damageType);
+        base.TakeDamage(damage, poiseDamage, damageType);
     }
 
 
