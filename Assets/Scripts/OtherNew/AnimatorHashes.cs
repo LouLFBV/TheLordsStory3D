@@ -11,4 +11,5 @@ public static class AnimatorHashes
     public static readonly int vHash = Animator.StringToHash("V");
     public static readonly int speedHash = Animator.StringToHash("Speed");
     public static readonly int chargeBool = Animator.StringToHash("ChargeBow");
+    public static readonly int crouchBool = Animator.StringToHash("IsCrouched");
 }

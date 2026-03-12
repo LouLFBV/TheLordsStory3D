@@ -6,6 +6,7 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] private float maxHealth = 100f; 
     [SerializeField] private ParticleSystem healEffect;
 
+    private bool _isInvulnerable;
     public float CurrentHealth { get; private set; }
 
     public event Action<float, float> OnHealthChanged;
@@ -19,6 +20,11 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (_isInvulnerable)
+        {
+            Debug.Log("Esquivé !");
+            return;
+        }
         CurrentHealth -= damage;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
 
@@ -42,5 +48,12 @@ public class HealthSystem : MonoBehaviour
             // Ton script d'UI doit être abonné à cet event.
             OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
+    }
+
+
+    public void SetInvulnerable(bool state)
+    {
+        _isInvulnerable = state;
+        // Optionnel : Changer la couleur ou ajouter un effet de transparence
     }
 }

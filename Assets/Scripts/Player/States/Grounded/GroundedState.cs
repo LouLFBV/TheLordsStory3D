@@ -27,6 +27,7 @@ public class GroundedState : PlayerState
         if (player.Input.JumpPressed && player.Stamina.HasStamina())
         {
             //player.Stamina.Spend(10f);
+            player.Input.UseJumpInput();
             player.StateMachine.ChangeState(PlayerStateType.Jump);
             return;
         }
@@ -49,9 +50,12 @@ public class GroundedState : PlayerState
         // 5. PRIORITÉ : La Roulade
         if (player.Input.RollPressed && player.Stamina.HasStamina())
         {
+            HandleCrouchInput();
             player.StateMachine.ChangeState(PlayerStateType.Roll);
             return;
         }
+
+        HandleCrouchInput();
     }
 
     private void HandleAttackInput()
@@ -62,20 +66,27 @@ public class GroundedState : PlayerState
                                 PaletteSystem.instance.slotManager.weaponSlots[1].slotItemData;
 
         if (activeWeapon == null) return;
-
         // --- DISTINCTION ARC / MÊLÉE ---
         if (activeWeapon.handWeaponType == HandWeapon.Bow)
         {
             // On vérifie les munitions via ton BowBehaviour
-            if (player.GetComponent<BowBehaviour>().VerifIfCanShoot())
+            if (player.Bow.VerifIfCanShoot())
             {
-                Debug.Log("Passage en BowChargeState depuis GroundedState");
                 player.StateMachine.ChangeState(PlayerStateType.BowCharge);
             }
         }
         else
         {
+            player.Input.UseAttackInput();
             player.StateMachine.ChangeState(PlayerStateType.Attack);
+        }
+    }
+    protected virtual void HandleCrouchInput()
+    {
+        if (player.Input.CrouchPressed)
+        {
+            player.Input.UseCrouchInput();
+            player.StateMachine.ChangeState(PlayerStateType.Crouch);
         }
     }
 }

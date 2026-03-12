@@ -23,7 +23,6 @@ public class BowChargeState : GroundedState
 
     public override void Update()
     {
-        base.Update();
 
         // 1. Gestion de la charge (Inchangé)
         if (currentChargeTime < chargeDuration)

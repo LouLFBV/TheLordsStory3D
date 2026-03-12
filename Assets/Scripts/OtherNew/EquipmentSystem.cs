@@ -60,7 +60,7 @@ public class EquipmentSystem : MonoBehaviour
             return;
         }
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == itemToDisable).First();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(itemToDisable);
 
         if (equipmentLibraryItem != null)
         {
@@ -240,6 +240,8 @@ public class EquipmentSystem : MonoBehaviour
                     arrowSlot.itemVisual.sprite = itemToEquip.visual;
                     arrowItemInInventory.itemData = itemToEquip;
                     arrowItemInInventory.count = InventorySystem.instance.GetContent().Find(x => x.itemData == itemToEquip).count;
+                    PaletteSystem.instance.slotManager.AddArrow(itemToEquip);
+                    PaletteSystem.instance.slotManager.UpdateCountArrow(arrowItemInInventory.count);
                     for (int i = 0; i < arrowItemInInventory.count; i++)
                     {
                         InventorySystem.instance.RemoveItem(itemToEquip);

@@ -185,6 +185,14 @@ public class PlayerController : MonoBehaviour
             unequip.HandleWeaponRemoval();
         }
     }
+
+    public void AE_OnRollEnd()
+    {
+        if (StateMachine.CurrentState is RollState rollState)
+        {
+            rollState.OnRollAnimationEnd();
+        }
+    }
     public void PrepareEquip(ItemData data)
     {
         // On cherche l'item correspondant dans la librairie
