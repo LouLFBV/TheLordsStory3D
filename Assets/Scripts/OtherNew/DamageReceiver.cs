@@ -36,10 +36,20 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     {
         // Si c'est le joueur, on force l'état Hit
         if (_player != null)
-            _player.StateMachine.ChangeState(PlayerStateType.Hit);
+        {
+            // Si le poise est totalement brisé (système de posture à 0)
+            if (_poise.IsBroken)
+            {
+                _player.StateMachine.ChangeState(PlayerStateType.Stunned);
+            }
+            else
+            {
+                _player.StateMachine.ChangeState(PlayerStateType.Hit);
+            }
+        }
 
         // Si c'est une IA, on lui dit aussi de changer d'état
         //if (_enemy != null)
-         //   _enemy.StateMachine.ChangeState(EnemyStateType.Hit);
+        //   _enemy.StateMachine.ChangeState(EnemyStateType.Hit);
     }
 }
