@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PoiseSystem : MonoBehaviour
 {
+    public bool IsBroken => CurrentPoise <= 0;
     [SerializeField] private float maxPoise = 50f;
     [SerializeField] private float poiseRecoveryRate = 10f;
     [SerializeField] private float poiseResetDelay = 2f;
@@ -42,5 +43,11 @@ public class PoiseSystem : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void ResetPoise()
+    {
+        CurrentPoise = maxPoise;
+        resetTimer = 0f;
     }
 }

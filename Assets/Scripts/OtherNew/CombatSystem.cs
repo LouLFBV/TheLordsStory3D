@@ -7,13 +7,14 @@ public class CombatSystem : MonoBehaviour
     private Animator _animator;
     private WeaponDamageDetector _weaponDetector;
     private AttackSO _currentAttackData;
-    [SerializeField] private int attackLayer = 9;
+    public int attackLayer = 9;
 
     private bool canCombo;
 
     private void Awake()
     {
         _owner = GetComponent<ICombatant>();
+        _animator = GetComponent<Animator>();
     }
     public void ExecuteAttack(AttackSO attack)
     {
@@ -45,13 +46,16 @@ public class CombatSystem : MonoBehaviour
         }
     }
 
-    public void AE_HitboxClose() => _weaponDetector?.DisableDamage();
+    public void AE_HitboxClose()
+    {
+        _weaponDetector?.DisableDamage();
+        _weaponDetector?.ToggleCollider(false);
+    }
 
     public bool CanComboNext() => canCombo;
 
     public void UpdateWeaponDetector(WeaponDamageDetector newDetector)
     {
         _weaponDetector = newDetector;
-        _weaponDetector?.ToggleCollider(false);
     }
 }

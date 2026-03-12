@@ -1,6 +1,9 @@
+using UnityEngine;
+
 public class AttackState : GroundedState
 {
-    private bool animationFinished;
+    private bool animationFinished; 
+    private float attackRotationSpeed = 5f;
 
     public AttackState(PlayerController player) : base(player) { }
 
@@ -16,6 +19,7 @@ public class AttackState : GroundedState
 
         // On ordonne l'exécution
         player.Combat.ExecuteAttack(player.CurrentAttack);
+        player.Animator.SetLayerWeight(player.Combat.attackLayer, 1f);
     }
 
     public override void Update()
@@ -43,6 +47,8 @@ public class AttackState : GroundedState
         base.Exit();
         player.CurrentAttack = null; // Reset le combo
         //player.Animator.applyRootMotion = false;
+
+        player.Animator.SetLayerWeight(player.Combat.attackLayer, 0f);
     }
 
     public void OnAnimationFinished() => animationFinished = true;

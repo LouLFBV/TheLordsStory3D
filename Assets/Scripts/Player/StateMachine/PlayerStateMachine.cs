@@ -56,6 +56,7 @@ public enum PlayerStateType
     Attack,
     Roll,
     Hit,
+    Stunned,
     Jump,
     Fall,
     Aim,

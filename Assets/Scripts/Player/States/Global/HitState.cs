@@ -2,24 +2,29 @@ using UnityEngine;
 
 public class HitState : PlayerState
 {
+    private bool isAnimationFinished;
+
     public HitState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
-        // 1. On joue le trigger de l'anim
+        base.Enter();
+        isAnimationFinished = false;
+
+        // 1. Annulation immédiate des actions en cours
+        player.Combat.AE_HitboxClose(); // On coupe l'épée si on était en train d'attaquer
+        player.CurrentAttack = null;     // On reset le combo
+
+        // 2. Visuel
         player.Animator.SetTrigger("Hit");
 
-        // 2. On s'assure de couper le mouvement (Root motion peut être utile ou non selon ton besoin)
-        player.Animator.applyRootMotion = true;
+        Debug.Log("Le joueur est titubant (Stagger) !");
     }
 
     public override void Update()
     {
-        // On surveille l'animation "Hit" sur le layer 0
-        AnimatorStateInfo stateInfo = player.Animator.GetCurrentAnimatorStateInfo(0);
-
-        // Si l'animation est terminée (95% ou plus)
-        if (stateInfo.IsName("Hit") && stateInfo.normalizedTime >= 0.95f)
+        // On attend l'Animation Event "OnHitAnimationEnd"
+        if (isAnimationFinished)
         {
             player.StateMachine.ChangeState(PlayerStateType.Idle);
         }
@@ -27,7 +32,13 @@ public class HitState : PlayerState
 
     public override void Exit()
     {
-        // Reset le trigger pour éviter qu'il ne se relance accidentellement
+        base.Exit();
         player.Animator.ResetTrigger("Hit");
+    }
+
+    // Appelé par un Animation Event à la fin du clip de dégâts
+    public void OnHitAnimationEnd()
+    {
+        isAnimationFinished = true;
     }
 }

@@ -7,8 +7,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public PlayerInputHandler Input { get; private set; }
     public CharacterMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
-    public DamageReceiver DmgReceiver { get; private set; }
-    public BowBehaviour Bow { get; private set; }
+    public Rigidbody Rigidbody { get; private set; }
 
     [Header("States")]
     public IdleState IdleState { get; private set; }
@@ -18,6 +17,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public AttackState AttackState { get; private set; }
     public RollState RollState { get; private set; }
     public HitState HitState { get; private set; }
+    public StunnedState StunnedState { get; private set; }
     public JumpState JumpState { get; private set; }
     public FallState FallState { get; private set; }
     public AimState AimState { get; private set; }
@@ -32,6 +32,9 @@ public class PlayerController : MonoBehaviour, ICombatant
     [Header("Systems")]
     public HealthSystem Health { get; private set; }
     public ArmorSystem Armor { get; private set; }
+    public PoiseSystem Poise { get; private set; }
+    public DamageReceiver DmgReceiver { get; private set; }
+    public BowBehaviour Bow { get; private set; }
 
 
     [Header("Combat Settings")]
@@ -44,12 +47,9 @@ public class PlayerController : MonoBehaviour, ICombatant
     [Header("Library")]
     public EquipmentLibrary equipmentLibrary;
     public EquipmentLibraryItem PendingLibraryItem { get; private set; }
-    public Rigidbody Rigidbody { get; private set; }
 
     [Header("Others")]
     public UIPanelType RequestedPanelType { get; set; }
-
-
     private UIPanelType? _previousPanelType = null; 
 
     private void Awake()
@@ -60,14 +60,17 @@ public class PlayerController : MonoBehaviour, ICombatant
         Armor = GetComponent<ArmorSystem>();
         Stamina = GetComponent<StaminaSystem>();
         Animator = GetComponent<Animator>();
+        Combat = GetComponent<CombatSystem>();
         Rigidbody = GetComponent<Rigidbody>();
         DmgReceiver = GetComponent<DamageReceiver>();
+        Poise = GetComponent<PoiseSystem>();
         Bow = GetComponent<BowBehaviour>();
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
         AttackState = new AttackState(this);
         RollState = new RollState(this);
-        HitState = new HitState(this); 
+        HitState = new HitState(this);
+        StunnedState = new StunnedState(this);
         FallState = new FallState(this);
         JumpState = new JumpState(this);
         CrouchState = new CrouchState(this);
@@ -86,6 +89,7 @@ public class PlayerController : MonoBehaviour, ICombatant
                 { PlayerStateType.Attack, AttackState},
                 { PlayerStateType.Roll, RollState},
                 { PlayerStateType.Hit, HitState},
+                { PlayerStateType.Stunned, StunnedState},
                 { PlayerStateType.Jump, JumpState},
                 { PlayerStateType.Fall, FallState},
                 { PlayerStateType.Death, DeathState},
@@ -199,6 +203,13 @@ public class PlayerController : MonoBehaviour, ICombatant
         if (StateMachine.CurrentState is RollState rollState)
         {
             rollState.OnRollAnimationEnd();
+        }
+    }
+    public void AE_OnHitAnimationEnd()
+    {
+        if (StateMachine.CurrentState is HitState hitState)
+        {
+            hitState.OnHitAnimationEnd();
         }
     }
     public void PrepareEquip(ItemData data)

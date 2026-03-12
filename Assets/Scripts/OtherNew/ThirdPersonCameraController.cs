@@ -54,6 +54,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     public float DefaultFOV => defaultFOV;
     private Camera _camComponent;
     private PlayerInputHandler input;
+    public float GetYaw() => yaw;
     private float yaw;
     private float pitch;
 
