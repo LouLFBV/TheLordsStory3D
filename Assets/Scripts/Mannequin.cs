@@ -22,7 +22,7 @@ public class Mannequin : MonoBehaviour, IDamageable
     }
 
 
-    public void TakeDamage(float damage, DamageType damageType)
+    public void TakeDamage(float damage, float poiseDamage, DamageType damageType)
     {
         barreDeVie.SetActive(true);
 

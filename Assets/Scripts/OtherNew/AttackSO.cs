@@ -10,6 +10,4 @@ public class AttackSO : ScriptableObject
 
     [Header("Combo Logic")]
     public AttackSO nextAttack;       // L'attaque suivante si on reclique
-    public float comboWindowStart = 0.5f; // Moment où on peut "buffer" l'attaque suivante
-    public float comboWindowEnd = 0.8f;   // Moment où c'est trop tard
 }

@@ -1,40 +1,45 @@
 using UnityEngine;
 
-public class DamageReceiver : MonoBehaviour
+public class DamageReceiver : MonoBehaviour, IDamageable
 {
-    private HealthSystem health;
-    private PoiseSystem poise;
-    private PlayerController player;
-    private ArmorSystem armor; // Nouveau : pour les calculs de réduction
+    private HealthSystem _health;
+    private PoiseSystem _poise;
+    private PlayerController _player; // Pour le joueur
+    private EnemyParent _enemy;      // Pour l'IA (si tu as une classe de base IA)
+    private ArmorSystem _armor;
 
     private void Awake()
     {
-        health = GetComponent<HealthSystem>();
-        poise = GetComponent<PoiseSystem>();
-        player = GetComponent<PlayerController>();
-        armor = GetComponent<ArmorSystem>();
+        _health = GetComponent<HealthSystem>();
+        _poise = GetComponent<PoiseSystem>();
+        _player = GetComponent<PlayerController>();
+        _enemy = GetComponent<EnemyParent>();
+        _armor = GetComponent<ArmorSystem>();
     }
 
-    // On ajoute le DamageType pour savoir quelle armure utiliser
-    public void ReceiveDamage(float damage, float poiseDamage, DamageType type)
+    public void TakeDamage(float damage, float poiseDamage, DamageType type)
     {
-        float finalDamage = damage;
+        // 1. Calcul de l'armure
+        float finalDamage = (_armor != null) ? _armor.CalculateReducedDamage(damage, type) : damage;
 
-        // 1. Calcul de la réduction d'armure
-        if (armor != null)
+        // 2. Appliquer à la vie
+        _health.TakeDamage(finalDamage);
+
+        // 3. Logique de Stun (Poise)
+        if (_poise != null && _poise.ApplyPoiseDamage(poiseDamage))
         {
-            finalDamage = armor.CalculateReducedDamage(damage, type);
+            TriggerHitReaction();
         }
+    }
 
-        // 2. Application à la santé
-        health.TakeDamage(finalDamage);
+    private void TriggerHitReaction()
+    {
+        // Si c'est le joueur, on force l'état Hit
+        if (_player != null)
+            _player.StateMachine.ChangeState(PlayerStateType.Hit);
 
-        // 3. Gestion du Poise (Équilibre)
-        if (poise != null && poise.ApplyPoiseDamage(poiseDamage))
-        {
-            // Si le poise est brisé, on passe en HitState
-            if (player != null)
-                player.StateMachine.ChangeState(PlayerStateType.Hit);
-        }
+        // Si c'est une IA, on lui dit aussi de changer d'état
+        //if (_enemy != null)
+         //   _enemy.StateMachine.ChangeState(EnemyStateType.Hit);
     }
 }

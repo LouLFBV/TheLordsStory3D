@@ -38,13 +38,31 @@ public class EquipState : GroundedState
     {
         if (player.PendingLibraryItem != null)
         {
-            // Activer le nouveau prefab
-            player.PendingLibraryItem.itemPrefab.SetActive(true);
-            // Désactiver les éléments visuels inutiles (ex: carquois si arc, etc.)
+            // 1. Activer le nouveau prefab
+            GameObject weaponObj = player.PendingLibraryItem.itemPrefab;
+            weaponObj.SetActive(true);
+
+            // 2. EXTRACTION ET MISE À JOUR DU DETECTOR
+            // On récupère le detector sur le nouveau prefab
+            WeaponDamageDetector newDetector = weaponObj.GetComponent<WeaponDamageDetector>();
+
+            if (newDetector != null)
+            {
+                // On informe le CombatSystem qu'il doit maintenant piloter cette hitbox
+                player.Combat.UpdateWeaponDetector(newDetector);
+            }
+            else if (player.PendingWeaponItem.itemType != ItemType.Consumable)
+            {
+                Debug.LogWarning($"Le prefab {weaponObj.name} n'a pas de WeaponDamageDetector!");
+            }
+
+            // 3. Désactiver les éléments visuels inutiles
             foreach (var element in player.PendingLibraryItem.elementsToDisable)
             {
                 element.SetActive(false);
             }
+
+            // 4. Transition
             player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
                 ? PlayerStateType.Move : PlayerStateType.Idle);
         }

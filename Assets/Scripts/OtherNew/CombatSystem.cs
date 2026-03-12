@@ -2,40 +2,56 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    private int comboIndex;
-    private bool canQueueNextAttack;
-    public void PerformAttack()
-    {
-        animator.applyRootMotion = true;
-        animator.SetInteger("ComboIndex", comboIndex);
-        animator.SetTrigger(AnimatorHashes.Attack);
+    private ICombatant _owner; // Peut être le joueur ou un ennemi !
+    
+    private Animator _animator;
+    private WeaponDamageDetector _weaponDetector;
+    private AttackSO _currentAttackData;
+    [SerializeField] private int attackLayer = 9;
 
-        canQueueNextAttack = false;
+    private bool canCombo;
+
+    private void Awake()
+    {
+        _owner = GetComponent<ICombatant>();
+    }
+    public void ExecuteAttack(AttackSO attack)
+    {
+        _currentAttackData = attack;
+        canCombo = false;
+
+        _animator.applyRootMotion = true;
+        _animator.Play(attack.AnimationHash, attackLayer, 0f);
     }
 
-    public void EnableComboWindow()
+    // --- Méthodes appelées par Animation Events ---
+
+    public void AE_EnableCombo()
     {
-        canQueueNextAttack = true;
+        canCombo = true;
+        Debug.Log("Fenêtre de combo ouverte !");
     }
 
-    public void TryQueueNextAttack()
+    public void AE_HitboxOpen()
     {
-        if (!canQueueNextAttack)
-            return;
+        if (_weaponDetector != null && _currentAttackData != null && _owner != null)
+        {
+            // On demande les dégâts de base à l'interface, peu importe qui c'est
+            float weaponDamage = _owner.GetBaseWeaponDamage();
+            float finalDamage = weaponDamage * _currentAttackData.damageMultiplier;
 
-        comboIndex++;
-        PerformAttack();
+            _weaponDetector.SetDamageFrame(finalDamage);
+            _weaponDetector.ToggleCollider(true);
+        }
     }
 
-    public void ResetCombo()
-    {
-        comboIndex = 0;
-        animator.applyRootMotion = false;
-    }
+    public void AE_HitboxClose() => _weaponDetector?.DisableDamage();
 
-    public void EndAttack()
+    public bool CanComboNext() => canCombo;
+
+    public void UpdateWeaponDetector(WeaponDamageDetector newDetector)
     {
-        animator.applyRootMotion = false;
+        _weaponDetector = newDetector;
+        _weaponDetector?.ToggleCollider(false);
     }
 }

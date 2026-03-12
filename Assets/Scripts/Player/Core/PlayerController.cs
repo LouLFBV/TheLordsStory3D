@@ -1,12 +1,13 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ICombatant
 {
     [Header("Core Components")]
     public PlayerStateMachine StateMachine { get; private set; }
     public PlayerInputHandler Input { get; private set; }
     public CharacterMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
+    public DamageReceiver DmgReceiver { get; private set; }
     public BowBehaviour Bow { get; private set; }
 
     [Header("States")]
@@ -34,7 +35,6 @@ public class PlayerController : MonoBehaviour
 
 
     [Header("Combat Settings")]
-    public AttackSO defaultLightAttack;
     public AttackSO CurrentAttack { get; set; }
     public ItemData PendingWeaponItem { get; set; }
     public HandWeapon PendingWeaponType { get; set; }
@@ -60,7 +60,8 @@ public class PlayerController : MonoBehaviour
         Armor = GetComponent<ArmorSystem>();
         Stamina = GetComponent<StaminaSystem>();
         Animator = GetComponent<Animator>();
-        Rigidbody = GetComponent<Rigidbody>(); 
+        Rigidbody = GetComponent<Rigidbody>();
+        DmgReceiver = GetComponent<DamageReceiver>();
         Bow = GetComponent<BowBehaviour>();
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
@@ -186,6 +187,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void AE_OnAttackFinished()
+    {
+        if (StateMachine.CurrentState is AttackState attack)
+        {
+            attack.OnAnimationFinished();
+        }
+    }
     public void AE_OnRollEnd()
     {
         if (StateMachine.CurrentState is RollState rollState)
@@ -206,4 +214,6 @@ public class PlayerController : MonoBehaviour
             StateMachine.ChangeState(PlayerStateType.Equip);
         }
     }
+
+    public float GetBaseWeaponDamage() => PendingWeaponItem.attackPoints;
 }
