@@ -7,7 +7,8 @@ public class GroundedState : PlayerState
     {
         base.Enter();
         player.Animator.applyRootMotion = true; // Le sol reprend le contrôle via l'anim
-    
+        player.Animator.SetBool("Grounded", true);
+
         // On ne nettoie les layers que si on vient d'un état "non-grounded" 
         // ou d'une attaque, pour éviter les saccades entre Idle et Move.
     }
