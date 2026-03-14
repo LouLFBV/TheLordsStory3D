@@ -6,6 +6,7 @@ public class AirborneState : PlayerState
     {
         base.Enter();
         player.Animator.applyRootMotion = false; // On laisse le Rigidbody gérer la trajectoire
+        player.Animator.SetBool("Grounded", false);
     }
     public override void Update()
     {

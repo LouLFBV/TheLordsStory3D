@@ -3,7 +3,6 @@ using UnityEngine;
 public class AttackState : GroundedState
 {
     private bool animationFinished; 
-    private float attackRotationSpeed = 5f;
 
     public AttackState(PlayerController player) : base(player) { }
 
