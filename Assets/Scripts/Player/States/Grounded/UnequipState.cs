@@ -9,16 +9,15 @@ public class UnequipState : GroundedState
         base.Enter();
         player.Rigidbody.linearVelocity = Vector3.zero;
 
-
-        if (player.PendingWeaponItem.itemType == ItemType.Consumable)
+        if (player.PendingWeaponItem != null && player.PendingWeaponItem.itemType == ItemType.Consumable)
         {
-            player.Animator.SetBool("CarryingConsumable", false);
+            player.Animator.SetTrigger("UnequipConsumable");
             return;
         }
 
-        // On déclenche l'animation de rangement
         PlayUnequipAnimation(player.PendingUnequipType);
     }
+
 
     private void PlayUnequipAnimation(HandWeapon type)
     {
@@ -42,18 +41,38 @@ public class UnequipState : GroundedState
     {
         if (player.PendingLibraryItem != null)
         {
-            // Désactiver le nouveau prefab;
+            // 1. Désactivation visuelle habituelle
             player.PendingLibraryItem.itemPrefab.SetActive(false);
-
-            // Activer les éléments visuels inutiles (ex: carquois si arc, etc.)
             foreach (var element in player.PendingLibraryItem.elementsToDisable)
             {
                 element.SetActive(true);
             }
-            player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
-                ? PlayerStateType.Move : PlayerStateType.Idle);
+
+            // 2. CHECK : Est-ce qu'on a un item en attente (SWAP) ?
+            if (player.ItemQueuedToEquip != null)
+            {
+                // On récupère l'item et on vide la file
+                ItemData nextItem = player.ItemQueuedToEquip;
+                player.ItemQueuedToEquip = null;
+
+                // On prépare le prochain équipement
+                player.PendingWeaponType = nextItem.handWeaponType;
+                player.PrepareEquip(nextItem);
+
+                // On enchaîne directement sur l'état Equip
+                player.StateMachine.ChangeState(PlayerStateType.Equip);
+            }
+            else
+            {
+                // Sinon, retour classique à la locomotion
+                player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
+                    ? PlayerStateType.Move : PlayerStateType.Idle);
+            }
         }
         else
-            Debug.LogWarning("PendingLibraryItem is null in HandleWeaponRemoval, cannot disable prefab or enable elements.");
+        {
+            Debug.LogWarning("PendingLibraryItem is null in HandleWeaponRemoval");
+            player.StateMachine.ChangeState(PlayerStateType.Idle);
+        }
     }
 }

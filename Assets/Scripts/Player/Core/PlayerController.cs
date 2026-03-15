@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour, ICombatant
     public DamageReceiver DmgReceiver { get; private set; }
     public BowBehaviour Bow { get; private set; }
 
+    public LockOnSystem LockOn { get; private set; }
+
 
     [Header("Combat Settings")]
     public AttackSO CurrentAttack { get; set; }
@@ -50,7 +52,8 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     [Header("Others")]
     public UIPanelType RequestedPanelType { get; set; }
-    private UIPanelType? _previousPanelType = null; 
+    private UIPanelType? _previousPanelType = null;
+    public ItemData ItemQueuedToEquip;
 
     private void Awake()
     {
@@ -65,6 +68,7 @@ public class PlayerController : MonoBehaviour, ICombatant
         DmgReceiver = GetComponent<DamageReceiver>();
         Poise = GetComponent<PoiseSystem>();
         Bow = GetComponent<BowBehaviour>();
+        LockOn = GetComponent<LockOnSystem>();
         IdleState = new IdleState(this);
         MoveState = new MoveState(this);
         AttackState = new AttackState(this);

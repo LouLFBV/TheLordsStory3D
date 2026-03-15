@@ -31,6 +31,7 @@ public class PlayerInputHandler : MonoBehaviour
     public bool DropActionPressed { get; private set; }
     public bool DestroyActionPressed { get; private set; }
     public bool UnequipActionPressed { get; private set; }
+    public bool LockOnPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -67,6 +68,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Interact"].performed += ctx => InteractPressed = true;
         input.actions["Interact"].canceled += ctx => InteractPressed = false;
+
+        input.actions["LockOn"].performed += ctx => LockOnPressed = true;
+        input.actions["LockOn"].canceled += ctx => LockOnPressed = false;
 
         // Souris
         input.actions["LookMouse"].performed += ctx => MouseLook = ctx.ReadValue<Vector2>();
@@ -166,4 +170,5 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseJumpInput() => JumpPressed = false;
     public void UseRollInput() => RollPressed = false;
     public void UseAttackInput() => AttackPressed = false;
+    public void UseLockOnInput() => LockOnPressed = false;
 }

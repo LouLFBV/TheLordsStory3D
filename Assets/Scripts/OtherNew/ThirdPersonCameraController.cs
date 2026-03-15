@@ -5,6 +5,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     public static ThirdPersonCameraController Instance { get; private set; }
 
     [Header("Target")]
+    private PlayerController _playerController;
     [SerializeField] private Transform target;
     [SerializeField] private float smoothTime = 10f;
 
@@ -66,6 +67,8 @@ public class ThirdPersonCameraController : MonoBehaviour
         input = target.GetComponent<PlayerInputHandler>();
         _camComponent = GetComponent<Camera>();
 
+        _playerController = target.GetComponent<PlayerController>();
+
         defaultFOV = _camComponent.fieldOfView;
         targetFOV = defaultFOV;
         SprintFOV = sprintFOV;
@@ -84,12 +87,41 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private void HandleInput()
     {
+        if (_playerController.LockOn != null && _playerController.LockOn.IsLocked)
+        {
+            UpdateLockOnRotation();
+            return; // On ignore l'input de la souris/stick
+        }
         Vector2 look = input.MouseLook + input.GamepadLook;
         yaw += look.x * rotationSpeed * Time.deltaTime;
         pitch -= look.y * verticalSpeed * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
     }
+    // La nouvelle méthode qui calcule la rotation vers l'ennemi
+    private void UpdateLockOnRotation()
+    {
+        Transform targetEnemy = _playerController.LockOn.CurrentTarget;
+        if (targetEnemy == null) return;
 
+        // On calcule la direction entre la caméra et l'ennemi
+        // Note : On vise souvent un peu au-dessus du pivot (la poitrine) pour un meilleur look
+        Vector3 targetPoint = targetEnemy.position + Vector3.up * 1.5f;
+        Vector3 dir = (targetPoint - transform.position).normalized;
+
+        // On extrait le yaw et le pitch de cette direction
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        // On lisse la transition pour que la caméra ne "snappe" pas trop violemment
+        float targetYaw = targetRot.eulerAngles.y;
+        float targetPitch = targetRot.eulerAngles.x;
+
+        // Attention : targetPitch peut être > 180, on doit le normaliser pour ton Clamp
+        if (targetPitch > 180) targetPitch -= 360f;
+
+        yaw = Mathf.LerpAngle(yaw, targetYaw, Time.deltaTime * smoothTime);
+        pitch = Mathf.LerpAngle(pitch, targetPitch, Time.deltaTime * smoothTime);
+        pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
+    }
     private void UpdateCameraPosition()
     {
         // 1. Interpolation fluide des offsets
