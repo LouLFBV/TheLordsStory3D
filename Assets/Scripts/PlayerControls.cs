@@ -808,6 +808,51 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""055677c6-ff39-4eed-b144-2d75e9535cd4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""EquipAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""2aafef78-6a85-4680-a8e8-6f2c9878f79e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""6a64b9df-6880-42cd-88a1-b6d1eb638e10"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DestroyAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""5cd5eaff-4e2f-4c8d-9372-cbc01e8a4f58"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UnequipAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""63465d1e-004d-4728-9f81-1e66cc498697"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1129,6 +1174,116 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""DialogueNext"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c7d54a3-351f-45fb-9e5c-8cae526ba59c"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""48825859-19e9-471f-9a24-5ce31e809c1e"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eb08b509-f991-4872-99a9-44341be35157"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EquipAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""710130a2-6021-4013-b609-38ee03d9b911"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EquipAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cec8e168-cf26-489f-84c5-f78610639047"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DropAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""004dddd9-d0f0-4b3c-89b0-c8007b6ad59b"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DropAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1ee213d-0264-41f3-88cc-e0c81f9053d6"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DestroyAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""083aa90b-2a52-4ff3-ad0e-390f64714fde"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DestroyAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c696f15b-9b73-41e3-8905-8aa39f6480ad"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnequipAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""41f50a4d-f768-422c-a284-67b06c5a495d"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnequipAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1164,6 +1319,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_CloseMenu = m_UI.FindAction("CloseMenu", throwIfNotFound: true);
         m_UI_CloseInventory = m_UI.FindAction("CloseInventory", throwIfNotFound: true);
         m_UI_DialogueNext = m_UI.FindAction("DialogueNext", throwIfNotFound: true);
+        m_UI_UseAction = m_UI.FindAction("UseAction", throwIfNotFound: true);
+        m_UI_EquipAction = m_UI.FindAction("EquipAction", throwIfNotFound: true);
+        m_UI_DropAction = m_UI.FindAction("DropAction", throwIfNotFound: true);
+        m_UI_DestroyAction = m_UI.FindAction("DestroyAction", throwIfNotFound: true);
+        m_UI_UnequipAction = m_UI.FindAction("UnequipAction", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1545,6 +1705,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_CloseMenu;
     private readonly InputAction m_UI_CloseInventory;
     private readonly InputAction m_UI_DialogueNext;
+    private readonly InputAction m_UI_UseAction;
+    private readonly InputAction m_UI_EquipAction;
+    private readonly InputAction m_UI_DropAction;
+    private readonly InputAction m_UI_DestroyAction;
+    private readonly InputAction m_UI_UnequipAction;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1580,6 +1745,26 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/DialogueNext".
         /// </summary>
         public InputAction @DialogueNext => m_Wrapper.m_UI_DialogueNext;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/UseAction".
+        /// </summary>
+        public InputAction @UseAction => m_Wrapper.m_UI_UseAction;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/EquipAction".
+        /// </summary>
+        public InputAction @EquipAction => m_Wrapper.m_UI_EquipAction;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/DropAction".
+        /// </summary>
+        public InputAction @DropAction => m_Wrapper.m_UI_DropAction;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/DestroyAction".
+        /// </summary>
+        public InputAction @DestroyAction => m_Wrapper.m_UI_DestroyAction;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/UnequipAction".
+        /// </summary>
+        public InputAction @UnequipAction => m_Wrapper.m_UI_UnequipAction;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1624,6 +1809,21 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DialogueNext.started += instance.OnDialogueNext;
             @DialogueNext.performed += instance.OnDialogueNext;
             @DialogueNext.canceled += instance.OnDialogueNext;
+            @UseAction.started += instance.OnUseAction;
+            @UseAction.performed += instance.OnUseAction;
+            @UseAction.canceled += instance.OnUseAction;
+            @EquipAction.started += instance.OnEquipAction;
+            @EquipAction.performed += instance.OnEquipAction;
+            @EquipAction.canceled += instance.OnEquipAction;
+            @DropAction.started += instance.OnDropAction;
+            @DropAction.performed += instance.OnDropAction;
+            @DropAction.canceled += instance.OnDropAction;
+            @DestroyAction.started += instance.OnDestroyAction;
+            @DestroyAction.performed += instance.OnDestroyAction;
+            @DestroyAction.canceled += instance.OnDestroyAction;
+            @UnequipAction.started += instance.OnUnequipAction;
+            @UnequipAction.performed += instance.OnUnequipAction;
+            @UnequipAction.canceled += instance.OnUnequipAction;
         }
 
         /// <summary>
@@ -1653,6 +1853,21 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DialogueNext.started -= instance.OnDialogueNext;
             @DialogueNext.performed -= instance.OnDialogueNext;
             @DialogueNext.canceled -= instance.OnDialogueNext;
+            @UseAction.started -= instance.OnUseAction;
+            @UseAction.performed -= instance.OnUseAction;
+            @UseAction.canceled -= instance.OnUseAction;
+            @EquipAction.started -= instance.OnEquipAction;
+            @EquipAction.performed -= instance.OnEquipAction;
+            @EquipAction.canceled -= instance.OnEquipAction;
+            @DropAction.started -= instance.OnDropAction;
+            @DropAction.performed -= instance.OnDropAction;
+            @DropAction.canceled -= instance.OnDropAction;
+            @DestroyAction.started -= instance.OnDestroyAction;
+            @DestroyAction.performed -= instance.OnDestroyAction;
+            @DestroyAction.canceled -= instance.OnDestroyAction;
+            @UnequipAction.started -= instance.OnUnequipAction;
+            @UnequipAction.performed -= instance.OnUnequipAction;
+            @UnequipAction.canceled -= instance.OnUnequipAction;
         }
 
         /// <summary>
@@ -1876,5 +2091,40 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDialogueNext(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "EquipAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEquipAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DropAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDropAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DestroyAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDestroyAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UnequipAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUnequipAction(InputAction.CallbackContext context);
     }
 }

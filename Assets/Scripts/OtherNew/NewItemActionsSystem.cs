@@ -46,6 +46,52 @@ public class NewItemActionsSystem : MonoBehaviour
     {
         actionPanelRect = actionPanel.GetComponent<RectTransform>();
     }
+    void Update()
+    {
+        // On ne vérifie les inputs que si le panneau est affiché et qu'un item est sélectionné
+        if (!actionPanel.activeSelf || itemCurrentlySelected == null) return;
+
+        HandleActionInputs();
+    }
+
+    private void HandleActionInputs()
+    {
+        // Utiliser / Consommer
+        if (player.Input.UseActionPressed && useItemButton.gameObject.activeInHierarchy)
+        {
+            UseActionButton();
+        }
+
+        // Équiper
+        else if (player.Input.EqupActionPressed && equipmentItemButton.gameObject.activeInHierarchy)
+        {
+            EquipActionButton();
+        }
+
+        // Jeter
+        else if (player.Input.DropActionPressed && dropItemButton.gameObject.activeInHierarchy)
+        {
+            DropActionButton();
+        }
+
+        // Détruire
+        else if (player.Input.DestroyActionPressed && destroyItemButton.gameObject.activeInHierarchy)
+        {
+            DestroyActionButton();
+        }
+
+        // Déséquiper
+        else if (player.Input.UnequipActionPressed && desequipmentItemButton.gameObject.activeInHierarchy)
+        {
+            DesequipActionButton();
+        }
+
+        // Fermer le panel avec "Cancel" (souvent la touche Echap ou B sur manette)
+        else if (player.Input.CancelPressed)
+        {
+            CloseActionPanel();
+        }
+    }
     public void OpenActionPanel(ItemData item, bool isEquipped)
     {
         itemCurrentlySelected = item;

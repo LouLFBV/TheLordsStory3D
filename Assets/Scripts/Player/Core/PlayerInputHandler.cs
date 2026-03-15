@@ -26,6 +26,11 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CloseInventoryPressed { get; private set; }
     public bool InteractPressed { get; private set; }
     public bool DialogueNextPressed { get; private set; }
+    public bool UseActionPressed { get; private set; }
+    public bool EqupActionPressed { get; private set; }
+    public bool DropActionPressed { get; private set; }
+    public bool DestroyActionPressed { get; private set; }
+    public bool UnequipActionPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -109,6 +114,22 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["DialogueNext"].performed += ctx => DialogueNextPressed = true;
         input.actions["DialogueNext"].canceled += ctx => DialogueNextPressed = false;
 
+        // Slot Actions 
+
+        input.actions["UseAction"].performed += ctx => UseActionPressed = true;
+        input.actions["UseAction"].canceled += ctx => UseActionPressed = false;
+
+        input.actions["EquipAction"].performed += ctx => EqupActionPressed = true;
+        input.actions["EquipAction"].canceled += ctx => EqupActionPressed = false;
+
+        input.actions["DropAction"].performed += ctx => DropActionPressed = true;
+        input.actions["DropAction"].canceled += ctx => DropActionPressed = false;
+
+        input.actions["DestroyAction"].performed += ctx => DestroyActionPressed = true;
+        input.actions["DestroyAction"].canceled += ctx => DestroyActionPressed = false;
+
+        input.actions["UnequipAction"].performed += ctx => UnequipActionPressed = true;
+        input.actions["UnequipAction"].canceled += ctx => UnequipActionPressed = false;
     }
 
     // --- LA MÉTHODE PRO ---
