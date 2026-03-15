@@ -1,6 +1,6 @@
-public class DeathState : PlayerState
+public class PlayerDeathState : PlayerState
 {
-    public DeathState(PlayerController player) : base(player) {}
+    public PlayerDeathState(PlayerController player) : base(player) {}
 
     public override void Enter()
     {

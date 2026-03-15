@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class StunnedState : PlayerState
+public class PlayerStunnedState : PlayerState
 {
     private float stunTimer;
     private float maxStunDuration = 3.0f; // Durée de l'étourdissement
 
-    public StunnedState(PlayerController player) : base(player) { }
+    public PlayerStunnedState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

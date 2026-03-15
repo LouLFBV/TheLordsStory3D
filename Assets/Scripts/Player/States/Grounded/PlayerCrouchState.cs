@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class CrouchState : GroundedState
+public class PlayerCrouchState : PlayerGroundedState
 {
-    public CrouchState(PlayerController player) : base(player) { }
+    public PlayerCrouchState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

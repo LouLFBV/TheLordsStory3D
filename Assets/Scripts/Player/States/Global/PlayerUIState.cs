@@ -1,7 +1,7 @@
 using UnityEngine;
-public class UIState : PlayerState
+public class PlayerUIState : PlayerState
 {
-    public UIState(PlayerController player) : base(player) { }
+    public PlayerUIState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

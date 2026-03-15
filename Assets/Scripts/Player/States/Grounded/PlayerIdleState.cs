@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class IdleState : GroundedState
+public class PlayerIdleState : PlayerGroundedState
 {
-    public IdleState(PlayerController player) : base(player) { }
+    public PlayerIdleState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

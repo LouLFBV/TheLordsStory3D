@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class AimState : GroundedState
+public class PlayerAimState : PlayerGroundedState
 {
     private readonly int aimBool = Animator.StringToHash("Aim");
 
-    public AimState(PlayerController player) : base(player) { }
+    public PlayerAimState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

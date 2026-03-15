@@ -1,9 +1,9 @@
 using UnityEngine;
-public class JumpState : AirborneState
+public class PlayerJumpState : PlayerAirborneState
 {
     private float jumpForce = 6f;
 
-    public JumpState(PlayerController player) : base(player) { }
+    public PlayerJumpState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

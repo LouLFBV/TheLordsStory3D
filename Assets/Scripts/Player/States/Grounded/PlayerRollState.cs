@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class RollState : PlayerState
+public class PlayerRollState : PlayerState
 {
     private bool isRollFinished;
 
-    public RollState(PlayerController player) : base(player) { }
+    public PlayerRollState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

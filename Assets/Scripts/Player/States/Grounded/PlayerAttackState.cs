@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class AttackState : GroundedState
+public class PlayerAttackState : PlayerGroundedState
 {
     private bool animationFinished; 
 
-    public AttackState(PlayerController player) : base(player) { }
+    public PlayerAttackState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
