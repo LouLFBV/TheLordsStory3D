@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CharacterMotor : MonoBehaviour
 {
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] private PlayerController player;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private Transform cameraTransform;
@@ -17,8 +17,7 @@ public class CharacterMotor : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        capsule = GetComponent<CapsuleCollider>();
+        capsule = player.GetComponent<CapsuleCollider>();
     }
     private void Start()
     {
@@ -47,15 +46,45 @@ public class CharacterMotor : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        rb.MoveRotation(
+        player.Rigidbody.MoveRotation(
             Quaternion.Slerp(
-                rb.rotation,
+                player.Rigidbody.rotation,
                 targetRotation,
                 rotationSpeed * Time.fixedDeltaTime
             )
         );
     }
+    public void Rotate(Vector2 input)
+    {
+        // CAS 1 : On est verrouillé sur un ennemi
+        if (player.LockOn != null && player.LockOn.IsLocked)
+        {
+            // On calcule la direction vers la cible
+            Vector3 targetPos = player.LockOn.CurrentTarget.position;
+            Vector3 dir = (targetPos - transform.position).normalized;
+            dir.y = 0; // On reste bien vertical
 
+            if (dir != Vector3.zero)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+
+                // On utilise MoveRotation pour que ce soit fluide et physique
+                player.Rigidbody.MoveRotation(
+                    Quaternion.Slerp(
+                        player.Rigidbody.rotation,
+                        targetRot,
+                        rotationSpeed * Time.fixedDeltaTime
+                    )
+                );
+            }
+        }
+        // CAS 2 : On n'est pas verrouillé, on tourne vers l'input
+        else
+        {
+            // On appelle simplement ta méthode existante !
+            RotateTowardsInput(input);
+        }
+    }
     public bool IsGrounded()
     {
         Vector3 start = capsule.bounds.center;

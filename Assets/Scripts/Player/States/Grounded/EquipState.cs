@@ -11,7 +11,7 @@ public class EquipState : GroundedState
 
         if (player.PendingWeaponItem.itemType == ItemType.Consumable)
         {
-            player.Animator.SetBool("CarryingConsumable", true);
+            player.Animator.SetTrigger("EquipConsumable");
             return;
         }
         PlayEquipAnimation(player.PendingWeaponType);

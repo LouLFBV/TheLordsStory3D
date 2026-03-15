@@ -27,7 +27,13 @@ public class GroundedState : PlayerState
         // 2. PRIORITÉ : Le Saut
         if (player.Input.JumpPressed && player.Stamina.HasStamina())
         {
-            //player.Stamina.Spend(10f);
+            // On empêche le saut pendant les transitions d'équipement
+            if (player.StateMachine.CurrentState is EquipState ||
+                player.StateMachine.CurrentState is UnequipState)
+            {
+                return;
+            }
+
             player.Input.UseJumpInput();
             player.StateMachine.ChangeState(PlayerStateType.Jump);
             return;
@@ -51,12 +57,21 @@ public class GroundedState : PlayerState
         // 5. PRIORITÉ : La Roulade
         if (player.Input.RollPressed && player.Stamina.HasStamina())
         {
-            HandleCrouchInput();
             player.StateMachine.ChangeState(PlayerStateType.Roll);
             return;
         }
 
+        // 6. PRIORITÉ : Le Crouch
         HandleCrouchInput();
+
+        // 7. PRIORITÉ : Le LockOn
+        if (player.Input.LockOnPressed)
+        {
+            Debug.Log("LockOn Pressed");
+            player.Input.UseLockOnInput();
+            player.LockOn.ToggleLock();
+            return;
+        }
     }
 
     private void HandleAttackInput()
