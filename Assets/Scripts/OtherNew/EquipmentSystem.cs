@@ -270,6 +270,7 @@ public class EquipmentSystem : MonoBehaviour
         //UpdateEquipmentsDesequipButtons();
     }
 
+    #region Save/Load
     public EquipmentSaveData GetSaveData()
     {
         return new EquipmentSaveData
@@ -345,7 +346,7 @@ public class EquipmentSystem : MonoBehaviour
             EquipAction(item);
         }
     }
-
+    #endregion
     private void ActiveItemVisuel(EquipmentLibraryItem equipmentLibraryItem)
     {
         foreach (GameObject element in equipmentLibraryItem.elementsToDisable)

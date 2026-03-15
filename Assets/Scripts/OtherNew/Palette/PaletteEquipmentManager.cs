@@ -1,6 +1,4 @@
-using NUnit.Framework.Interfaces;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class PaletteEquipmentManager : MonoBehaviour
 {
@@ -56,18 +54,7 @@ public class PaletteEquipmentManager : MonoBehaviour
         slotManager.objectSlots[0].isEquipped = slotManager.objectSlots[1].isEquipped = false;
         player.Animator.SetBool("CarryingConsumable", false);
 
-
-        //// 3. On prépare les data pour le script qui gère l'apparition du mesh
-        //EquipmentLibraryItem libItem = equipmentLibrary.content.First(x => x.itemData == itemToEquip);
-        //interactBehaviour.SetCurrentEquippedItem(libItem);
-        //player.instance.equipmentToEquip = libItem;
-
         player.PrepareEquip(itemToEquip);
-        // Note: Le mesh apparaîtra via un Animation Event ou la logique de ton EquipmentSystem
-
-        //StartCoroutine(EquipAfterDesequip(itemToEquip.handWeaponType, 0.01f));
-
-
     }
 
     public void DesequipWeapon(int numberOfWeapon)
