@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class FallState : AirborneState
+public class PlayerFallState : PlayerAirborneState
 {
     private float fallTimer;
     private float threshold = 0.15f; // Le temps d'attente "Juice"
     private bool animTriggered;
 
-    public FallState(PlayerController player) : base(player) { }
+    public PlayerFallState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class HitState : PlayerState
+public class PlayerHitState : PlayerState
 {
     private bool isAnimationFinished;
 
-    public HitState(PlayerController player) : base(player) { }
+    public PlayerHitState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

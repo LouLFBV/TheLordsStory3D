@@ -1,14 +1,8 @@
-public abstract class PlayerState
+public abstract class PlayerState : State
 {
     protected PlayerController player;
-
     protected PlayerState(PlayerController player)
     {
         this.player = player;
     }
-
-    public virtual void Enter() { }
-    public virtual void Exit() { }
-    public virtual void Update() { }
-    public virtual void FixedUpdate() { }
 }

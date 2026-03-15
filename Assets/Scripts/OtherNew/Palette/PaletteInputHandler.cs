@@ -7,8 +7,8 @@ public class PaletteInputHandler : MonoBehaviour
 
     public void HandleInput(PlayerController player)
     {
-        if (player.StateMachine.CurrentState is not GroundedState ||
-            player.StateMachine.CurrentState is EquipState)
+        if (player.StateMachine.CurrentState is not PlayerGroundedState ||
+            player.StateMachine.CurrentState is PlayerEquipState)
             return;
 
         if (player.Input.Weapon1Pressed)

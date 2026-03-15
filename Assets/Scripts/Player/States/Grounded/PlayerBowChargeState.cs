@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class BowChargeState : GroundedState
+public class PlayerBowChargeState : PlayerGroundedState
 {
 
     private float currentChargeTime;
     private float chargeDuration = 2.067f;
 
-    public BowChargeState(PlayerController player) : base(player) { }
+    public PlayerBowChargeState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MoveState : GroundedState
+public class PlayerMoveState : PlayerGroundedState
 {
     private int hHash = Animator.StringToHash("H");
     private int vHash = Animator.StringToHash("V");
@@ -16,7 +16,7 @@ public class MoveState : GroundedState
     private bool isSprinting;
     private bool changedFOV;
 
-    public MoveState(PlayerController player) : base(player) { }
+    public PlayerMoveState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

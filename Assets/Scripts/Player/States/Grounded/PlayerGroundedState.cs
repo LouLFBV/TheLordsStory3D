@@ -1,7 +1,7 @@
 using UnityEngine;
-public class GroundedState : PlayerState
+public class PlayerGroundedState : PlayerState
 {
-    public GroundedState(PlayerController player) : base(player) { }
+    public PlayerGroundedState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
@@ -28,8 +28,8 @@ public class GroundedState : PlayerState
         if (player.Input.JumpPressed && player.Stamina.HasStamina())
         {
             // On empêche le saut pendant les transitions d'équipement
-            if (player.StateMachine.CurrentState is EquipState ||
-                player.StateMachine.CurrentState is UnequipState)
+            if (player.StateMachine.CurrentState is PlayerEquipState ||
+                player.StateMachine.CurrentState is PlayerUnequipState)
             {
                 return;
             }

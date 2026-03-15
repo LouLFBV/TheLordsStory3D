@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class UnequipState : GroundedState
+public class PlayerUnequipState : PlayerGroundedState
 {
-    public UnequipState(PlayerController player) : base(player) { }
+    public PlayerUnequipState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {

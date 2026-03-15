@@ -5,28 +5,28 @@ public class PlayerController : MonoBehaviour, ICombatant
     [Header("Core Components")]
     public PlayerStateMachine StateMachine { get; private set; }
     public PlayerInputHandler Input { get; private set; }
-    public CharacterMotor Motor { get; private set; }
+    public PlayerCharacterMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
 
     [Header("States")]
-    public IdleState IdleState { get; private set; }
-    public MoveState MoveState { get; private set; }
+    public PlayerIdleState IdleState { get; private set; }
+    public PlayerMoveState MoveState { get; private set; }
     public CombatSystem Combat { get; private set; }
     public StaminaSystem Stamina { get; private set; }
-    public AttackState AttackState { get; private set; }
-    public RollState RollState { get; private set; }
-    public HitState HitState { get; private set; }
-    public StunnedState StunnedState { get; private set; }
-    public JumpState JumpState { get; private set; }
-    public FallState FallState { get; private set; }
-    public AimState AimState { get; private set; }
-    public EquipState EquipState { get; private set; }
-    public UnequipState UnequipState { get; private set; }
-    public BowChargeState BowChargeState { get; private set; }
-    public CrouchState CrouchState { get; private set; }
-    public DeathState DeathState { get; private set; }
-    public UIState UIState { get; private set; }
+    public PlayerAttackState AttackState { get; private set; }
+    public PlayerRollState RollState { get; private set; }
+    public PlayerHitState HitState { get; private set; }
+    public PlayerStunnedState StunnedState { get; private set; }
+    public PlayerJumpState JumpState { get; private set; }
+    public PlayerFallState FallState { get; private set; }
+    public PlayerAimState AimState { get; private set; }
+    public PlayerEquipState EquipState { get; private set; }
+    public PlayerUnequipState UnequipState { get; private set; }
+    public PlayerBowChargeState BowChargeState { get; private set; }
+    public PlayerCrouchState CrouchState { get; private set; }
+    public PlayerDeathState DeathState { get; private set; }
+    public PlayerUIState UIState { get; private set; }
 
 
     [Header("Systems")]
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     private void Awake()
     {
         Input = GetComponent<PlayerInputHandler>();
-        Motor = GetComponent<CharacterMotor>();
+        Motor = GetComponent<PlayerCharacterMotor>();
         Health = GetComponent<HealthSystem>();
         Armor = GetComponent<ArmorSystem>();
         Stamina = GetComponent<StaminaSystem>();
@@ -69,21 +69,21 @@ public class PlayerController : MonoBehaviour, ICombatant
         Poise = GetComponent<PoiseSystem>();
         Bow = GetComponent<BowBehaviour>();
         LockOn = GetComponent<LockOnSystem>();
-        IdleState = new IdleState(this);
-        MoveState = new MoveState(this);
-        AttackState = new AttackState(this);
-        RollState = new RollState(this);
-        HitState = new HitState(this);
-        StunnedState = new StunnedState(this);
-        FallState = new FallState(this);
-        JumpState = new JumpState(this);
-        CrouchState = new CrouchState(this);
-        DeathState = new DeathState(this);
-        AimState = new AimState(this);
-        EquipState = new EquipState(this);
-        UnequipState = new UnequipState(this);
-        BowChargeState = new BowChargeState(this);
-        UIState = new UIState(this);
+        IdleState = new PlayerIdleState(this);
+        MoveState = new PlayerMoveState(this);
+        AttackState = new PlayerAttackState(this);
+        RollState = new PlayerRollState(this);
+        HitState = new PlayerHitState(this);
+        StunnedState = new PlayerStunnedState(this);
+        FallState = new PlayerFallState(this);
+        JumpState = new PlayerJumpState(this);
+        CrouchState = new PlayerCrouchState(this);
+        DeathState = new PlayerDeathState(this);
+        AimState = new PlayerAimState(this);
+        EquipState = new PlayerEquipState(this);
+        UnequipState = new PlayerUnequipState(this);
+        BowChargeState = new PlayerBowChargeState(this);
+        UIState = new PlayerUIState(this);
 
         StateMachine = new PlayerStateMachine(
             new System.Collections.Generic.Dictionary<PlayerStateType, PlayerState>
@@ -181,7 +181,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public void AE_EquipWeapon() // AE pour Animation Event
     {
         // On délègue la logique à l'état actuel si c'est un état d'équipement
-        if (StateMachine.CurrentState is EquipState equip)
+        if (StateMachine.CurrentState is PlayerEquipState equip)
         {            
             equip.HandleWeaponSwitch();
         }
@@ -189,7 +189,7 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     public void AE_UnequipWeapon()
     {
-        if (StateMachine.CurrentState is UnequipState unequip)
+        if (StateMachine.CurrentState is PlayerUnequipState unequip)
         {
             unequip.HandleWeaponRemoval();
         }
@@ -197,21 +197,21 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     public void AE_OnAttackFinished()
     {
-        if (StateMachine.CurrentState is AttackState attack)
+        if (StateMachine.CurrentState is PlayerAttackState attack)
         {
             attack.OnAnimationFinished();
         }
     }
     public void AE_OnRollEnd()
     {
-        if (StateMachine.CurrentState is RollState rollState)
+        if (StateMachine.CurrentState is PlayerRollState rollState)
         {
             rollState.OnRollAnimationEnd();
         }
     }
     public void AE_OnHitAnimationEnd()
     {
-        if (StateMachine.CurrentState is HitState hitState)
+        if (StateMachine.CurrentState is PlayerHitState hitState)
         {
             hitState.OnHitAnimationEnd();
         }

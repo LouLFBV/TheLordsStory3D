@@ -1,7 +1,7 @@
 using UnityEngine;
-public class AirborneState : PlayerState
+public class PlayerAirborneState : PlayerState
 {
-    public AirborneState(PlayerController player) : base(player) { }
+    public PlayerAirborneState(PlayerController player) : base(player) { }
     public override void Enter()
     {
         base.Enter();

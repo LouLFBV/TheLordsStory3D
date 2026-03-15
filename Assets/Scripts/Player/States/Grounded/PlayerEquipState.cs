@@ -1,8 +1,8 @@
 using UnityEngine;
-public class EquipState : GroundedState
+public class PlayerEquipState : PlayerGroundedState
 {
 
-    public EquipState(PlayerController player) : base(player) { }
+    public PlayerEquipState(PlayerController player) : base(player) { }
 
     public override void Enter()
     {
