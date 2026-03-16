@@ -14,8 +14,6 @@ public class PlayerController : MonoBehaviour, ICombatant
     [Header("States")]
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMoveState MoveState { get; private set; }
-    public CombatSystem Combat { get; private set; }
-    public StaminaSystem Stamina { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerRollState RollState { get; private set; }
     public PlayerHitState HitState { get; private set; }
@@ -39,6 +37,8 @@ public class PlayerController : MonoBehaviour, ICombatant
     public BowBehaviour Bow { get; private set; }
     public LockOnSystem LockOn { get; private set; }
     public WalletSystem Wallet { get; private set; }
+    public CombatSystem Combat { get; private set; }
+    public StaminaSystem Stamina { get; private set; }
 
 
     [Header("Combat Settings")]

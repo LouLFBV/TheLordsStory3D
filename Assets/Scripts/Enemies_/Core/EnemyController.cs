@@ -16,10 +16,18 @@ public class EnemyController : MonoBehaviour, ICombatant
     [SerializeField] private EnemySO enemyData;
     // On garde ton SO pour les PV max et le type !
 
+    [Header("Combat Settings")]
+    [SerializeField] private List<AttackSO> availableAttacks;
+    public ItemData PendingWeaponItem { get; set; }
+
     [Header("Senses & AI")]
     public Transform Target; // Le joueur
     public float DetectionRadius = 10f;
     public float AttackRadius = 2f;
+
+    [Header("UI & Feedback")]
+    [SerializeField] private GameObject lockOnIndicator;
+    [SerializeField] private EnemyHealthUI healthUI;
 
     [Header("Systems (Shared with Player)")]
     public HealthSystem Health { get; private set; }
@@ -27,7 +35,7 @@ public class EnemyController : MonoBehaviour, ICombatant
     public CombatSystem Combat { get; private set; }
     public DamageReceiver DmgReceiver { get; private set; }
 
-    // On prépare les slots pour les états
+    [Header ("Enemy States")]
     public EnemyIdleState IdleState { get; private set; }
     public EnemyPatrolState PatrolState { get; private set; }
     public EnemyFollowState FollowState { get; private set; }
@@ -72,6 +80,11 @@ public class EnemyController : MonoBehaviour, ICombatant
             Target = PlayerController.Instance.transform;
 
         StateMachine.Initialize(EnemyStateType.Idle);
+        // Initialisation de l'UI de vie
+        if (healthUI != null) healthUI.Initialize(Health);
+
+        // On cache l'indicateur de lock au début
+        SetLockOnIndicator(false);
     }
 
     private void Update()
@@ -91,15 +104,44 @@ public class EnemyController : MonoBehaviour, ICombatant
 
         float distance = Vector3.Distance(transform.position, Target.position);
 
-        // Logique de transition ultra basique pour tester :
-        if (distance <= DetectionRadius && StateMachine.CurrentState == IdleState)
+        // LOGIQUE DE TRANSITION :
+
+        // 1. Si je suis en Idle ou Patrol et que je vois le joueur -> Poursuite
+        if (distance <= DetectionRadius)
         {
-            StateMachine.ChangeState(EnemyStateType.Follow);
+            if (StateMachine.CurrentState == IdleState || StateMachine.CurrentState == PatrolState)
+            {
+                StateMachine.ChangeState(EnemyStateType.Follow);
+            }
+        }
+
+        // 2. Si je suis en Idle trop longtemps -> Patrouille (Optionnel)
+        if (StateMachine.CurrentState == IdleState)
+        {
+            // Tu peux ajouter un petit timer ici pour passer en Patrol automatiquement
+            StateMachine.ChangeState(EnemyStateType.Patrol);
         }
     }
 
+    // Méthode pour choisir une attaque
+    public AttackSO GetRandomAttack()
+    {
+        if (availableAttacks == null || availableAttacks.Count == 0) return null;
+        return availableAttacks[Random.Range(0, availableAttacks.Count)];
+    }
+
+    // Implémentation de ICombatant
+    public float GetBaseWeaponDamage()
+    {
+        // On utilise les dégâts de ton ItemData (arme) ou de ton EnemySO
+        return PendingWeaponItem != null ? PendingWeaponItem.attackPoints : 10f;
+    }
+
+    // On fait le pont entre les events de l'Animator et le CombatSystem
+    public void AE_HitboxOpen() => Combat.AE_HitboxOpen();
+    public void AE_HitboxClose() => Combat.AE_HitboxClose();
     // --- Animation Events (Même logique que le joueur) ---
-   public void AE_OnAttackFinished() => (StateMachine.CurrentState as EnemyAttackState)?.OnAnimationFinished();
+    public void AE_OnAttackFinished() => (StateMachine.CurrentState as EnemyAttackState)?.OnAnimationFinished();
 
     private void OnDrawGizmosSelected()
     {
@@ -109,8 +151,20 @@ public class EnemyController : MonoBehaviour, ICombatant
         Gizmos.DrawWireSphere(transform.position, AttackRadius);
     }
 
-    public float GetBaseWeaponDamage()
+    public void SetLockOnIndicator(bool isLocked)
     {
-        throw new System.NotImplementedException();
+        if (lockOnIndicator != null)
+            lockOnIndicator.SetActive(isLocked);
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (StateMachine != null && StateMachine.CurrentState != null)
+        {
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 2.5f,
+                $"State: {StateMachine.CurrentState.GetType().Name}");
+        }
+    }
+#endif
 }
