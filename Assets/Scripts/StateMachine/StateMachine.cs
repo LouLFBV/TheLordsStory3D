@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseStateMachine<TState, TType> where TState : State
+public abstract class StateMachine<TState, TType> where TState : State
 {
     public TState CurrentState { get; protected set; }
     protected Dictionary<TType, TState> states;
 
-    public BaseStateMachine(Dictionary<TType, TState> allStates)
+    public StateMachine(Dictionary<TType, TState> allStates)
     {
         states = allStates;
     }

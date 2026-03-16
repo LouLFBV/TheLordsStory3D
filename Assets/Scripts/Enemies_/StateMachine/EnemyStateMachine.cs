@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class EnemyStateMachine : BaseStateMachine<EnemyState, EnemyStateType>
+public class EnemyStateMachine : StateMachine<EnemyState, EnemyStateType>
 {
     public EnemyStateMachine(Dictionary<EnemyStateType, EnemyState> allStates) : base(allStates) { }
 }
