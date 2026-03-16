@@ -14,7 +14,6 @@ public class WeaponDamageDetector : MonoBehaviour
 
     private void Awake() => myCollider = GetComponent<Collider>();
 
-    // Appelé par le CombatSystem (AE_HitboxOpen)
     public void SetDamageFrame(float amount) => damageForThisFrame = amount;
 
     public void ToggleCollider(bool state)

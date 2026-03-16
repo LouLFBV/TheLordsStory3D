@@ -6,12 +6,8 @@ public class EnemyFollowState : EnemyState
 
     public override void Enter()
     {
-        // On peut déclencher une animation de course ici
-        // enemy.Animator.CrossFade("Run", 0.1f);
-
+        agent.speed = 4f; // Vitesse de poursuite (plus rapide que walkSpeed)
         agent.isStopped = false;
-        // On remet la vitesse de poursuite
-        agent.speed = 4f; // Tu pourras plus tard tirer ça d'un SO
     }
 
     public override void Update()

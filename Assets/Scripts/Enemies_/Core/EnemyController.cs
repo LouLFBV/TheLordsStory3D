@@ -17,6 +17,8 @@ public class EnemyController : MonoBehaviour, ICombatant
     // On garde ton SO pour les PV max et le type !
 
     [Header("Combat Settings")]
+    [SerializeField] private List<WeaponBinding> weaponLibrary;
+    private Dictionary<ItemData, WeaponDamageDetector> _weaponDict;
     [SerializeField] private List<AttackSO> availableAttacks;
     public ItemData PendingWeaponItem { get; set; }
 
@@ -71,20 +73,38 @@ public class EnemyController : MonoBehaviour, ICombatant
         };
 
         StateMachine = new EnemyStateMachine(states);
+
+        _weaponDict = new Dictionary<ItemData, WeaponDamageDetector>();
+        foreach (var binding in weaponLibrary)
+        {
+            if (binding.weaponData != null && !_weaponDict.ContainsKey(binding.weaponData))
+                _weaponDict.Add(binding.weaponData, binding.detector);
+        }
     }
 
     private void Start()
     {
-        // On cherche le joueur automatiquement au début
+        // 1. Recherche du joueur
         if (Target == null && PlayerController.Instance != null)
             Target = PlayerController.Instance.transform;
 
-        StateMachine.Initialize(EnemyStateType.Idle);
-        // Initialisation de l'UI de vie
-        if (healthUI != null) healthUI.Initialize(Health);
+        // 2. Équipement de l'arme par défaut
+        // On prend la première arme définie dans ta bibliothèque (weaponLibrary)
+        if (weaponLibrary != null && weaponLibrary.Count > 0)
+        {
+            EquipWeapon(weaponLibrary[0].weaponData);
+        }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name} n'a aucune arme dans sa Weapon Library !");
+        }
 
-        // On cache l'indicateur de lock au début
+        // 3. Initialisation de l'UI et du Lock
+        if (healthUI != null) healthUI.Initialize(Health);
         SetLockOnIndicator(false);
+
+        // 4. Lancement de l'IA
+        StateMachine.Initialize(EnemyStateType.Idle);
     }
 
     private void Update()
@@ -143,6 +163,15 @@ public class EnemyController : MonoBehaviour, ICombatant
     // --- Animation Events (Même logique que le joueur) ---
     public void AE_OnAttackFinished() => (StateMachine.CurrentState as EnemyAttackState)?.OnAnimationFinished();
 
+    public void EquipWeapon(ItemData weapon)
+    {
+        if (_weaponDict.TryGetValue(weapon, out var detector))
+        {
+            PendingWeaponItem = weapon;
+            Combat.UpdateWeaponDetector(detector);
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
@@ -167,4 +196,11 @@ public class EnemyController : MonoBehaviour, ICombatant
         }
     }
 #endif
+}
+
+[System.Serializable]
+public class WeaponBinding
+{
+    public ItemData weaponData;
+    public WeaponDamageDetector detector;
 }

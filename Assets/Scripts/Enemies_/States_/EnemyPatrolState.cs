@@ -19,12 +19,12 @@ public class EnemyPatrolState : EnemyState
     {
         agent.speed = walkSpeed;
         agent.isStopped = false;
+        isWaiting = false; // Reset important
         FindNewDestination();
     }
 
     public override void Update()
     {
-        // 1. Si on attend, on décrémente le timer
         if (isWaiting)
         {
             waitTimer -= Time.deltaTime;
@@ -36,26 +36,37 @@ public class EnemyPatrolState : EnemyState
             return;
         }
 
-        // 2. Si on est arrivé à destination, on commence à attendre
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        // Sécurité : On ne vérifie la distance QUE si l'agent a un chemin et qu'il est en mouvement
+        if (agent.hasPath && !agent.pathPending)
         {
-            StartWaiting();
+            if (agent.remainingDistance <= agent.stoppingDistance)
+            {
+                StartWaiting();
+            }
         }
 
-        // 3. Animation : on met à jour le float "Speed"
-        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / walkSpeed);
+        // Animation plus fluide
+        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed);
     }
 
     private void FindNewDestination()
     {
+        // On prend un point aléatoire
         Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+
+        // FORCE une distance minimum (ex: au moins 4 mètres)
+        if (randomDirection.magnitude < 4f)
+        {
+            randomDirection = randomDirection.normalized * 4f;
+        }
+
         randomDirection += enemy.transform.position;
 
         if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, patrolRadius, NavMesh.AllAreas))
         {
-            destination = hit.position;
-            agent.SetDestination(destination);
+            agent.SetDestination(hit.position);
             agent.isStopped = false;
+            // On s'assure que la flèche bleue (vélocité) se réactive
         }
     }
 
