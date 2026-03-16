@@ -8,6 +8,7 @@ public class HealthSystem : MonoBehaviour
 
     private bool _isInvulnerable;
     public float CurrentHealth { get; private set; }
+    public bool IsDead => CurrentHealth <= 0;
 
     public event Action<float, float> OnHealthChanged;
     public event Action OnDeath;

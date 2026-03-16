@@ -6,21 +6,9 @@ public class LockOnSystem : MonoBehaviour
     [SerializeField] private float lockRadius = 15f;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float maxLockDistance = 20f; // Distance de rupture
-
+    private EnemyController currentTarget;
     public Transform CurrentTarget { get; private set; }
     public bool IsLocked => CurrentTarget != null;
-
-    public void ToggleLock()
-    {
-        if (IsLocked)
-        {
-            CurrentTarget = null;
-        }
-        else
-        {
-            SearchTarget();
-        }
-    }
 
     private void SearchTarget()
     {
@@ -28,26 +16,63 @@ public class LockOnSystem : MonoBehaviour
 
         if (hits.Length == 0) return;
 
-        // On prend le plus proche
-        CurrentTarget = hits
+        // 1. On trouve le collider le plus proche
+        Collider closestHit = hits
             .OrderBy(h => Vector3.Distance(transform.position, h.transform.position))
-            .First()
-            .transform;
+            .First();
+
+        // 2. On tente de récupérer le script EnemyController sur ce collider
+        if (closestHit.TryGetComponent<EnemyController>(out var enemy))
+        {
+            // On éteint l'ancienne marque visuelle si on change de cible
+            if (currentTarget != null) currentTarget.SetLockOnIndicator(false);
+
+            // On assigne les références
+            currentTarget = enemy;           // Référence au script pour l'UI
+            CurrentTarget = enemy.transform; // Référence au Transform pour la caméra/mouvement
+
+            // On active la marque visuelle
+            currentTarget.SetLockOnIndicator(true);
+        }
+    }
+
+    public void ToggleLock()
+    {
+        if (IsLocked)
+        {
+            // Utilise ta méthode DeselectTarget pour bien tout nettoyer
+            DeselectTarget();
+        }
+        else
+        {
+            SearchTarget();
+        }
     }
 
     public void Update()
     {
         if (!IsLocked) return;
 
-        // Sécurité : Si l'ennemi meurt ou s'éloigne trop
+        // Sécurité : Distance ou si l'ennemi meurt (Health <= 0)
         float distance = Vector3.Distance(transform.position, CurrentTarget.position);
-        if (distance > maxLockDistance)
+
+        // On vérifie la distance OU si l'ennemi est mort (via son HealthSystem)
+        if (distance > maxLockDistance || (currentTarget != null && currentTarget.Health.IsDead))
         {
-            CurrentTarget = null;
-            return;
+            DeselectTarget();
+        }
+    }
+
+    public void DeselectTarget()
+    {
+        // On éteint le visuel avant de perdre la référence
+        if (currentTarget != null)
+        {
+            currentTarget.SetLockOnIndicator(false);
         }
 
-        // Optionnel : On peut ajouter ici un changement de cible avec le stick droit
+        currentTarget = null;
+        CurrentTarget = null;
     }
     private void OnDrawGizmosSelected()
     {
