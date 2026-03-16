@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICombatant
 {
+    public static PlayerController Instance { get; private set; }
+
     [Header("Core Components")]
     public PlayerStateMachine StateMachine { get; private set; }
     public PlayerInputHandler Input { get; private set; }
@@ -35,8 +37,8 @@ public class PlayerController : MonoBehaviour, ICombatant
     public PoiseSystem Poise { get; private set; }
     public DamageReceiver DmgReceiver { get; private set; }
     public BowBehaviour Bow { get; private set; }
-
     public LockOnSystem LockOn { get; private set; }
+    public WalletSystem Wallet { get; private set; }
 
 
     [Header("Combat Settings")]
@@ -57,6 +59,13 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         Input = GetComponent<PlayerInputHandler>();
         Motor = GetComponent<PlayerCharacterMotor>();
         Health = GetComponent<HealthSystem>();
@@ -69,6 +78,7 @@ public class PlayerController : MonoBehaviour, ICombatant
         Poise = GetComponent<PoiseSystem>();
         Bow = GetComponent<BowBehaviour>();
         LockOn = GetComponent<LockOnSystem>();
+        Wallet = GetComponent<WalletSystem>();
         IdleState = new PlayerIdleState(this);
         MoveState = new PlayerMoveState(this);
         AttackState = new PlayerAttackState(this);

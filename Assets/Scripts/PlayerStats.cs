@@ -82,6 +82,19 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private Animator healthBarAnimator;
     private bool _fistAnimStaminaLowPlayed = false;
 
+
+    public void AddGold(int amount)
+    {
+        goldAmount += amount;
+        audioSource.PlayOneShot(goldSound);
+        UpdateGoldText();
+    }
+
+    public void UpdateGoldText()
+    {
+        goldText.text = goldAmount.ToString();
+    }
+
     void Awake()
     {
         instance = this;
@@ -228,17 +241,6 @@ public class PlayerStats : MonoBehaviour
         UpdateHealthBar();
     }
 
-    public void AddGold(int amount)
-    {
-        goldAmount += amount;
-        audioSource.PlayOneShot(goldSound);
-        UpdateGoldText();
-    }
-
-    public void UpdateGoldText()
-    {
-        goldText.text = goldAmount.ToString() ;
-    }
 
     public void UpddateArmorText()
     {
