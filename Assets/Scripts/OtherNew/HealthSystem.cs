@@ -3,11 +3,12 @@ using System;
 
 public class HealthSystem : MonoBehaviour
 {
-    [SerializeField] private float maxHealth = 100f; 
+    [SerializeField] private float maxHealthVar = 100f; 
     [SerializeField] private ParticleSystem healEffect;
 
     private bool _isInvulnerable;
     public float CurrentHealth { get; private set; }
+    public float MaxHealth => maxHealthVar; // Propriété en lecture seule pour le maxHealth
     public bool IsDead => CurrentHealth <= 0;
 
     public event Action<float, float> OnHealthChanged;
@@ -16,7 +17,7 @@ public class HealthSystem : MonoBehaviour
 
     private void Awake()
     {
-        CurrentHealth = maxHealth;
+        CurrentHealth = maxHealthVar;
     }
 
     public void TakeDamage(float damage)
@@ -27,9 +28,8 @@ public class HealthSystem : MonoBehaviour
             return;
         }
         CurrentHealth -= damage;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
 
-        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
         OnHit?.Invoke();
 
         if (CurrentHealth <= 0)
@@ -39,15 +39,15 @@ public class HealthSystem : MonoBehaviour
     {
         // Si on est déjà full vie, on peut choisir de ne pas consommer l'objet
         // Mais si on soigne, on lance la logique :
-        if (CurrentHealth < maxHealth)
+        if (CurrentHealth < MaxHealth)
         {
             if (healEffect != null) healEffect.Play();
 
-            CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
+            CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
 
             // C'est CA qui remplace "UpdateHealthBar" ! 
             // Ton script d'UI doit être abonné à cet event.
-            OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+            OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
         }
     }
 

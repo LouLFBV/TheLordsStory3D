@@ -14,21 +14,22 @@ public class EnemyAttackState : EnemyState
 
         FaceTarget();
 
-        // 1. On récupère l'attaque via une donnée de l'ennemi 
-        // (on peut ajouter une liste d'AttackSO dans EnemyController)
         AttackSO attackToExecute = enemy.GetRandomAttack();
 
         if (attackToExecute != null)
         {
-            // 2. On utilise TON CombatSystem !
+            // On prépare tout via le dictionnaire (Arme + Detector)
+            enemy.PrepareAttack(attackToExecute);
+
+            // On lance l'attaque
             enemy.Combat.ExecuteAttack(attackToExecute);
         }
         else
         {
-            // Sécurité si pas d'attaque trouvée
             isAnimationFinished = true;
         }
     }
+
 
     public override void Update()
     {
@@ -76,9 +77,5 @@ public class EnemyAttackState : EnemyState
         isAnimationFinished = true;
     }
 
-    public override void Exit()
-    {
-        // On s'assure que le trigger est reset pour ne pas attaquer en boucle par erreur
-        enemy.Animator.ResetTrigger("Attack");
-    }
+    public override void Exit(){    }
 }

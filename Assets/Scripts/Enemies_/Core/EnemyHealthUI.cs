@@ -22,7 +22,7 @@ public class EnemyHealthUI : MonoBehaviour
         healthBarFill.fillAmount = current / max;
 
         // Optionnel : Changer la couleur selon la vie (ton ancien Lerp)
-        healthBarFill.color = Color.Lerp(Color.yellow, Color.green, current / max);
+        healthBarFill.color = Color.Lerp(Color.red, Color.yellow, current / max);
 
         if (current <= 0) uiContainer.SetActive(false);
     }

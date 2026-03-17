@@ -17,8 +17,9 @@ public class EnemyController : MonoBehaviour, ICombatant
     // On garde ton SO pour les PV max et le type !
 
     [Header("Combat Settings")]
-    [SerializeField] private List<WeaponBinding> weaponLibrary;
-    private Dictionary<ItemData, WeaponDamageDetector> _weaponDict;
+    [SerializeField] private List<EnemyWeaponSetup> weaponSetups;
+    private Dictionary<AttackSO, EnemyWeaponSetup> _attackToWeaponMap;
+    public Dictionary<AttackSO, WeaponDamageDetector> weaponDict;
     [SerializeField] private List<AttackSO> availableAttacks;
     public ItemData PendingWeaponItem { get; set; }
 
@@ -74,11 +75,14 @@ public class EnemyController : MonoBehaviour, ICombatant
 
         StateMachine = new EnemyStateMachine(states);
 
-        _weaponDict = new Dictionary<ItemData, WeaponDamageDetector>();
-        foreach (var binding in weaponLibrary)
+        _attackToWeaponMap = new Dictionary<AttackSO, EnemyWeaponSetup>();
+        foreach (var setup in weaponSetups)
         {
-            if (binding.weaponData != null && !_weaponDict.ContainsKey(binding.weaponData))
-                _weaponDict.Add(binding.weaponData, binding.detector);
+            foreach (var attack in setup.usableAttacks)
+            {
+                if (!_attackToWeaponMap.ContainsKey(attack))
+                    _attackToWeaponMap.Add(attack, setup);
+            }
         }
     }
 
@@ -87,17 +91,6 @@ public class EnemyController : MonoBehaviour, ICombatant
         // 1. Recherche du joueur
         if (Target == null && PlayerController.Instance != null)
             Target = PlayerController.Instance.transform;
-
-        // 2. Équipement de l'arme par défaut
-        // On prend la première arme définie dans ta bibliothèque (weaponLibrary)
-        if (weaponLibrary != null && weaponLibrary.Count > 0)
-        {
-            EquipWeapon(weaponLibrary[0].weaponData);
-        }
-        else
-        {
-            Debug.LogWarning($"{gameObject.name} n'a aucune arme dans sa Weapon Library !");
-        }
 
         // 3. Initialisation de l'UI et du Lock
         if (healthUI != null) healthUI.Initialize(Health);
@@ -163,12 +156,22 @@ public class EnemyController : MonoBehaviour, ICombatant
     // --- Animation Events (Même logique que le joueur) ---
     public void AE_OnAttackFinished() => (StateMachine.CurrentState as EnemyAttackState)?.OnAnimationFinished();
 
-    public void EquipWeapon(ItemData weapon)
+    public void EquipWeapon(AttackSO weapon)
     {
-        if (_weaponDict.TryGetValue(weapon, out var detector))
+        if (weaponDict.TryGetValue(weapon, out var detector))
         {
-            PendingWeaponItem = weapon;
             Combat.UpdateWeaponDetector(detector);
+        }
+    }
+    public void PrepareAttack(AttackSO attack)
+    {
+        if (_attackToWeaponMap.TryGetValue(attack, out var setup))
+        {
+            // On met à jour l'arme actuelle (pour les dégâts de base)
+            PendingWeaponItem = setup.weaponData;
+
+            // On met à jour le détecteur physique (la hitbox)
+            Combat.UpdateWeaponDetector(setup.detector);
         }
     }
 
@@ -199,8 +202,9 @@ public class EnemyController : MonoBehaviour, ICombatant
 }
 
 [System.Serializable]
-public class WeaponBinding
+public class EnemyWeaponSetup
 {
-    public ItemData weaponData;
-    public WeaponDamageDetector detector;
+    public ItemData weaponData;          // Contient les points d'attaque (ex: 15)
+    public WeaponDamageDetector detector; // Le script sur l'objet physique
+    public List<AttackSO> usableAttacks;  // Les attaques que CETTE arme peut faire
 }

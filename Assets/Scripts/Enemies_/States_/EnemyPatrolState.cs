@@ -10,8 +10,8 @@ public class EnemyPatrolState : EnemyState
     // Paramètres (qu'on pourra sortir dans un SO plus tard)
     private float walkSpeed = 2f;
     private float patrolRadius = 8f;
-    private float waitTimeMin = 2f;
-    private float waitTimeMax = 5f;
+    private float waitTimeMin = 1f;
+    private float waitTimeMax = 2f;
 
     public EnemyPatrolState(EnemyController enemy) : base(enemy) { }
 
@@ -36,38 +36,50 @@ public class EnemyPatrolState : EnemyState
             return;
         }
 
-        // Sécurité : On ne vérifie la distance QUE si l'agent a un chemin et qu'il est en mouvement
-        if (agent.hasPath && !agent.pathPending)
+        // Condition d'arrivée robuste
+        // On vérifie si la distance restante est faible (0.5f est une bonne marge)
+        if (!agent.pathPending)
         {
-            if (agent.remainingDistance <= agent.stoppingDistance)
+            if (agent.remainingDistance <= agent.stoppingDistance + 0.5f)
             {
+                // Debug.Log("Destination atteinte, début de l'attente.");
                 StartWaiting();
             }
         }
 
-        // Animation plus fluide
-        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed);
+        // Mise à jour de l'animation avec la vélocité réelle
+        // On utilise Mathf.Lerp pour éviter que l'anim ne saute
+        float currentSpeed = agent.velocity.magnitude / agent.speed;
+        enemy.Animator.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
     }
 
     private void FindNewDestination()
     {
-        // On prend un point aléatoire
-        Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
-
-        // FORCE une distance minimum (ex: au moins 4 mètres)
-        if (randomDirection.magnitude < 4f)
+        // On essaie de trouver un point valide jusqu'à 5 fois si nécessaire
+        for (int i = 0; i < 5; i++)
         {
-            randomDirection = randomDirection.normalized * 4f;
+            Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+
+            // On s'assure d'une distance minimale pour éviter le surplace
+            if (randomDirection.magnitude < 3f)
+                randomDirection = randomDirection.normalized * 3f;
+
+            randomDirection += enemy.transform.position;
+
+            // On utilise un rayon de recherche un peu plus large (2f au lieu de patrolRadius) 
+            // pour SamplePosition pour être sûr de trouver le sol
+            if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+            {
+                agent.isStopped = false;
+                agent.SetDestination(hit.position);
+                // Debug.Log("Nouveau point trouvé à l'essai n°" + (i + 1));
+                return;
+            }
         }
 
-        randomDirection += enemy.transform.position;
-
-        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit hit, patrolRadius, NavMesh.AllAreas))
-        {
-            agent.SetDestination(hit.position);
-            agent.isStopped = false;
-            // On s'assure que la flèche bleue (vélocité) se réactive
-        }
+        // Si après 5 essais rien n'est trouvé, on attend un peu et on recommence
+        // Debug.LogWarning("Aucun point NavMesh trouvé, l'ours attend.");
+        StartWaiting();
     }
 
     private void StartWaiting()
