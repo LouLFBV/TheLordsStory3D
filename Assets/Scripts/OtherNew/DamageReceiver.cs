@@ -19,6 +19,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage, float poiseDamage, DamageType type)
     {
+        Debug.Log($"Received damage: {damage} of type {type}, with poise damage: {poiseDamage}");
         // 1. Calcul de l'armure
         float finalDamage = (_armor != null) ? _armor.CalculateReducedDamage(damage, type) : damage;
 

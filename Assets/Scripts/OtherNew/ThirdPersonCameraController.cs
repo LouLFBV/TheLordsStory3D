@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ThirdPersonCameraController : MonoBehaviour
@@ -175,4 +176,10 @@ public class ThirdPersonCameraController : MonoBehaviour
     }
     public void SetFOV(float fov) => targetFOV = fov;
     public void ResetFOV() => targetFOV = defaultFOV;
+}
+
+public static class CameraEvents
+{
+    public static Action<float, float> OnCameraShake;
+    // amplitude, duration
 }

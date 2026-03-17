@@ -30,9 +30,9 @@ public class PlayerUIManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateHealthBar(player.Health.CurrentHealth, player.Health.CurrentHealth); // Initialisation de la barre
+        UpdateHealth(player.Health.CurrentHealth, player.Health.CurrentHealth); // Initialisation de la barre
         // On s'abonne aux événements des systèmes
-        player.Health.OnHealthChanged += UpdateHealthBar;
+        player.Health.OnHealthChanged += UpdateHealth;
         player.Stamina.OnStaminaChanged += UpdateStaminaBar;
         player.Stamina.OnStaminaEmpty += HandleEmptyFeedback;
 
@@ -58,11 +58,21 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
-    private void UpdateHealthBar(float current, float max)
+    private void UpdateHealth(float current, float max)
     {
         float ratio = current / max;
         healthBarFill.fillAmount = ratio;
+        UpdateHealthBarColor(ratio);
+    }
+    public void UpdateHealthBar()
+    {
+        float ratio =  player.Health.CurrentHealth / player.Health.MaxHealth;
+        healthBarFill.fillAmount = ratio;
+        UpdateHealthBarColor(ratio);
 
+    }
+    private void UpdateHealthBarColor(float ratio)
+    {
         // Ta logique de dégradé de couleurs
         if (ratio >= 0.6f)
             healthBarFill.color = Color.Lerp(colorMedium, colorFull, (ratio - 0.6f) / 0.4f);

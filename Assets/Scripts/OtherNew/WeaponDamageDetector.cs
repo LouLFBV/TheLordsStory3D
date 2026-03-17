@@ -12,7 +12,10 @@ public class WeaponDamageDetector : MonoBehaviour
     private Collider myCollider;
     private List<GameObject> alreadyHit = new List<GameObject>();
 
-    private void Awake() => myCollider = GetComponent<Collider>();
+    private void Awake()
+    {
+        myCollider = GetComponent<Collider>();
+    }
 
     public void SetDamageFrame(float amount) => damageForThisFrame = amount;
 
@@ -26,7 +29,10 @@ public class WeaponDamageDetector : MonoBehaviour
     {
         // On évite de se frapper soi-même ou de frapper 2x la même cible
         if (other.gameObject == transform.root.gameObject || alreadyHit.Contains(other.gameObject))
+        {
+            Debug.Log("Collision ignorée : " + other.gameObject.name);
             return;
+        }
 
         // On cherche une interface de dégâts (plus propre que Tag "AI")
         if (other.TryGetComponent<IDamageable>(out var target))
