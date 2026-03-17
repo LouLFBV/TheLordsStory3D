@@ -50,7 +50,6 @@ public class Chest : InteractableBase
     private bool isAnimating = false;
     private bool isAlive = true;
 
-    private Animator playerAnimator;
     private PlayerInput playerInput;
 
     #endregion 
@@ -72,7 +71,6 @@ public class Chest : InteractableBase
         if (player != null)
         {
             playerInput = player.GetComponent<PlayerInput>();
-            playerAnimator = player.GetComponent<Animator>();
             Debug.Log("[CHEST] PlayerInput trouvé !");
         }
         else
@@ -164,6 +162,7 @@ public class Chest : InteractableBase
 
         if (descriptionPanel.activeSelf)
         {
+            PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
             descriptionPanel.SetActive(false);
             playerInput.actions["Cancel"].performed -= OnCancel;
             playerInput.actions["Cancel"].Disable();
@@ -186,7 +185,7 @@ public class Chest : InteractableBase
     {
         if (isAnimating) return;
 
-        if (isLocked && Inventory.instance.KeyIsInInventory(keyItem))
+        if (isLocked && InventorySystem.instance.KeyIsInInventory(keyItem))
             TryToOpenWithKey(keyItem);
         else if (!isOpen && !isLocked)
             StartCoroutine(OpenChest());
@@ -204,7 +203,7 @@ public class Chest : InteractableBase
         // Cas 1 : la bonne clé est utilisée
         else if (key == keyItem)
         {
-            Inventory.instance.RemoveItem(key);
+            InventorySystem.instance.RemoveItem(key);
             StartCoroutine(OpenChest());
             return;
         }
@@ -293,6 +292,7 @@ public class Chest : InteractableBase
     private void ShowDescriptionPanel()
     {
         descriptionPanel.SetActive(true);
+        PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.UI);
         ActiveCancel();
         nameText.text = rewardItem.itemName;
         objectImage.sprite = rewardItem.visual;
@@ -301,12 +301,12 @@ public class Chest : InteractableBase
         {
             amountText.text = $"x{rewardAmount}";
             for (int i = 0; i < rewardAmount; i++)
-                Inventory.instance.AddItem(rewardItem);
+                InventorySystem.instance.AddItem(rewardItem);
         }
         else
         {
             amountText.text = "";
-            Inventory.instance.AddItem(rewardItem);
+            InventorySystem.instance.AddItem(rewardItem);
         }
     }
 }

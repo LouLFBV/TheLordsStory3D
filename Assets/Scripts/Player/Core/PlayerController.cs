@@ -120,6 +120,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     private void Start()
     {
         StateMachine.Initialize(PlayerStateType.Idle);
+        RequestedPanelType = UIPanelType.None;
     }
 
 

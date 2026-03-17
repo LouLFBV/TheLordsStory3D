@@ -54,7 +54,7 @@ public class Recipe : MonoBehaviour
 
             requiredItemGO.GetComponent<Slot>().item = requiredItem;
 
-            ItemInInventory[] itemInInventory = Inventory.instance.GetContent().Where(item => item.itemData == requiredItem).ToArray();
+            ItemInInventory[] itemInInventory = InventorySystem.instance.GetContent().Where(item => item.itemData == requiredItem).ToArray();
 
             int totalRequiredItemQuantityInInventory = 0;
 
@@ -142,8 +142,8 @@ public class Recipe : MonoBehaviour
         }
         else
         {
-            Inventory.instance.AddItem(currentRecipe.craftableItem);
-            QuestManager.instance.UpdateQuestProgress("", 1, currentRecipe.craftableItem);
+            InventorySystem.instance.AddItem(currentRecipe.craftableItem);
+            NewQuestManager.instance.UpdateQuestProgress("", 1, currentRecipe.craftableItem);
         }
     }
 

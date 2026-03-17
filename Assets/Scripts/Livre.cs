@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +11,8 @@ public class Livre :InteractableBase
     public bool isOpen = false;
     [SerializeField] private AudioSource openSound;
 
+    private PlayerController _player;
+
     void Start()
     {
         if (texteMPPage1 != null)
@@ -23,6 +24,8 @@ public class Livre :InteractableBase
 
     public void OuvrirFermerLivre()
     {
+        if (_player == null)
+            _player = PlayerController.Instance;
         if (!isOpen)
         {
             if (openSound != null)
@@ -30,10 +33,12 @@ public class Livre :InteractableBase
                 openSound.Play();
             }
             canvas.SetActive(true);
+            _player.StateMachine.ChangeState(PlayerStateType.UI);
             isOpen = true;
         }
         else
         {
+            _player.StateMachine.ChangeState(PlayerStateType.Idle);
             canvas.SetActive(false);
             isOpen = false;
         }
