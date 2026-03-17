@@ -42,7 +42,9 @@ public class ThirdPersonCameraController : MonoBehaviour
     [Header("Collision Settings")]
     [SerializeField] private LayerMask collisionLayers;
     [SerializeField] private float cameraRadius = 0.2f;
-    [SerializeField] private float minCollisionDistance = 0.5f;
+    [SerializeField] private float minCollisionDistance = 0.5f; 
+    [SerializeField] private float collisionSmoothSpeed = 12f; // Pour un retour fluide après une collision
+    private float currentCollisionDistance;
 
     // Valeurs de travail
     private Vector3 currentPivotOffset;
@@ -78,6 +80,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         currentCamOffset = targetCamOffset = defaultCamOffset;
 
         yaw = target.eulerAngles.y;
+        currentCollisionDistance = defaultCamOffset.magnitude;
     }
 
     private void LateUpdate()
@@ -125,40 +128,44 @@ public class ThirdPersonCameraController : MonoBehaviour
     }
     private void UpdateCameraPosition()
     {
-        // 1. Interpolation fluide des offsets
-        // On utilise Lerp pour passer doucement de l'offset "Idle" à l'offset "Aim"
+        // 1. Interpolation fluide des offsets (Visée/Idle)
         currentPivotOffset = Vector3.Lerp(currentPivotOffset, targetPivotOffset, Time.deltaTime * smoothTime);
-
-        // CORRECTION ICI : On lerp vers targetCamOffset pour que le zoom/décalage soit fluide
         currentCamOffset = Vector3.Lerp(currentCamOffset, targetCamOffset, Time.deltaTime * smoothTime);
-
         _camComponent.fieldOfView = Mathf.Lerp(_camComponent.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
 
         // 2. Calcul des rotations
         Quaternion rot = Quaternion.Euler(pitch, yaw, 0);
         Quaternion yawRot = Quaternion.Euler(0, yaw, 0);
 
-        // 3. Calcul du pivot dynamique (le point que la caméra regarde)
-        // On applique le pivot offset relativement à la rotation horizontale du joueur
+        // 3. Calcul du pivot (où la caméra regarde)
         Vector3 pivotPos = target.position + yawRot * currentPivotOffset;
 
-        // 4. Calcul de la distance souhaitée avec collision
-        float desiredDistance = currentCamOffset.magnitude;
-        Vector3 direction = rot * Vector3.back; // Direction arrière de la caméra
+        // 4. GESTION DES COLLISIONS (Le cœur du système)
+        float maxDistance = currentCamOffset.magnitude;
+        Vector3 direction = rot * Vector3.back; // Direction vers l'arrière
 
-        Vector3 desiredPos = pivotPos + direction * desiredDistance;
-
-        // 5. Check des collisions
+        // On lance un rayon du pivot vers la position souhaitée de la caméra
         RaycastHit hit;
-        if (Physics.SphereCast(pivotPos, cameraRadius, direction, out hit, desiredDistance, collisionLayers))
+        float targetDistance = maxDistance;
+
+        // On utilise SphereCast pour simuler le volume de la caméra
+        if (Physics.SphereCast(pivotPos, cameraRadius, direction, out hit, maxDistance, collisionLayers))
         {
-            float hitDistance = Mathf.Max(minCollisionDistance, hit.distance);
-            desiredPos = pivotPos + direction * hitDistance;
+            // On déduit une petite marge (cameraRadius) pour ne pas toucher le mur
+            targetDistance = Mathf.Clamp(hit.distance, minCollisionDistance, maxDistance);
         }
 
+        // Lissage de la distance (évite les sauts brusques quand on rase un mur)
+        currentCollisionDistance = Mathf.Lerp(currentCollisionDistance, targetDistance, Time.deltaTime * collisionSmoothSpeed);
+
+        // 5. Calcul de la position finale
+        Vector3 finalPos = pivotPos + direction * currentCollisionDistance;
+
         // 6. Application
-        transform.position = desiredPos;
-        transform.LookAt(pivotPos);
+        transform.position = finalPos;
+
+        // Optionnel : Un LookAt plus précis ou simplement utiliser la rotation rot
+        transform.rotation = rot;
     }
 
     public Transform GetTransform() => transform;

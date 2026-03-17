@@ -149,7 +149,7 @@ public class Door : InteractableBase
     }
     private void ConsommerCle(ItemData key)
     {
-       Inventory.instance.RemoveItem(key);
+        InventorySystem.instance.RemoveItem(key);
     }
     private void DeverrouillerEtOuvrir()
     {
@@ -162,7 +162,7 @@ public class Door : InteractableBase
 
     public override void OnInteract(PlayerInteractor player)
     {
-        if (Inventory.instance.KeyIsInInventory(keyItem))
+        if (InventorySystem.instance.KeyIsInInventory(keyItem))
             TryToOpenWithKey(keyItem);
         else
             OpenAndCloseDoor();

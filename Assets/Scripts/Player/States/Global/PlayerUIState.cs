@@ -42,6 +42,7 @@ public class PlayerUIState : PlayerState
             Time.timeScale = 1f;
             UIManagerSystem.Instance.CloseAll();
         }
+        player.RequestedPanelType = UIPanelType.None;
         player.Input.SwitchActionMap("Player");
         UIManagerSystem.Instance.ToggleCursor(false);
         InventorySystem.instance.itemActionsSystem.CloseActionPanel();

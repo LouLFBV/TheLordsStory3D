@@ -39,7 +39,7 @@ public class CraftingSystem : MonoBehaviour
 
     public void ClosePanel()
     {
-        TooltipSystem.instance.Hide();
+        //TooltipSystem.instance.Hide();
         craftPanel.SetActive(false);
         if (uiNavigationManager != null)
         {
