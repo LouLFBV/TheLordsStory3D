@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public UIPanelType RequestedPanelType { get; set; }
     private UIPanelType? _previousPanelType = null;
     public ItemData ItemQueuedToEquip;
+    public bool IsDead { get; set; }
 
     private void Awake()
     {
@@ -242,4 +243,23 @@ public class PlayerController : MonoBehaviour, ICombatant
     }
 
     public float GetBaseWeaponDamage() => PendingWeaponItem.attackPoints;
+
+
+    private void OnEnable()
+    {
+        if (Health != null)
+            Health.OnDeath += HandleDeath;
+    }
+
+    private void OnDisable()
+    {
+        if (Health != null)
+            Health.OnDeath -= HandleDeath;
+    }
+
+    private void HandleDeath()
+    {
+        if (!IsDead) 
+        StateMachine.ChangeState(PlayerStateType.Death);
+    }
 }

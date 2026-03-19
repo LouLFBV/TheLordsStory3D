@@ -2,14 +2,31 @@ using UnityEngine;
 
 public class AIManager : MonoBehaviour
 {
-    private EnemyController enemyController;
-    private void Awake()
+    private EnemyController _enemy;
+    [SerializeField] private NewEnemySO enemyData; // Ta base de données
+
+    public void Initialize(EnemyController owner)
     {
-        enemyController = GetComponent<EnemyController>();
+        _enemy = owner;
     }
-    private void Start()
+
+    // Système de permission simple
+    public bool CanOrbit => enemyData != null && enemyData.canOrbit;
+
+    // Accès aux réglages du SO pour les états
+    public float OrbitDistance => enemyData != null ? enemyData.idealOrbitDistance : 4f;
+    public float OrbitSpeed => enemyData != null ? enemyData.orbitSpeedMultiplier : 1f;
+
+    public NewEnemySO GetData() => enemyData;
+    public bool HasPermission(EnemyStateType stateType)
     {
-        // Initialize the first state, e.g., IdleState
-        // enemyController.ChangeState(new IdleState(enemyController, enemyData));
+        if (enemyData == null) return false;
+
+        return stateType switch
+        {
+            EnemyStateType.Orbit => enemyData.canOrbit,
+            // Tu pourras ajouter d'autres cas ici plus tard
+            _ => true
+        };
     }
 }

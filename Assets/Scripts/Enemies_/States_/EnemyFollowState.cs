@@ -27,18 +27,26 @@ public class EnemyFollowState : EnemyState
             return;
         }
 
-        // 2. Si le joueur s'est trop éloigné (on l'a perdu)
+        // 2. Si le joueur s'est trop éloigné
         if (distance > enemy.DetectionRadius * 1.5f)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Idle);
             return;
         }
 
-        // 3. Sinon, on met à jour la destination
+        // 3. Logique de transition vers l'Orbite
+        // On ne change d'état QUE si on a la permission ET qu'on est à la bonne distance
+        if (distance <= enemy.AIManager.OrbitDistance + 1f && enemy.AIManager.HasPermission(EnemyStateType.Orbit))
+        {
+            enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
+            return; // On sort de l'Update pour ne pas exécuter le SetDestination ci-dessous
+        }
+
+        // 4. Si on n'est pas en orbite (Squelette ou trop loin), on fonce !
         agent.SetDestination(enemy.Target.position);
 
-        // Animation : on envoie la vitesse au paramètre "Speed" de l'animator
-        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed);
+        // Animation
+        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed, 0.1f, Time.deltaTime);
     }
 
     public override void Exit()
