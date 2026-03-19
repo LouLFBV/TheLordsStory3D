@@ -25,7 +25,7 @@ public class PlayerGroundedState : PlayerState
         }
 
         // 2. PRIORITÉ : Le Saut
-        if (player.Input.JumpPressed && player.Stamina.HasStamina())
+        if (player.Input.JumpPressed)
         {
             // On empêche le saut pendant les transitions d'équipement
             if (player.StateMachine.CurrentState is PlayerEquipState ||

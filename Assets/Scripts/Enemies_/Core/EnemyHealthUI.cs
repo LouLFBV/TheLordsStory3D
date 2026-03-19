@@ -13,7 +13,7 @@ public class EnemyHealthUI : MonoBehaviour
         uiContainer.SetActive(false); // Caché par défaut
 
         // On s'abonne à l'événement de changement de vie
-        health.OnHealthChanged += UpdateUI;
+        health.OnHealthEnemyChanged += UpdateUI;
     }
 
     private void UpdateUI(float current, float max)

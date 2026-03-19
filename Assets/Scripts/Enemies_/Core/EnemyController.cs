@@ -12,10 +12,6 @@ public class EnemyController : MonoBehaviour, ICombatant
     public Animator Animator { get; private set; }
     public Rigidbody Rigidbody { get; private set; }
 
-    [Header("Data & Stats")]
-    [SerializeField] private EnemySO enemyData;
-    // On garde ton SO pour les PV max et le type !
-
     [Header("Combat Settings")]
     [SerializeField] private List<EnemyWeaponSetup> weaponSetups;
     private Dictionary<AttackSO, EnemyWeaponSetup> _attackToWeaponMap;
@@ -37,12 +33,17 @@ public class EnemyController : MonoBehaviour, ICombatant
     public PoiseSystem Poise { get; private set; }
     public CombatSystem Combat { get; private set; }
     public DamageReceiver DmgReceiver { get; private set; }
+    public AIManager AIManager { get; private set; }
 
     [Header ("Enemy States")]
     public EnemyIdleState IdleState { get; private set; }
     public EnemyPatrolState PatrolState { get; private set; }
     public EnemyFollowState FollowState { get; private set; }
+    public EnemyOrbitState OrbitState { get; private set; }
     public EnemyAttackState AttackState { get; private set; }
+    public EnemyHitState HitState { get; private set; }
+    public EnemyStunnedState StunnedState { get; private set; }
+    public EnemyDeathState DeathState { get; private set; }
 
     private void Awake()
     {
@@ -56,21 +57,31 @@ public class EnemyController : MonoBehaviour, ICombatant
         Poise = GetComponent<PoiseSystem>();
         Combat = GetComponent<CombatSystem>();
         DmgReceiver = GetComponent<DamageReceiver>();
+        AIManager = GetComponent<AIManager>();
+        AIManager.Initialize(this); // On passe le controller à l'AI Manager pour qu'il puisse interagir avec les états et les systèmes de l'ennemi
 
         // 3. Création des instances d'états
         // On passera 'this' (le controller) à chaque état
         IdleState = new EnemyIdleState(this);
         FollowState = new EnemyFollowState(this);
+        OrbitState = new EnemyOrbitState(this);
         AttackState = new EnemyAttackState(this);
         PatrolState = new EnemyPatrolState(this); // On le fera juste après
+        HitState = new EnemyHitState(this);
+        StunnedState = new EnemyStunnedState(this);
+        DeathState = new EnemyDeathState(this);
 
         // 4. Setup de la State Machine
         var states = new Dictionary<EnemyStateType, EnemyState>
         {
             { EnemyStateType.Idle, IdleState },
             { EnemyStateType.Follow, FollowState },
+            { EnemyStateType.Orbit, OrbitState },
             { EnemyStateType.Attack, AttackState },
-            { EnemyStateType.Patrol, PatrolState }
+            { EnemyStateType.Patrol, PatrolState },
+            { EnemyStateType.Hit, HitState },
+            { EnemyStateType.Stunned, StunnedState },
+            { EnemyStateType.Death, DeathState }
         };
 
         StateMachine = new EnemyStateMachine(states);
@@ -175,6 +186,30 @@ public class EnemyController : MonoBehaviour, ICombatant
         }
     }
 
+    private void OnEnable()
+    {
+        if (Health != null)
+            Health.OnDeath += HandleDeath;
+    }
+
+    private void OnDisable()
+    {
+        if (Health != null)
+            Health.OnDeath -= HandleDeath;
+    }
+
+    private void HandleDeath()
+    {
+        // On force le passage à l'état de mort, peu importe l'état actuel
+        StateMachine.ChangeState(EnemyStateType.Death);
+    }
+
+    public void SetLockOnIndicator(bool isLocked)
+    {
+        if (lockOnIndicator != null)
+            lockOnIndicator.SetActive(isLocked);
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
@@ -183,11 +218,6 @@ public class EnemyController : MonoBehaviour, ICombatant
         Gizmos.DrawWireSphere(transform.position, AttackRadius);
     }
 
-    public void SetLockOnIndicator(bool isLocked)
-    {
-        if (lockOnIndicator != null)
-            lockOnIndicator.SetActive(isLocked);
-    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

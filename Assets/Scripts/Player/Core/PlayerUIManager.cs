@@ -21,6 +21,10 @@ public class PlayerUIManager : MonoBehaviour
     private Color colorMedium = new Color32(0xC0, 0x88, 0x34, 0xFF); // Orange
     private Color colorLow = new Color32(0x99, 0x46, 0x46, 0xFF);    // Rouge
 
+    [Header("Death Panel")]
+    [SerializeField] private GameObject deathPanel;
+    [SerializeField] private Animator deathPanelAnimator;
+
     private bool _feedbackLocked;
     private void Awake()
     {
@@ -89,5 +93,12 @@ public class PlayerUIManager : MonoBehaviour
         // Si stamina très basse, on peut trigger l'anim "StaminaLow"
         if (current <= 0)
             staminaBarAnimator.SetTrigger("StaminaLow");
+    }
+
+    public void OpenDeathPanel()
+    {
+        deathPanel.SetActive(true);
+        deathPanelAnimator.SetTrigger("Open");
+        player.StateMachine.ChangeState(PlayerStateType.UI);
     }
 }

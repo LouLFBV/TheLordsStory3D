@@ -9,6 +9,7 @@ public enum EnemyStateType
     Idle,
     Patrol,
     Follow,
+    Orbit,
     Attack,
     Hit,
     Stunned,

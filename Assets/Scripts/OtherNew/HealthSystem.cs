@@ -12,6 +12,7 @@ public class HealthSystem : MonoBehaviour
     public bool IsDead => CurrentHealth <= 0;
 
     public event Action<float, float> OnHealthChanged;
+    public event Action<float, float> OnHealthEnemyChanged;
     public event Action OnDeath;
     public event Action OnHit;
 
@@ -30,6 +31,7 @@ public class HealthSystem : MonoBehaviour
         CurrentHealth -= damage;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
 
+        OnHealthEnemyChanged?.Invoke(CurrentHealth, MaxHealth);
         OnHit?.Invoke();
 
         if (CurrentHealth <= 0)
