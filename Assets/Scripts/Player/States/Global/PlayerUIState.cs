@@ -12,16 +12,13 @@ public class PlayerUIState : PlayerState
             Time.timeScale = 0f;
             UIManagerSystem.Instance.OpenPanel(player.RequestedPanelType);
         }
-        else
+        if (player.Animator != null)
         {
-            if (player.Animator != null)
-            {
-                player.Animator.SetFloat("Speed", 0f);
-                // Si tu as des paramètres Horizontal/Vertical, mets les aussi à 0
-            }
+            player.Animator.SetFloat("Speed", 0f);
+            // Si tu as des paramètres Horizontal/Vertical, mets les aussi à 0
         }
 
-            player.Input.SwitchActionMap("UI");
+        player.Input.SwitchActionMap("UI");
         UIManagerSystem.Instance.ToggleCursor(true);
     }
 

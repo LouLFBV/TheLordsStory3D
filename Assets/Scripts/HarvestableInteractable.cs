@@ -12,7 +12,7 @@ public class HarvestableInteractable : InteractableBase
     public override void OnInteract(PlayerInteractor player)
     {
         Debug.Log("Interacting with Harvestable");
-        var interactBehaviour = player.GetComponent<InteractBehaviour>();
+        var interactBehaviour = player.GetComponent<InteractSystem>();
 
         if (interactBehaviour == null || harvestable == null)
         {
