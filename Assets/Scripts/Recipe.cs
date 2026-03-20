@@ -94,7 +94,7 @@ public class Recipe : MonoBehaviour
         {
             for (int y = 0; y < currentRecipe.requiredItems[i].count; y++)
             {
-                Inventory.instance.RemoveItem(currentRecipe.requiredItems[i].itemData);
+                InventorySystem.instance.RemoveItem(currentRecipe.requiredItems[i].itemData);
             }
         }
         
@@ -114,6 +114,7 @@ public class Recipe : MonoBehaviour
                 }
 
                 craftingSystem.craftPanel.SetActive(false);
+                PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
             }
             else
             {
@@ -134,6 +135,7 @@ public class Recipe : MonoBehaviour
                 }
 
                 craftingSystem.craftPanel.SetActive(false);
+                PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
             }
             else
             {

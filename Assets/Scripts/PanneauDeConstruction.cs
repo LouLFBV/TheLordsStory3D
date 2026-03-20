@@ -13,9 +13,11 @@ public class PanneauDeConstruction : InteractableBase
     public override void OnInteract(PlayerInteractor player)
     {
         OpenPanel();
+        PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.UI);
+        Time.timeScale = 1f; 
     }
 
-    public void OpenPanel()
+    private void OpenPanel()
     {
         if (craftPanel != null && !craftPanel.activeInHierarchy)
         {
@@ -29,5 +31,10 @@ public class PanneauDeConstruction : InteractableBase
                 craftingSystem.uiNavigationManager.onCancel = craftingSystem.ClosePanel;
             }
         }
+    }
+    public void ClosePanel()
+    {
+        craftPanel.SetActive(false);
+        PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
     }
 }

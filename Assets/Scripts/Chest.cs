@@ -293,6 +293,7 @@ public class Chest : InteractableBase
     {
         descriptionPanel.SetActive(true);
         PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.UI);
+        Time.timeScale = 1f;
         ActiveCancel();
         nameText.text = rewardItem.itemName;
         objectImage.sprite = rewardItem.visual;
@@ -308,5 +309,11 @@ public class Chest : InteractableBase
             amountText.text = "";
             InventorySystem.instance.AddItem(rewardItem);
         }
+    }
+
+    public void CloseDescriptionPanel()
+    {
+        descriptionPanel.SetActive(false);
+        PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
     }
 }

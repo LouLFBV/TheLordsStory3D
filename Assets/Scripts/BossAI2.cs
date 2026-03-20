@@ -43,9 +43,9 @@ public class BossAI2 : EnemyParent
 
     private void Update()
     {
-        if (player == null) player = PlayerStats.instance.transform;
+        if (player == null) player = PlayerController.Instance.transform;
         if (IsDead || agent == null) return;
-        if (PlayerStats.instance.currentHealth <= 0) return;
+        //if (PlayerStats.instance.currentHealth <= 0) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
