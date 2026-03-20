@@ -13,7 +13,7 @@ public class Coin : InteractableBase
 
             // Si tu as un système de feedback visuel/sonore plus global, 
             // c'est ici qu'on le triggerait.
-
+            SetTargeted(false, interactor.transform); // On désélectionne la pièce avant de la détruire
             Destroy(gameObject);
         }
     }
