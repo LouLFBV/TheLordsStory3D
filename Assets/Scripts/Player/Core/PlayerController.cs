@@ -53,6 +53,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public EquipmentLibraryItem PendingLibraryItem { get; private set; }
 
     [Header("Others")]
+    [SerializeField] private InteractSystem interactSystem;
     public UIPanelType RequestedPanelType { get; set; }
     private UIPanelType? _previousPanelType = null;
     public ItemData ItemQueuedToEquip;
@@ -190,6 +191,8 @@ public class PlayerController : MonoBehaviour, ICombatant
             Rigidbody.rotation * Animator.deltaRotation
         );
     }
+
+    #region Animation Events
     public void AE_EquipWeapon() // AE pour Animation Event
     {
         // On délègue la logique à l'état actuel si c'est un état d'équipement
@@ -228,6 +231,15 @@ public class PlayerController : MonoBehaviour, ICombatant
             hitState.OnHitAnimationEnd();
         }
     }
+    //public void ReEnablePlayerMouvementFromInteractBehaviour() => InteractBehaviour.ReEnablePlayerMouvement();
+
+    //public void EnableTwoHandFromInteractBehaviour() => InteractBehaviour.EnableTwoHand();
+    //public void DisableTwoHandFromInteractBehaviour() => InteractBehaviour.DisableTwoHand();
+    //public void AddItemToInventoryFromInteractBehaviour() => InteractBehaviour.AddItemToInventory();
+    public void AE_PlayHarvestingSoundEffectFromInteractBehaviour() => interactSystem.PlayHarvestingSoundEffect();
+
+    public void AE_BreakHarvestableFromInteractBehaviour() => StartCoroutine(interactSystem.BreakHarvestable());
+    #endregion
     public void PrepareEquip(ItemData data)
     {
         // On cherche l'item correspondant dans la librairie
