@@ -228,10 +228,17 @@ public class NewItemActionsSystem : MonoBehaviour
     {
         if (itemCurrentlySelected.equipmentType == EquipmentType.Weapon)
         {
-            if (palette.slotManager.weaponSlots[0].slotItemData == itemCurrentlySelected)            
-                palette.equipmentManager.DesequipWeapon(0);
-            else
+            if (palette.slotManager.weaponSlots[0].slotItemData == itemCurrentlySelected)
+            {
+                Debug.Log("Desequipping weapon in slot 1");
                 palette.equipmentManager.DesequipWeapon(1);
+
+            }
+            else
+            {
+                Debug.Log("Desequipping weapon in slot 2");
+                palette.equipmentManager.DesequipWeapon(2);
+            }
             
         }
         else if (itemCurrentlySelected.itemType == ItemType.Consumable)

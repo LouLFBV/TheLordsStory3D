@@ -64,10 +64,10 @@ public class PaletteEquipmentManager : MonoBehaviour
             return;
         }
 
-        ItemData currentItem = (numberOfWeapon == 1) ? slotManager.weaponSlots[1].slotItemData : slotManager.weaponSlots[0].slotItemData;
+        ItemData currentItem = (numberOfWeapon == 1) ? slotManager.weaponSlots[0].slotItemData : slotManager.weaponSlots[1].slotItemData;
 
 
-        if (slotManager.weaponSlots[numberOfWeapon].isEquipped)
+        if (slotManager.weaponSlots[numberOfWeapon-1].isEquipped)
         {
             Debug.Log("Desequipping currently equipped weapon in slot 1");
             DisableWeapon(currentItem);
@@ -76,7 +76,7 @@ public class PaletteEquipmentManager : MonoBehaviour
         // animations + model disable
 
         // remettre le slot visuellement vide
-        if (numberOfWeapon == 0)
+        if (numberOfWeapon == 1)
         {
             slotManager.weaponSlots[0].slotItemData = null;
             slotManager.weaponSlots[0].slotInEquipment.item = null;

@@ -23,6 +23,10 @@ public class BossAI : EnemyParent
     [SerializeField] private float fadeDuration = 1.2f;
     private float baseVolume;
 
+    [Header("Systems")]
+    [SerializeField] private HealthSystem healthSystem;
+    [SerializeField] private DamageReceiver damageReceiver;
+
     private bool playerDetected = false;
     private bool isDefending = false;
     private bool phase2 = false;
@@ -48,9 +52,9 @@ public class BossAI : EnemyParent
 
     private void Update()
     {
-        if (player == null) player = PlayerStats.instance.transform;
+        if (player == null) player = PlayerController.Instance.transform;
         if (IsDead || agent == null) return;
-        if (PlayerStats.instance.currentHealth<=0) return;
+        if (PlayerController.Instance.IsDead) return;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
 
@@ -176,7 +180,7 @@ public class BossAI : EnemyParent
         if (colliderOfDeath != null)
             colliderOfDeath.SetActive(true);
         agent.isStopped = true;
-        QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
+        NewQuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 
     private void FacePlayer()
