@@ -224,11 +224,6 @@ public class PNJ : InteractableBase
         player.StateMachine.ChangeState(PlayerStateType.Idle);
         agent.isStopped = false;
         if (isPnjInteraction) isPnjInteraction = false;
-        var uiManager = UIManager.instance;
-        if (uiManager != null)
-        {
-            uiManager.HandlePanelClosed();
-        }
     }
 #endregion
     public void NextLine()

@@ -28,6 +28,25 @@ public class PNJAcheteur : PNJParent
             SetTargeted(false, playerTransform);
         }
     }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            player = other.GetComponent<PlayerController>();
+            playerTransform = other.transform;
+            isPlayerInZone = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = false;
+            player = null;
+        }
+    }
     // GESTION DU DIALOGUE
     public void StartDialogue(List<DialogueResponse> sentence)
     {
@@ -57,23 +76,15 @@ public class PNJAcheteur : PNJParent
         if (!isOnDial)
         {
             StartCoroutine(RotateTowardsPlayer());
-            moveBehaviour.StopPlayer();
             isOnDial = true;
 
-            BasicBehaviour behaviourManager = playerTransform.GetComponent<BasicBehaviour>();
-            behaviourManager.GetAnim.SetFloat("Speed", 0f, 0f, Time.deltaTime);
-
+            player.RequestedPanelType = UIPanelType.Dialogue;
+            player.StateMachine.ChangeState(PlayerStateType.UI);
             DialogueManager.instance.textName.text = namePNJ;
 
             index = 0;
             dialogueStartTime = Time.time; // Enregistrer le temps de début du dialogue
             currentDialogue = sentence;
-
-            var uiManager = UIManager.instance;
-            if (uiManager != null)
-            {
-                uiManager.HandlePanelOpened();
-            }
         }
         else if (!animatorPanelProduits.GetBool("PanelIsOpen") && index >= sentences.Count)
         {

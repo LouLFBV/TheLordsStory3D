@@ -23,6 +23,8 @@ public class WalletSystem : MonoBehaviour
         UpdateGoldUI();
     }
 
+    public bool CanSpendGold(int amount) => goldAmount >= amount;
+
     public bool SpendGold(int amount)
     {
         if (goldAmount >= amount)
