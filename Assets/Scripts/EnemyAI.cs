@@ -50,10 +50,10 @@ public class EnemyAI : EnemyParent
     {
         if (playerStats == null)
         {
-            playerStats = PlayerStats.instance;
+            playerStats = PlayerController.Instance;
             player = playerStats.transform;
         }
-        if (IsDead || playerStats.isDead) return;
+        if (IsDead || PlayerController.Instance.IsDead) return;
 
 
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
@@ -153,7 +153,7 @@ public class EnemyAI : EnemyParent
 
         yield return null; // Laisse une frame
 
-        playerStats.TakeDamage(damageDealt, damageType);
+        playerStats.DmgReceiver.TakeDamage(damageDealt,0, damageType);
 
         yield return new WaitForSeconds(attackDelay);
 

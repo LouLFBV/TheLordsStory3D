@@ -19,7 +19,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
     protected float currentHealth;
 
     protected Transform player;
-    protected PlayerStats playerStats;
+    protected PlayerController playerStats;
 
     [SerializeField] protected GameObject itemToDrop;
 
@@ -56,7 +56,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
 
     void Start()
     {
-        playerStats = PlayerStats.instance;
+        playerStats = PlayerController.Instance;
         player = playerStats.transform;
     }
 
