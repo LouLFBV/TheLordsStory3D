@@ -149,7 +149,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         float targetDistance = maxDistance;
 
         // On utilise SphereCast pour simuler le volume de la caméra
-        if (Physics.SphereCast(pivotPos, cameraRadius, direction, out hit, maxDistance, collisionLayers))
+        if (Physics.SphereCast(pivotPos, cameraRadius, direction, out hit, maxDistance, collisionLayers, QueryTriggerInteraction.Ignore))
         {
             // On déduit une petite marge (cameraRadius) pour ne pas toucher le mur
             targetDistance = Mathf.Clamp(hit.distance, minCollisionDistance, maxDistance);

@@ -62,6 +62,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
 
     public virtual void TakeDamage(float damage, float poisedamage, DamageType damageType)
     {
+        Debug.Log($"[{name}] TakeDamage called with damage: {damage}, poiseDamage: {poisedamage}, damageType: {damageType}");
         if (IsDead) return;
 
         foreach (DamageType type in defensePointFortType)
