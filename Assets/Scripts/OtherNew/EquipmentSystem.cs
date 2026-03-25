@@ -104,30 +104,36 @@ public class EquipmentSystem : MonoBehaviour
                 currentItem = headSlot.item;
                 headSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 headSlot.item = null;
+                headSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Chest:
                 currentItem = chestSlot.item;
                 chestSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 chestSlot.item = null;
+                chestSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Hands:
                 currentItem = handsSlot.item;
                 handsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 handsSlot.item = null;
+                handsSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Legs:
                 currentItem = legsSlot.item;
                 legsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 legsSlot.item = null;
+                legsSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Feet:
                 currentItem = feetSlot.item;
                 feetSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 feetSlot.item = null;
+                feetSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Arrow:
                 currentItem = arrowItemInInventory.itemData;
                 arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                arrowSlot.itemTypeVisual.gameObject.SetActive(true);
                 arrowItemInInventory.itemData = null;
                 break;
         }
@@ -189,30 +195,35 @@ public class EquipmentSystem : MonoBehaviour
                     headSlot.itemVisual.sprite = itemToEquip.visual;
                     headSlot.item = itemToEquip;
                     headSlot.item = itemToEquip;
+                    headSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Chest:
                     DisablePreviousEquipedEquipment(chestSlot.item);
                     chestSlot.itemVisual.sprite = itemToEquip.visual;
                     chestSlot.item = itemToEquip;
+                    chestSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Hands:
                     DisablePreviousEquipedEquipment(handsSlot.item);
                     handsSlot.itemVisual.sprite = itemToEquip.visual;
                     handsSlot.item = itemToEquip;
+                    handsSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Legs:
                     DisablePreviousEquipedEquipment(legsSlot.item);
                     legsSlot.itemVisual.sprite = itemToEquip.visual;
                     legsSlot.item = itemToEquip;
+                    legsSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Feet:
                     DisablePreviousEquipedEquipment(feetSlot.item);
                     feetSlot.itemVisual.sprite = itemToEquip.visual;
                     feetSlot.item = itemToEquip;
+                    feetSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Weapon:
