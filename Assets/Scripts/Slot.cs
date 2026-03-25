@@ -5,6 +5,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public ItemData item;
     public Image itemVisual;
+    public Image itemTypeVisual;
     public Text countTexte;
     [SerializeField] private bool isEquipmentSlot;
 

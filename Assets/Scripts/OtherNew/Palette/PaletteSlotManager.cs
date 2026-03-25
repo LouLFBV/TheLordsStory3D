@@ -67,6 +67,7 @@ public class PaletteSlotManager : MonoBehaviour
         arrowSlot.SlotImage.sprite = item.visual;
         arrowSlot.slotInEquipment.itemVisual.sprite = item.visual;
         arrowSlot.slotInEquipment.item = item;
+        arrowSlot.slotInEquipment.itemTypeVisual.gameObject.SetActive(false);
         arrowSlot.countText.gameObject.SetActive(true); ;
     }
     public  void UpdateCountArrow(int count)
@@ -116,6 +117,7 @@ public class PaletteSlotManager : MonoBehaviour
 
         slot.SlotImage.sprite = item ? item.visual : InventorySystem.instance.emptySlotVisual;
         slot.slotInEquipment.itemVisual.sprite = slot.SlotImage.sprite;
+        slot.slotInEquipment.itemTypeVisual.gameObject.SetActive(!item);
         slot.slotInEquipment.item = item;
 
         if (slot.countText != null)

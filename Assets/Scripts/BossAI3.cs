@@ -48,9 +48,9 @@ public class BossAI3 : EnemyParent
 
     private void Update()
     {
-        if (player == null) player = PlayerStats.instance.transform;
+        if (player == null) player = PlayerController.Instance.transform;
         if (IsDead || agent == null) return;
-        if (PlayerStats.instance.currentHealth <= 0) return;
+        if (PlayerController.Instance.IsDead) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -157,7 +157,7 @@ public class BossAI3 : EnemyParent
             colliderOfDeath.SetActive(true);
         basicCollider.enabled = false;
         agent.isStopped = true;
-        QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
+        NewQuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 
     private void FacePlayer()

@@ -31,6 +31,7 @@ public class Menu : MonoBehaviour
     private GameObject optionsPanel;
 
     [SerializeField] private bool isMainMenu = false;
+    [SerializeField] private GameObject partiesPanel;
 
 
     private int pendingSlot;
@@ -195,12 +196,22 @@ public class Menu : MonoBehaviour
         isNewGame = true;
         TransitionPanel.Instance.PlayTransitionOut();
     }
-
+    public void Continue()
+    {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        isNewGame = false;
+        TransitionPanel.Instance.PlayTransitionOut();
+    }
     public void LoadGame(int slot)
     {
         pendingSlot = slot;
         isNewGame = false;
         TransitionPanel.Instance.PlayTransitionOut();
+    }
+    public void OpenPanelParties()
+    {
+        partiesPanel.SetActive(true);
     }
 
     //  Appelé par l'Animation Event
