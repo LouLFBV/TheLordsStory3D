@@ -165,12 +165,6 @@ public class PNJ : InteractableBase
         AddEnemiesKilled();
 
 
-        //var uiManager = UIManager.instance;
-        //if (uiManager != null)
-        //{
-        //    uiManager.HandlePanelOpened();
-        //}
-
         if (canGiveQuest && currentQuestSO != null)
         {
             if (activeQuestInstance == null)
@@ -368,7 +362,7 @@ public class PNJ : InteractableBase
     private void VerifObjectsInInventory()
     {
         if (activeQuestInstance == null || activeQuestInstance.status != QuestStatus.InProgress || currentQuestSO.requiredItem == null) return;
-        foreach (var obj in Inventory.instance.GetContent())
+        foreach (var obj in InventorySystem.instance.GetContent())
         {
             if (currentQuestSO.requiredItem == obj.itemData)
             {
@@ -393,7 +387,7 @@ public class PNJ : InteractableBase
     {
         for (int i = 0; i < count; i++)
         {
-            Inventory.instance.RemoveItem(itemData);
+            InventorySystem.instance.RemoveItem(itemData);
         }
     }
     private void VerifIfIntercationQuest()
