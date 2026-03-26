@@ -274,4 +274,16 @@ public class PlayerController : MonoBehaviour, ICombatant
         if (!IsDead) 
         StateMachine.ChangeState(PlayerStateType.Death);
     }
+
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (StateMachine != null && StateMachine.CurrentState != null)
+        {
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 2.5f,
+                $"State: {StateMachine.CurrentState.GetType().Name}");
+        }
+    }
+#endif
 }

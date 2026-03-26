@@ -9,6 +9,7 @@ public class PlayerIdleState : PlayerGroundedState
         base.Enter();
         player.Animator.applyRootMotion = true;
         player.Animator.SetFloat("Speed", 0f);
+        player.Animator.SetBool("IsFalling", false);
     }
 
     public override void Update()
