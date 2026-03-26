@@ -3,8 +3,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem.HID;
 
 public class UINavigationManager : MonoBehaviour
 {

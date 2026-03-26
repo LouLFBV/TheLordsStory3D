@@ -23,7 +23,8 @@ public class PanneauDeConstruction : InteractableBase
         {
             craftingSystem.availableRecipes = new List<RecipeData> { recetteDeLObject };
             craftingSystem.UpdateDisplayRecipes();
-            craftingSystem.textIsRecipeListEmpty.SetActive(false);
+            if (craftingSystem.textIsRecipeListEmpty != null)
+                craftingSystem.textIsRecipeListEmpty.SetActive(false);
             craftPanel.SetActive(true);
             SetTargeted(false,PlayerController.Instance.transform);
             if (craftingSystem.uiNavigationManager != null)
