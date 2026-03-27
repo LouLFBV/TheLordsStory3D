@@ -143,8 +143,8 @@ public class NewItemActionsSystem : MonoBehaviour
                 case ItemType.Key:
                     useItemButton.gameObject.SetActive(false);
                     equipmentItemButton.gameObject.SetActive(false);
-                    dropItemButton.gameObject.SetActive(true);
-                    destroyItemButton.gameObject.SetActive(true);
+                    dropItemButton.gameObject.SetActive(false);
+                    destroyItemButton.gameObject.SetActive(false);
                     actionPanelRect.anchoredPosition = positionInitiale;
                     break;
             }

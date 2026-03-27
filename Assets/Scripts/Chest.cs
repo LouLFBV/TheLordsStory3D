@@ -46,6 +46,10 @@ public class Chest : InteractableBase
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private float displayDuration = 5f;
 
+    [Header("Popup Event")]
+    [SerializeField] private bool triggerPopupOnOpen = false;
+    [SerializeField] private string popupMessage;
+
     private Quaternion closedRotation;
     private Quaternion openRotation;
 
@@ -189,6 +193,11 @@ public class Chest : InteractableBase
         else if (rewardItem != null)
         {
             ShowDescriptionPanel();
+        }
+
+        if(triggerPopupOnOpen)
+        {
+            PopupEvent.Raise(popupMessage);
         }
 
         // Unlocking physics
