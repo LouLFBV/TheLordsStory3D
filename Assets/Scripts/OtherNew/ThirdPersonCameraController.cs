@@ -46,6 +46,9 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float collisionSmoothSpeed = 12f; // Pour un retour fluide après une collision
     private float currentCollisionDistance;
 
+    [Header("Lock-On Settings")]
+    [SerializeField] private float lockOnHeight = 0.5f;
+
     // Valeurs de travail
     private Vector3 currentPivotOffset;
     private Vector3 currentCamOffset;
@@ -109,7 +112,8 @@ public class ThirdPersonCameraController : MonoBehaviour
 
         // On calcule la direction entre la caméra et l'ennemi
         // Note : On vise souvent un peu au-dessus du pivot (la poitrine) pour un meilleur look
-        Vector3 targetPoint = targetEnemy.position + Vector3.up * 1.5f;
+        //Vector3 targetPoint = targetEnemy.position + Vector3.up * 1.5f;
+        Vector3 targetPoint = targetEnemy.position + Vector3.up * lockOnHeight;
         Vector3 dir = (targetPoint - transform.position).normalized;
 
         // On extrait le yaw et le pitch de cette direction

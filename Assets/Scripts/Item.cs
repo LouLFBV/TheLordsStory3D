@@ -12,6 +12,12 @@ public class Item : WorldDisappearOnCollected
     [SerializeField] private float floatSpeed = 2f;
     [SerializeField] private float rotationSpeed = 60f;
 
+
+    [Header("Popup Event")]
+    [SerializeField] private bool triggerPopupOnOpen = false;
+    [SerializeField] private string popupMessage;
+
+
     private Vector3 startPosition;
     private float timeOffset;
     private Rigidbody rb;
@@ -43,5 +49,12 @@ public class Item : WorldDisappearOnCollected
 
         float newY = startPosition.y + Mathf.Sin((Time.time + timeOffset) * floatSpeed) * floatAmplitude;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log($"[Item] {name} destroyed. Triggering popup: {triggerPopupOnOpen}, Message: {popupMessage}");
+        if (triggerPopupOnOpen)
+            PopupEvent.Raise(popupMessage);
     }
 }
