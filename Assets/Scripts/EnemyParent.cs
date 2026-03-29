@@ -10,7 +10,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
     [HideInInspector]public NavMeshAgent agent;
     protected Animator animator;
 
-    [SerializeField] private BarriereDeCombat barriereDeCombat;
+    [SerializeField] private BarriereDeCombat[] barriereDeCombat;
 
 
     [SerializeField] protected Image healthBar;
@@ -115,7 +115,17 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
         if (barriereDeCombat != null)
         {
             Debug.Log("Raising the combat barrier.");
-            barriereDeCombat.UpBarriere();
+            UpAllBarriere();
+        }
+    }
+    private void UpAllBarriere()
+    {
+        if (barriereDeCombat != null)
+        {
+            foreach (var barriere in barriereDeCombat)
+            {
+                barriere.UpBarriere();
+            }
         }
     }
 
