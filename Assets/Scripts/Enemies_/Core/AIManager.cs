@@ -4,6 +4,8 @@ public class AIManager : MonoBehaviour
 {
     private EnemyController _enemy;
     [SerializeField] private NewEnemySO enemyData; // Ta base de données
+    private float _orbitCooldownTimer;
+    [SerializeField] private float defaultCooldown = 5f; // Temps entre deux orbites
 
     public void Initialize(EnemyController owner)
     {
@@ -18,15 +20,30 @@ public class AIManager : MonoBehaviour
     public float OrbitSpeed => enemyData != null ? enemyData.orbitSpeedMultiplier : 1f;
 
     public NewEnemySO GetData() => enemyData;
+
     public bool HasPermission(EnemyStateType stateType)
     {
         if (enemyData == null) return false;
 
-        return stateType switch
+        if (stateType == EnemyStateType.Orbit)
         {
-            EnemyStateType.Orbit => enemyData.canOrbit,
-            // Tu pourras ajouter d'autres cas ici plus tard
-            _ => true
-        };
+            // L'ours ne peut orbiter que si le cooldown est à 0
+            return enemyData.canOrbit && _orbitCooldownTimer <= 0;
+        }
+        return true;
+    }
+
+    public void StartOrbitCooldown(float duration = -1)
+    {
+        // Si on ne précise pas de durée, on prend celle par défaut
+        _orbitCooldownTimer = (duration < 0) ? defaultCooldown : duration;
+    }
+
+    private void Update()
+    {
+        if (_orbitCooldownTimer > 0)
+        {
+            _orbitCooldownTimer -= Time.deltaTime;
+        }
     }
 }

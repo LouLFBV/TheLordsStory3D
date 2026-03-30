@@ -6,8 +6,12 @@ public class EnemyFollowState : EnemyState
 
     public override void Enter()
     {
-        agent.speed = 4f; // Vitesse de poursuite (plus rapide que walkSpeed)
+        agent.speed = 4f;
         agent.isStopped = false;
+
+        // TRÈS IMPORTANT : On remet la distance d'arrêt à presque 0 
+        // pour qu'il accepte de foncer au contact du joueur.
+        agent.stoppingDistance = 1.2f;
     }
 
     public override void Update()
@@ -19,6 +23,13 @@ public class EnemyFollowState : EnemyState
         }
 
         float distance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
+
+
+        if (enemy.AIManager.HasPermission(EnemyStateType.Orbit) && distance <= enemy.AIManager.OrbitDistance + 2f)
+        {
+            enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
+            return;
+        }
 
         // 1. Si on est assez proche pour attaquer
         if (distance <= enemy.AttackRadius)
@@ -32,14 +43,6 @@ public class EnemyFollowState : EnemyState
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Idle);
             return;
-        }
-
-        // 3. Logique de transition vers l'Orbite
-        // On ne change d'état QUE si on a la permission ET qu'on est à la bonne distance
-        if (distance <= enemy.AIManager.OrbitDistance + 1f && enemy.AIManager.HasPermission(EnemyStateType.Orbit))
-        {
-            enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
-            return; // On sort de l'Update pour ne pas exécuter le SetDestination ci-dessous
         }
 
         // 4. Si on n'est pas en orbite (Squelette ou trop loin), on fonce !
