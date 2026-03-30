@@ -124,6 +124,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
         {
             foreach (var barriere in barriereDeCombat)
             {
+                Debug.Log("Raising a combat barrier.");
                 barriere.UpBarriere();
             }
         }

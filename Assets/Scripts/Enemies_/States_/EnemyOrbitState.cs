@@ -10,8 +10,15 @@ public class EnemyOrbitState : EnemyState
 
     public override void Enter()
     {
+        Debug.Log($"[{enemy.name}] Entering Orbit State");
         enemy.Animator.SetBool("isStrafing", true);
-        agent.stoppingDistance = enemy.AIManager.OrbitDistance;
+
+        // ON FORCE LE MOUVEMENT : On met la distance d'arrêt à 0 
+        // pour que l'agent cherche toujours à bouger vers le point latéral
+        agent.stoppingDistance = 0f;
+
+        agent.updateRotation = false;
+        _attackTimer = Random.Range(2f, 5f);
         _directionTimer = Random.Range(2f, 4f);
     }
 
@@ -46,12 +53,12 @@ public class EnemyOrbitState : EnemyState
         OrbitMovement();
 
         // Update Animation
-        enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed, 0.1f, Time.deltaTime);
+        enemy.Animator.SetFloat("Speed", _orbitDirection, 0.1f, Time.deltaTime);
     }
 
     private void OrbitMovement()
     {
-        // On change de direction de temps en temps
+        // 1. Gestion du changement de direction (inchangé)
         _directionTimer -= Time.deltaTime;
         if (_directionTimer <= 0)
         {
@@ -59,15 +66,25 @@ public class EnemyOrbitState : EnemyState
             _directionTimer = Random.Range(2f, 5f);
         }
 
-        // Calcul du point autour du joueur
-        Vector3 directionToPlayer = (enemy.transform.position - enemy.Target.position).normalized;
-        Vector3 orbitOffset = Quaternion.AngleAxis(_orbitDirection * 20f, Vector3.up) * directionToPlayer;
-        Vector3 targetPos = enemy.Target.position + (orbitOffset * enemy.AIManager.OrbitDistance);
+        // 2. Calcul du vecteur latéral (le "Strafe")
+        // On prend la direction vers le joueur et on la tourne de 90 degrés
+        Vector3 directionToPlayer = (enemy.Target.position - enemy.transform.position).normalized;
+        Vector3 sideDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized * _orbitDirection;
 
-        agent.SetDestination(targetPos);
+        // 3. On ajoute une force pour maintenir la distance (pour ne pas qu'il s'éloigne ou s'approche trop)
+        float currentDistance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
+        float distanceError = currentDistance - enemy.AIManager.OrbitDistance;
+        Vector3 forwardCorrection = directionToPlayer * distanceError;
 
-        // On force l'ours à toujours regarder le joueur
-        Vector3 lookDir = (enemy.Target.position - enemy.transform.position).normalized;
+        // 4. Calcul de la vitesse finale
+        Vector3 desiredVelocity = (sideDirection + forwardCorrection).normalized * (enemy.AIManager.GetData().orbitSpeedMultiplier);
+
+        // 5. DEPLACEMENT DIRECT (Le secret est là)
+        // On utilise Move au lieu de SetDestination
+        agent.Move(desiredVelocity * Time.deltaTime);
+
+        // 6. ROTATION (inchangée, l'ours fait face au joueur)
+        Vector3 lookDir = directionToPlayer;
         lookDir.y = 0;
         if (lookDir != Vector3.zero)
         {
@@ -77,5 +94,9 @@ public class EnemyOrbitState : EnemyState
     public override void Exit()
     {
         enemy.Animator.SetBool("isStrafing", false);
+        enemy.Animator.SetFloat("Speed", 0);
+        agent.updateRotation = true; // On redonne le contrôle à l'agent
+        // On empêche de ré-entrer en orbite pendant 4 secondes
+        enemy.AIManager.StartOrbitCooldown(4f);
     }
 }

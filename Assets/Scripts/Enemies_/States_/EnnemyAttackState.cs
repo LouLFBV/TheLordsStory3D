@@ -77,5 +77,8 @@ public class EnemyAttackState : EnemyState
         isAnimationFinished = true;
     }
 
-    public override void Exit(){    }
+    public override void Exit()
+    {
+        enemy.AIManager.StartOrbitCooldown();
+    }
 }
