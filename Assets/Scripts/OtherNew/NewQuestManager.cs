@@ -91,15 +91,15 @@ public class NewQuestManager : MonoBehaviour
     {
         if (questInstane.data.rewards == null) return;
 
-        PlayerStats.instance.reputationData.reputationPoints += questInstane.data.rewards.reputation;
+        //PlayerStats.instance.reputationData.reputationPoints += questInstane.data.rewards.reputation;
         if (questInstane.data.rewards.gold > 0)
-            PlayerStats.instance.AddGold(questInstane.data.rewards.gold);
+            PlayerController.Instance.Wallet.AddGold(questInstane.data.rewards.gold);
 
         if (questInstane.data.rewards.items != null)
         {
             foreach (var item in questInstane.data.rewards.items)
             {
-                Inventory.instance.AddItem(item);
+                InventorySystem.instance.AddItem(item);
             }
         }
         questInstane.rewardsGiven = true;
