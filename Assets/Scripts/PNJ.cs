@@ -69,17 +69,14 @@ public class PNJ : InteractableBase
         Debug.Log("Interacting with PNJ: " + namePNJ);
         if (isOnDial && Time.time - dialogueStartTime > inputCooldown)
         {
-            Debug.Log("Attempting to advance dialogue for PNJ: " + namePNJ);
             if (!DialogueManager.instance.SkipOrFinish(currentSpeakerDisplaying) && !DialogueManager.instance.inDelay)
                 NextLine();
         }
         else if (!firstDialoguePnjDone && !isOnDial && Time.time - dialogueEndTime > inputCooldownEnding)
         {
-            Debug.Log("Starting dialogue with PNJ: " + namePNJ);
             StartDialogue();
             SetTargeted(false, playerTransform);
         }
-        Debug.Log("Finished processing interaction with PNJ: " + namePNJ);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -189,7 +186,7 @@ public class PNJ : InteractableBase
                 }
             }
         }
-        else
+        else if (!isPnjInteraction)
         {
             currentDialogue = sentences;
         }
@@ -340,7 +337,8 @@ public class PNJ : InteractableBase
 
         NewQuestManager.instance.CompleteQuest(activeQuestInstance);
 
-        DeleteObjectsInInventory(
+        if (currentQuestSO.requiredItem != null)
+            DeleteObjectsInInventory(
             currentQuestSO.requiredItem,
             currentQuestSO.requiredItemCount
         );
@@ -411,14 +409,17 @@ public class PNJ : InteractableBase
         activeQuestInstance = null;
         currentQuestSO = null;
 
-        foreach (var questSO in questsDisponibles)
+        //  On commence à l'index courant
+        for (int i = currentQuestIndex; i < questsDisponibles.Length; i++)
         {
+            var questSO = questsDisponibles[i];
             var instance = NewQuestManager.instance.GetQuestInstance(questSO);
 
             // 1️⃣ Quête jamais acceptée
             if (instance == null)
             {
                 currentQuestSO = questSO;
+                currentQuestIndex = i; //  important
                 return;
             }
 
@@ -427,6 +428,7 @@ public class PNJ : InteractableBase
             {
                 activeQuestInstance = instance;
                 currentQuestSO = questSO;
+                currentQuestIndex = i;
                 return;
             }
 
@@ -435,11 +437,14 @@ public class PNJ : InteractableBase
             {
                 activeQuestInstance = instance;
                 currentQuestSO = questSO;
+                currentQuestIndex = i;
                 return;
             }
+
+            // 4️⃣ Si elle est totalement terminée  on passe à la suivante
         }
 
-        // 4️⃣ Toutes les quêtes sont terminées
+        // 5️⃣ Toutes les quêtes sont terminées
         canGiveQuest = false;
     }
 
