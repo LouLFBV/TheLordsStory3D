@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 489fc1a28b8fa6742b42ffe55e7a530f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 210884
+  packageName: Stylized Ghibli Weapons Pack - Steel
+  packageVersion: 1.0.0
+  assetPath: Assets/Ghibli_steel_weapons/Materials/m_steel_Axe.mat
+  uploadId: 474980
