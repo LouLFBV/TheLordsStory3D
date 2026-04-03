@@ -14,4 +14,23 @@ public class NewEnemySO : ScriptableObject
     [Header("Orbit Settings")]
     public float idealOrbitDistance = 4f;
     public float orbitSpeedMultiplier = 1f;
+
+    [Header("Vision")]
+    public float visionRange = 10f;
+    public float visionAngle = 60f;
+}
+
+
+public enum EnemyType
+{
+    None,
+    Loup,
+    Squelette,
+    Ours,
+    Gobelin,
+    Boss,
+    Ogre,
+    ChevalierFantome,
+    Araignee,
+    Mimic
 }

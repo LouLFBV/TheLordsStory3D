@@ -3,72 +3,95 @@ using UnityEngine;
 public class EnemyAttackState : EnemyState
 {
     private bool isAnimationFinished;
+    private float _exitTimer;
+    private const float POST_ATTACK_DELAY = 0.5f; // Petit délai de sécurité après l'animation
 
     public EnemyAttackState(EnemyController enemy) : base(enemy) { }
 
     public override void Enter()
     {
         isAnimationFinished = false;
+        _exitTimer = 0f;
+
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
         FaceTarget();
 
-        AttackSO attackToExecute = enemy.GetRandomAttack();
+        // On utilise ta nouvelle méthode intelligente de sélection
+        AttackSO attackToExecute = enemy.GetBestAttack();
 
         if (attackToExecute != null)
         {
-            // On prépare tout via le dictionnaire (Arme + Detector)
             enemy.PrepareAttack(attackToExecute);
-
-            // On lance l'attaque
             enemy.Combat.ExecuteAttack(attackToExecute);
         }
         else
         {
+            // Si aucune attaque n'est valide (cooldowns ou distance), on quitte
             isAnimationFinished = true;
         }
     }
 
-
     public override void Update()
     {
-        // On peut continuer à pivoter légèrement vers le joueur 
-        // durant le début de l'attaque pour éviter qu'il ne tape dans le vide
+        // On continue de pivoter tant que l'attaque n'est pas "lancée" physiquement
+        // (Certaines attaques de boss demandent de ne plus pivoter à mi-chemin)
         if (!isAnimationFinished)
         {
             FaceTarget();
         }
-
-        // 4. Si l'animation est finie (via l'Animation Event), on décide quoi faire
-        if (isAnimationFinished)
+        else
         {
-            float distance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
-
-            if (distance <= enemy.AttackRadius)
+            // Une fois l'animation finie, on attend un tout petit peu
+            // pour éviter les transitions trop brusques
+            _exitTimer += Time.deltaTime;
+            if (_exitTimer >= POST_ATTACK_DELAY)
             {
-                // On peut enchaîner une autre attaque ou attendre un peu
-                // Pour l'instant, on reset juste pour boucler
-                Enter();
+                DetermineNextState();
+            }
+        }
+    }
+
+    private void DetermineNextState()
+    {
+        float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+
+        // Au lieu de boucler directement (Enter()), on repasse par Follow 
+        // ou Orbit pour laisser le Cooldown de l'AttackSO respirer.
+        if (distance <= enemy.AttackRadius)
+        {
+            // Si on est encore au corps à corps, on peut tenter une autre attaque
+            // mais on repasse par la StateMachine pour être propre
+            AttackSO nextAttack = enemy.GetBestAttack();
+
+            if (nextAttack != null)
+            {
+                enemy.StateMachine.ChangeState(EnemyStateType.Attack);
             }
             else
             {
-                enemy.StateMachine.ChangeState(EnemyStateType.Follow);
+                // Si aucune attaque n'est prête (cooldown), on recule ou on observe
+                enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
             }
+        }
+        else
+        {
+            enemy.StateMachine.ChangeState(EnemyStateType.Follow);
         }
     }
 
     private void FaceTarget()
     {
-        if (enemy.Target == null) return;
+        if (enemy.target == null) return;
 
-        Vector3 direction = (enemy.Target.position - enemy.transform.position).normalized;
-        direction.y = 0; // On ne veut pas que l'ennemi penche en avant/arrière
+        Vector3 direction = (enemy.target.position - enemy.transform.position).normalized;
+        direction.y = 0;
 
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
     }
 
@@ -79,6 +102,8 @@ public class EnemyAttackState : EnemyState
 
     public override void Exit()
     {
-        enemy.AIManager.StartOrbitCooldown();
+        // On lance le cooldown d'orbite global pour que l'IA repasse en "Follow" agressif
+        // si elle n'a plus d'attaques dispos en orbite.
+        enemy.AIManager.StartOrbitCooldown(3f);
     }
 }

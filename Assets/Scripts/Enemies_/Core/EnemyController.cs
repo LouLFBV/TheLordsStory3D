@@ -20,9 +20,9 @@ public class EnemyController : MonoBehaviour, ICombatant
     public ItemData PendingWeaponItem { get; set; }
 
     [Header("Senses & AI")]
-    public Transform Target; // Le joueur
-    public float DetectionRadius = 10f;
+    public Transform target; // Le joueur
     public float AttackRadius = 2f;
+    public NewEnemySO enemyData; 
 
     [Header("UI & Feedback")]
     [SerializeField] private GameObject lockOnIndicator;
@@ -100,8 +100,11 @@ public class EnemyController : MonoBehaviour, ICombatant
     private void Start()
     {
         // 1. Recherche du joueur
-        if (Target == null && PlayerController.Instance != null)
-            Target = PlayerController.Instance.transform;
+        if (target == null && PlayerController.Instance != null)
+            target = PlayerController.Instance.transform;
+
+        if (enemyData == null)
+            enemyData = AIManager.GetData();
 
         // 3. Initialisation de l'UI et du Lock
         if (healthUI != null) healthUI.Initialize(Health);
@@ -124,14 +127,17 @@ public class EnemyController : MonoBehaviour, ICombatant
 
     private void CheckForPlayer()
     {
-        if (Target == null) return;
+        if (target == null) return;
 
-        float distance = Vector3.Distance(transform.position, Target.position);
+        float distance = Vector3.Distance(transform.position, target.position);
 
+        Vector3 dirToPlayer = (target.position - transform.position).normalized;
+
+        float angleToPlayer = Vector3.Angle(transform.forward, dirToPlayer);
         // LOGIQUE DE TRANSITION :
 
         // 1. Si je suis en Idle ou Patrol et que je vois le joueur -> Poursuite
-        if (distance <= DetectionRadius)
+        if (distance <= enemyData.visionRange && angleToPlayer < enemyData.visionAngle / 2f)
         {
             if (StateMachine.CurrentState == IdleState || StateMachine.CurrentState == PatrolState)
             {
@@ -148,10 +154,34 @@ public class EnemyController : MonoBehaviour, ICombatant
     }
 
     // Méthode pour choisir une attaque
-    public AttackSO GetRandomAttack()
+    public AttackSO GetBestAttack()
     {
-        if (availableAttacks == null || availableAttacks.Count == 0) return null;
-        return availableAttacks[Random.Range(0, availableAttacks.Count)];
+        float distance = Vector3.Distance(transform.position, target.position);
+        List<AttackSO> possibleAttacks = new List<AttackSO>();
+
+        foreach (var attack in availableAttacks)
+        {
+            // 1. Check de la distance
+            bool isInRange = distance >= attack.minDistance && distance <= attack.maxDistance;
+
+            // 2. Check du cooldown
+            bool isOffCooldown = Time.time >= attack.lastUsedTime + attack.attackCooldown;
+
+            if (isInRange && isOffCooldown)
+            {
+                possibleAttacks.Add(attack);
+            }
+        }
+
+        if (possibleAttacks.Count > 0)
+        {
+            // On prend une attaque au hasard parmi celles qui sont valides
+            AttackSO selected = possibleAttacks[Random.Range(0, possibleAttacks.Count)];
+            selected.lastUsedTime = Time.time; // On lance le cooldown
+            return selected;
+        }
+
+        return null; // Aucune attaque n'est prête ou à portée
     }
 
     // Implémentation de ICombatant
@@ -215,9 +245,18 @@ public class EnemyController : MonoBehaviour, ICombatant
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, DetectionRadius);
+        Gizmos.DrawWireSphere(transform.position, enemyData.visionRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, AttackRadius);
+
+        // Cône de vision
+        Gizmos.color = Color.yellow;
+
+        Vector3 leftRay = Quaternion.Euler(0, -enemyData.visionAngle / 2f, 0) * transform.forward;
+        Vector3 rightRay = Quaternion.Euler(0, enemyData.visionAngle / 2f, 0) * transform.forward;
+
+        Gizmos.DrawRay(transform.position, leftRay * enemyData.visionRange);
+        Gizmos.DrawRay(transform.position, rightRay * enemyData.visionRange);
     }
 
 

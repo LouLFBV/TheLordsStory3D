@@ -16,13 +16,14 @@ public class EnemyFollowState : EnemyState
 
     public override void Update()
     {
-        if (enemy.Target == null)
+        if (enemy.target == null)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Idle);
             return;
         }
 
-        float distance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
+        float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+
 
 
         if (enemy.AIManager.HasPermission(EnemyStateType.Orbit) && distance <= enemy.AIManager.OrbitDistance + 2f)
@@ -39,14 +40,14 @@ public class EnemyFollowState : EnemyState
         }
 
         // 2. Si le joueur s'est trop éloigné
-        if (distance > enemy.DetectionRadius * 1.5f)
+        if (distance > enemy.enemyData.visionRange * 1.5f)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Idle);
             return;
         }
 
         // 4. Si on n'est pas en orbite (Squelette ou trop loin), on fonce !
-        agent.SetDestination(enemy.Target.position);
+        agent.SetDestination(enemy.target.position);
 
         // Animation
         enemy.Animator.SetFloat("Speed", agent.velocity.magnitude / agent.speed, 0.1f, Time.deltaTime);
