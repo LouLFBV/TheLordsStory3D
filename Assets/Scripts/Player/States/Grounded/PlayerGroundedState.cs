@@ -40,9 +40,15 @@ public class PlayerGroundedState : PlayerState
         }
 
         // 3. PRIORITÉ : L'Attaque ou l'Arc
-        if (player.Input.AttackPressed && player.Stamina.HasStamina())
+        if (player.Input.AttackPressed/*&& player.Stamina.HasStamina()*/)
         {
             HandleAttackInput();
+            return;
+        }
+
+        if (player.Input.AttackSpecialPressed)
+        {
+            HandleAttackInput(true);
             return;
         }
 
@@ -74,7 +80,7 @@ public class PlayerGroundedState : PlayerState
         }
     }
 
-    private void HandleAttackInput()
+    private void HandleAttackInput(bool isSpecialAttack = false)
     {
         // On récupère l'arme active via ton PaletteSystem
         ItemData activeWeapon = PaletteSystem.instance.slotManager.weaponSlots[0].isEquipped ?
@@ -91,8 +97,16 @@ public class PlayerGroundedState : PlayerState
                 player.StateMachine.ChangeState(PlayerStateType.BowCharge);
             }
         }
+        else if (isSpecialAttack)
+        {
+            Debug.Log("Special Attack Pressed");
+            player.usingSpecialAttack = true;
+            player.Input.UseAttackSpecialInput();
+            player.StateMachine.ChangeState(PlayerStateType.Attack);
+        }
         else
         {
+            Debug.Log("Attack Pressed");
             player.Input.UseAttackInput();
             player.StateMachine.ChangeState(PlayerStateType.Attack);
         }
