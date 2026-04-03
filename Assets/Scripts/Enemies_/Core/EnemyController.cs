@@ -201,6 +201,8 @@ public class EnemyController : MonoBehaviour, ICombatant
     private void HandleDeath()
     {
         // On force le passage à l'état de mort, peu importe l'état actuel
+
+        NewQuestManager.instance.UpdateQuestProgress(AIManager.GetData().enemyType.ToString(), 1);
         StateMachine.ChangeState(EnemyStateType.Death);
     }
 

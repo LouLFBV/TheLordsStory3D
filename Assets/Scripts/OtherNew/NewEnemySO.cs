@@ -4,6 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewEnemyData", menuName = "Enemy/EnemyData")]
 public class NewEnemySO : ScriptableObject
 {
+    public EnemyType enemyType;
+
     [Header("Permissions")]
     public bool canOrbit = true;
     public bool canFlank = false;

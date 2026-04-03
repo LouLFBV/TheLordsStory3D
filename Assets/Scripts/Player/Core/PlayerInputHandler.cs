@@ -8,6 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
     public Vector2 MouseLook { get; private set; }
     public Vector2 GamepadLook { get; private set; }
     public bool AttackPressed { get; private set; }
+    public bool AttackSpecialPressed { get; private set; }
     public bool RollPressed { get; private set; }
     public bool SprintHeld { get; private set; }
     public bool CrouchPressed { get; private set; }
@@ -47,6 +48,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["Attack"].performed += ctx => AttackPressed = true;
         input.actions["Attack"].canceled += ctx => AttackPressed = false;
+
+        input.actions["AttackSpecial"].performed += ctx => AttackSpecialPressed = true;
+        input.actions["AttackSpecial"].canceled += ctx => AttackSpecialPressed = false;
 
         input.actions["ForwardRoll"].performed += ctx => RollPressed = true;
         input.actions["ForwardRoll"].canceled += ctx => RollPressed = false;
@@ -146,6 +150,7 @@ public class PlayerInputHandler : MonoBehaviour
         // si on ouvre l'inventaire en plein sprint
         MoveInput = Vector2.zero;
         AttackPressed = false;
+        AttackSpecialPressed = false;
         RollPressed = false;
         SprintHeld = false;
         CrouchPressed = false;
@@ -170,5 +175,6 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseJumpInput() => JumpPressed = false;
     public void UseRollInput() => RollPressed = false;
     public void UseAttackInput() => AttackPressed = false;
+    public void UseAttackSpecialInput() => AttackSpecialPressed = false;
     public void UseLockOnInput() => LockOnPressed = false;
 }

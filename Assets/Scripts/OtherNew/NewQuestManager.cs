@@ -6,6 +6,7 @@ public class NewQuestManager : MonoBehaviour
     public static NewQuestManager instance;
 
     public List<QuestInstance> activeQuests = new List<QuestInstance>();
+    public List<QuestInstance> finishedQuests = new List<QuestInstance>();
 
     private void Awake()
     {
@@ -85,6 +86,8 @@ public class NewQuestManager : MonoBehaviour
         QuestInstance toRemove = activeQuests.Find(q => q.data == quest.data);
         if (toRemove != null)
             activeQuests.Remove(toRemove);
+        if (!finishedQuests.Exists(q => q.data == quest.data))
+            finishedQuests.Add(quest);
     }
 
     public void ApplyRewards(QuestInstance questInstane)

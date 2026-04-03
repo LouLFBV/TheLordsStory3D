@@ -195,7 +195,7 @@ public class EnemyAI : EnemyParent
         {
             itemToDrop.SetActive(true);
         }
-        QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
+        NewQuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 
     #region Déplacement

@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour, ICombatant
 
 
     [Header("Combat Settings")]
+    public bool usingSpecialAttack = false;
     public AttackSO CurrentAttack { get; set; }
     public ItemData PendingWeaponItem { get; set; }
     public HandWeapon PendingWeaponType { get; set; }

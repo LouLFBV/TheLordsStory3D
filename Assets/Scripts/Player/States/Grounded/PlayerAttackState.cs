@@ -14,7 +14,23 @@ public class PlayerAttackState : PlayerGroundedState
         // On récupère la première attaque de l'arme
         var combatData = player.PendingWeaponItem?.combatData;
         if (player.CurrentAttack == null)
-            player.CurrentAttack = combatData?.startingAttack;
+        {
+            if (player.usingSpecialAttack)
+            {
+                player.CurrentAttack = combatData?.specialAttack;
+                Debug.Log($"Starting Special Attack: {player.CurrentAttack}");
+            }
+            else
+            {
+                player.CurrentAttack = combatData?.startingAttack;
+                Debug.Log($"Starting Attack: {player.CurrentAttack}");
+            }
+        }
+        if (player.CurrentAttack == null)
+        {
+            player.StateMachine.ChangeState(PlayerStateType.Idle);
+            return;
+        }
 
         // On ordonne l'exécution
         player.Combat.ExecuteAttack(player.CurrentAttack);
@@ -26,7 +42,9 @@ public class PlayerAttackState : PlayerGroundedState
         // 1. Buffer d'input : si on clique pendant que canCombo est vrai
         if (player.Input.AttackPressed && player.Combat.CanComboNext())
         {
+            Debug.Log("Input d'attaque enregistré pour le combo !");
             player.Input.UseAttackInput();
+            player.Input.UseAttackSpecialInput();
             if (player.CurrentAttack.nextAttack != null)
             {
                 // On prépare la suite
@@ -45,6 +63,7 @@ public class PlayerAttackState : PlayerGroundedState
     {
         base.Exit();
         player.CurrentAttack = null; // Reset le combo
+        player.usingSpecialAttack = false;
         //player.Animator.applyRootMotion = false;
 
         player.Animator.SetLayerWeight(player.Combat.attackLayer, 0f);

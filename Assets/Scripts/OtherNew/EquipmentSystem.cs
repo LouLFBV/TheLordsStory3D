@@ -184,7 +184,7 @@ public class EquipmentSystem : MonoBehaviour
         ItemData itemToEquip = equipment ? equipment : itemActionsSystem.itemCurrentlySelected;
         print("Equip item : " + itemToEquip.name);
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == itemToEquip).FirstOrDefault();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(itemToEquip);
 
         if (equipmentLibraryItem != null)
         {
