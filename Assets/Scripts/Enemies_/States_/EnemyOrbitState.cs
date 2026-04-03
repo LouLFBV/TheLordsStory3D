@@ -24,12 +24,12 @@ public class EnemyOrbitState : EnemyState
 
     public override void Update()
     {
-        if (enemy.Target == null) return;
+        if (enemy.target == null) return;
 
-        float distance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
+        float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
 
         // 1. Si le joueur s'éloigne trop, on repasse en Follow
-        if (distance > enemy.DetectionRadius)
+        if (distance > enemy.enemyData.visionRange)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Follow);
             return;
@@ -68,11 +68,11 @@ public class EnemyOrbitState : EnemyState
 
         // 2. Calcul du vecteur latéral (le "Strafe")
         // On prend la direction vers le joueur et on la tourne de 90 degrés
-        Vector3 directionToPlayer = (enemy.Target.position - enemy.transform.position).normalized;
+        Vector3 directionToPlayer = (enemy.target.position - enemy.transform.position).normalized;
         Vector3 sideDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized * _orbitDirection;
 
         // 3. On ajoute une force pour maintenir la distance (pour ne pas qu'il s'éloigne ou s'approche trop)
-        float currentDistance = Vector3.Distance(enemy.transform.position, enemy.Target.position);
+        float currentDistance = Vector3.Distance(enemy.transform.position, enemy.target.position);
         float distanceError = currentDistance - enemy.AIManager.OrbitDistance;
         Vector3 forwardCorrection = directionToPlayer * distanceError;
 

@@ -7,13 +7,3 @@ public class EnemySO : ScriptableObject
     public int pvMax;
 }
 
-
-public enum EnemyType
-{
-    None,
-    Loup,
-    Squelette,
-    Ours,
-    Zombie,
-    Boss
-}
