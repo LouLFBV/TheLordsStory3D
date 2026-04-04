@@ -7,17 +7,12 @@ public class EnemyPatrolState : EnemyState
     private float waitTimer;
     private bool isWaiting;
 
-    // Paramètres (qu'on pourra sortir dans un SO plus tard)
-    private float walkSpeed = 2f;
-    private float patrolRadius = 8f;
-    private float waitTimeMin = 1f;
-    private float waitTimeMax = 2f;
 
     public EnemyPatrolState(EnemyController enemy) : base(enemy) { }
 
     public override void Enter()
     {
-        agent.speed = walkSpeed;
+        agent.speed = enemy.enemyData.walkSpeed;
         agent.isStopped = false;
         isWaiting = false; // Reset important
         FindNewDestination();
@@ -58,7 +53,7 @@ public class EnemyPatrolState : EnemyState
         // On essaie de trouver un point valide jusqu'à 5 fois si nécessaire
         for (int i = 0; i < 5; i++)
         {
-            Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+            Vector3 randomDirection = Random.insideUnitSphere * enemy.enemyData.patrolRadius;
 
             // On s'assure d'une distance minimale pour éviter le surplace
             if (randomDirection.magnitude < 3f)
@@ -85,7 +80,7 @@ public class EnemyPatrolState : EnemyState
     private void StartWaiting()
     {
         isWaiting = true;
-        waitTimer = Random.Range(waitTimeMin, waitTimeMax);
+        waitTimer = Random.Range(enemy.enemyData.waitTimeMin, enemy.enemyData.waitTimeMax);
         agent.isStopped = true;
         enemy.Animator.SetFloat("Speed", 0f);
     }
