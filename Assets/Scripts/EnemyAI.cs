@@ -179,7 +179,7 @@ public class EnemyAI : EnemyParent
         IsDead = true;
 
         vie.SetActive(false);
-        if (enemyData.enemyType == EnemyType.Squelette || enemyData.enemyType == EnemyType.Zombie)
+        if (enemyData.enemyType == EnemyType.Squelette)
         {
             agent.isStopped = true;
             if(gameObject.TryGetComponent<Rigidbody>(out var rb))
