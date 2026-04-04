@@ -6,7 +6,7 @@ public class EnemyFollowState : EnemyState
 
     public override void Enter()
     {
-        agent.speed = 4f;
+        agent.speed = enemy.enemyData.chaseSpeed;
         agent.isStopped = false;
 
         // TRÈS IMPORTANT : On remet la distance d'arrêt à presque 0 

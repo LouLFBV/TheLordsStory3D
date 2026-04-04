@@ -18,6 +18,13 @@ public class NewEnemySO : ScriptableObject
     [Header("Vision")]
     public float visionRange = 10f;
     public float visionAngle = 60f;
+
+    [Header("Speeds")]
+    public float walkSpeed = 2f;
+    public float chaseSpeed = 4f;
+    public float patrolRadius = 8f;
+    public float waitTimeMin = 1f;
+    public float waitTimeMax = 2f;
 }
 
 
