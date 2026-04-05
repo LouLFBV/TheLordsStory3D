@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour, ICombatant
     [Header("Senses & AI")]
     public Transform target; // Le joueur
     public float AttackRadius = 2f;
-    public NewEnemySO enemyData; 
+    [HideInInspector] public NewEnemySO enemyData; 
 
     [Header("UI & Feedback")]
     [SerializeField] private GameObject lockOnIndicator;
