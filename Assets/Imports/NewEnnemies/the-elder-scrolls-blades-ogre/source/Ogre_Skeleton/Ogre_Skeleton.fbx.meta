@@ -17,7 +17,58 @@ ModelImporter:
     removeConstantScaleCurves: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Ogre_Attack_PowerAttack' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'NPC Pelvis [Pelv]' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Ogre_AttackRight_Damage' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'NPC
+      Jaw [Jaw]' has translation animation that will be discarded.\n\nClip 'Ogre_AttackRight_Enter'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'NPC
+      Jaw [Jaw]' has translation animation that will be discarded.\n\nClip 'Ogre_Idle'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'NPC
+      Pelvis [Pelv]' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\t'NPC Jaw [Jaw]' has translation animation that will
+      be discarded.\n\nClip 'Ogre_IdlePatrol' has import animation warnings that
+      might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'NPC Pelvis [Pelv]' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\t'NPC Jaw [Jaw]'
+      has translation animation that will be discarded.\n\nClip 'Ogre_MoveLeft' has
+      import animation warnings that might lower retargeting quality:\nNote: Activate
+      translation DOF on avatar to improve retargeting quality.\n\t'NPC Pelvis [Pelv]'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Ogre_RunForward' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'NPC
+      Pelvis [Pelv]' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Ogre_ShieldBash' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'NPC Pelvis [Pelv]' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'Ogre_ShieldBash_Enter'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'NPC
+      Pelvis [Pelv]' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Ogre_StaggerBack' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'NPC Jaw [Jaw]' has translation animation
+      that will be discarded.\n\nClip 'Ogre_StaggerLeft' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'NPC Jaw [Jaw]' has translation animation
+      that will be discarded.\n\nClip 'Ogre_StaggerRight' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'NPC R Foot [Rft ]' has translation animation
+      that will be discarded.\n\t'NPC R Toe0 [RToe]' has translation animation that
+      will be discarded.\n\t'NPC Jaw [Jaw]' has translation animation that will be
+      discarded.\n\nClip 'Ogre_WalkForward' has import animation warnings that might
+      lower retargeting quality:\nNote: Activate translation DOF on avatar to improve
+      retargeting quality.\n\t'NPC Pelvis [Pelv]' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'NPC L Foot [Lft ]' has
+      translation animation that will be discarded.\n\t'NPC L Toe0 [LToe]' has translation
+      animation that will be discarded.\n\t'NPC R Foot [Rft ]' has translation animation
+      that will be discarded.\n\t'NPC R Toe0 [RToe]' has translation animation that
+      will be discarded.\n\t'NPC Jaw [Jaw]' has translation animation that will be
+      discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -82,8 +133,628 @@ ModelImporter:
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
-    human: []
-    skeleton: []
+    human:
+    - boneName: 'NPC COM [COM ]'
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Thigh [LThg]'
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Thigh [RThg]'
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Calf [LClf]'
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Calf [RClf]'
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Foot [Lft ]'
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Foot [Rft ]'
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Spine [Spn0]'
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Spine1 [Spn1]'
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Neck [Neck]'
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Head [Head]'
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Clavicle [LClv]'
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Clavicle [RClv]'
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L UpperArm [LUar]'
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R UpperArm [RUar]'
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Forearm [LLar]'
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Forearm [RLar]'
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Hand [LHnd]'
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Hand [RHnd]'
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Toe0 [LToe]'
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Toe0 [RToe]'
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: NPC Ear Left01
+      humanName: LeftEye
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: NPC Ear Right01
+      humanName: RightEye
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Jaw [Jaw]'
+      humanName: Jaw
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger00 [LF00]'
+      humanName: Left Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger01 [LF01]'
+      humanName: Left Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger10 [LF10]'
+      humanName: Left Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger11 [LF11]'
+      humanName: Left Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger20 [LF20]'
+      humanName: Left Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC L Finger21 [LF21]'
+      humanName: Left Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger00 [RF00]'
+      humanName: Right Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger01 [RF01]'
+      humanName: Right Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger10 [RF10]'
+      humanName: Right Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger11 [RF11]'
+      humanName: Right Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger20 [RF20]'
+      humanName: Right Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC R Finger21 [RF21]'
+      humanName: Right Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: 'NPC Spine2 [Spn2]'
+      humanName: UpperChest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: Ogre_Skeleton(Clone)
+      parentName: 
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: NPC
+      parentName: Ogre_Skeleton(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.00000009415697, y: 0.7071068, z: 0.7071068, w: 0.00000009415697}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'NPC Root [Root]'
+      parentName: NPC
+      position: {x: -0, y: -3.4063803e-13, z: -1.2182199e-19}
+      rotation: {x: 0.000000113247, y: -5.6254143e-15, z: -0.00000004967385, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'NPC COM [COM ]'
+      parentName: 'NPC Root [Root]'
+      position: {x: -0.00000047368763, y: -0.000012399399, z: 0.00011716709}
+      rotation: {x: -0.11112966, y: -0.005670155, z: 0.11872514, w: 0.9866724}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'NPC Pelvis [Pelv]'
+      parentName: 'NPC COM [COM ]'
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.07569249, y: 0.009922164, z: -0.11844558, w: 0.9900217}
+      scale: {x: 1.000003, y: 1.0000021, z: 1.0000006}
+    - name: 'NPC R Thigh [RThg]'
+      parentName: 'NPC Pelvis [Pelv]'
+      position: {x: -0.000013751587, y: -0.000007298941, z: -0.0000013092758}
+      rotation: {x: 0.0058244388, y: -0.98631227, z: -0.15361007, w: 0.0596513}
+      scale: {x: 1.0000011, y: 1.0000008, z: 1.0000018}
+    - name: 'NPC R Calf [RClf]'
+      parentName: 'NPC R Thigh [RThg]'
+      position: {x: -0, y: 0, z: 0.000059504688}
+      rotation: {x: 0.34425133, y: 0.021486914, z: -0.009607486, w: 0.9385825}
+      scale: {x: 1.0000002, y: 1.0000005, z: 1.0000027}
+    - name: 'NPC R Foot [Rft ]'
+      parentName: 'NPC R Calf [RClf]'
+      position: {x: -0, y: -2.9802326e-12, z: 0.000041929576}
+      rotation: {x: -0.65651613, y: -0.083870776, z: 0.003697332, w: 0.74962574}
+      scale: {x: 0.9999996, y: 1.0000001, z: 1.0000002}
+    - name: 'NPC R Toe0 [RToe]'
+      parentName: 'NPC R Foot [Rft ]'
+      position: {x: -5.6624417e-11, y: -0.000000023323297, z: 0.00003287694}
+      rotation: {x: -0.29496336, y: -0.0018317809, z: -0.00056554, w: 0.9555066}
+      scale: {x: 1.0000001, y: 1.0000012, z: 0.99999934}
+    - name: NPC BSkirt01
+      parentName: 'NPC Pelvis [Pelv]'
+      position: {x: -0.000000371597, y: -0.000026368501, z: -0.0000037539369}
+      rotation: {x: -0.0008276289, y: -0.99971676, z: -0.02378494, w: 0.000059709877}
+      scale: {x: 1.0000013, y: 1.0000018, z: 1.0000019}
+    - name: NPC BSkirt02
+      parentName: NPC BSkirt01
+      position: {x: -0, y: 0, z: 0.00002351344}
+      rotation: {x: -0.0000000074458475, y: 0.0000000050131344, z: -0.0000000145519135,
+        w: 1}
+      scale: {x: 0.9999997, y: 1.0000007, z: 1.0000004}
+    - name: 'NPC L Thigh [LThg]'
+      parentName: 'NPC Pelvis [Pelv]'
+      position: {x: 0.000013751587, y: -0.000007298941, z: -0.0000013092637}
+      rotation: {x: -0.0058244457, y: -0.98631227, z: -0.15361017, w: -0.059651166}
+      scale: {x: 1.0000013, y: 1.0000015, z: 1.0000021}
+    - name: 'NPC L Calf [LClf]'
+      parentName: 'NPC L Thigh [LThg]'
+      position: {x: -0, y: -5.960465e-12, z: 0.00005950469}
+      rotation: {x: 0.34428123, y: -0.021376783, z: 0.009690554, w: 0.9385731}
+      scale: {x: 1.000001, y: 0.9999984, z: 1.0000013}
+    - name: 'NPC L Foot [Lft ]'
+      parentName: 'NPC L Calf [LClf]'
+      position: {x: -1.4901163e-12, y: 1.4901163e-12, z: 0.000041929576}
+      rotation: {x: -0.6566217, y: 0.0837582, z: -0.003771698, w: 0.7495454}
+      scale: {x: 0.9999996, y: 1.000002, z: 0.99999875}
+    - name: 'NPC L Toe0 [LToe]'
+      parentName: 'NPC L Foot [Lft ]'
+      position: {x: 5.51343e-11, y: -0.000000023323297, z: 0.00003287694}
+      rotation: {x: -0.29485652, y: 0.0018827834, z: 0.00058148406, w: 0.9555395}
+      scale: {x: 1, y: 1.0000005, z: 1.0000002}
+    - name: NPC FSkirt01
+      parentName: 'NPC Pelvis [Pelv]'
+      position: {x: -0.00000037160223, y: 0.000025354695, z: -0.000017389892}
+      rotation: {x: 0.000000031082887, y: -1, z: -0.00000012665986, w: 9.3132246e-10}
+      scale: {x: 1.0000011, y: 1.0000017, z: 1.0000017}
+    - name: NPC FSkirt02
+      parentName: NPC FSkirt01
+      position: {x: -7.4505815e-13, y: 0, z: 0.000020370306}
+      rotation: {x: -0, y: 0.00000000228546, z: 0.000000011507369, w: 1}
+      scale: {x: 1.0000004, y: 0.9999998, z: 1.0000007}
+    - name: 'NPC Spine [Spn0]'
+      parentName: 'NPC COM [COM ]'
+      position: {x: -1.3411045e-11, y: -0.000007486389, z: 0.000005417251}
+      rotation: {x: 0.097232856, y: 0.0073405663, z: -0.11863295, w: 0.9881388}
+      scale: {x: 1.0000017, y: 1.0000006, z: 1.0000004}
+    - name: 'NPC Spine1 [Spn1]'
+      parentName: 'NPC Spine [Spn0]'
+      position: {x: -0, y: 2.9802326e-12, z: 0.000022499346}
+      rotation: {x: 0.046134386, y: -0.000000040110056, z: 0.000000035652537, w: 0.9989353}
+      scale: {x: 1, y: 1.0000005, z: 1.0000002}
+    - name: 'NPC Spine2 [Spn2]'
+      parentName: 'NPC Spine1 [Spn1]'
+      position: {x: -0, y: -0.000000024431946, z: 0.000021844791}
+      rotation: {x: -0.1325372, y: 0.00000035542456, z: 0.000000645309, w: 0.99117804}
+      scale: {x: 1.0000063, y: 1.0000042, z: 1.0000036}
+    - name: 'NPC L Clavicle [LClv]'
+      parentName: 'NPC Spine2 [Spn2]'
+      position: {x: 0.000017006458, y: 0.0000087782455, z: 0.000041249295}
+      rotation: {x: 0.10193473, y: -0.7754295, z: 0.22376822, w: -0.5815894}
+      scale: {x: 0.9999998, y: 1.0000015, z: 1.0000012}
+    - name: 'NPC L UpperArm [LUar]'
+      parentName: 'NPC L Clavicle [LClv]'
+      position: {x: -0, y: -1.192093e-11, z: 0.000026887315}
+      rotation: {x: -0.11567655, y: -0.15489714, z: 0.3204416, w: 0.92733115}
+      scale: {x: 1, y: 1.0000002, z: 1.0000015}
+    - name: 'NPC L UpperarmTwist1 [LUt1]'
+      parentName: 'NPC L UpperArm [LUar]'
+      position: {x: 1.192093e-11, y: 7.636846e-12, z: 0}
+      rotation: {x: 0.6981245, y: -0.11234909, z: -0.69812435, w: -0.11234912}
+      scale: {x: 1.0000006, y: 0.99999994, z: 1.0000005}
+    - name: 'NPC L Forearm [LLar]'
+      parentName: 'NPC L UpperArm [LUar]'
+      position: {x: -1.192093e-11, y: -1.192093e-11, z: 0.000039799816}
+      rotation: {x: -0.01301612, y: 0.012165375, z: -0.00078259176, w: 0.999841}
+      scale: {x: 1.0000006, y: 1.000001, z: 1.0000004}
+    - name: 'NPC L ForearmTwist1 [LLt1]'
+      parentName: 'NPC L Forearm [LLar]'
+      position: {x: -4.768372e-11, y: -2.3096802e-11, z: 0.000014454942}
+      rotation: {x: -0.7070985, y: -0.0036930735, z: 0.7070959, w: -0.003679984}
+      scale: {x: 0.9999991, y: 1.000001, z: 1.0000014}
+    - name: 'NPC L Hand [LHnd]'
+      parentName: 'NPC L Forearm [LLar]'
+      position: {x: 1.192093e-11, y: 0, z: 0.00004716494}
+      rotation: {x: 0.012373686, y: -0.06651023, z: 0.70764226, w: 0.7033248}
+      scale: {x: 1.0000015, y: 0.9999978, z: 1.0000002}
+    - name: Attach_HandLeft
+      parentName: 'NPC L Hand [LHnd]'
+      position: {x: -5.960465e-12, y: -0.0000034783125, z: 0.000010228641}
+      rotation: {x: 0.50000006, y: 0.49999994, z: -0.5, w: 0.5}
+      scale: {x: 1, y: 0.99999857, z: 0.9999985}
+    - name: 'NPC L MagicNode [RMag]'
+      parentName: 'NPC L Hand [LHnd]'
+      position: {x: -0, y: -0.000006126153, z: 0.000006069869}
+      rotation: {x: 0.00000005960479, y: -0.00000020861627, z: -0.00000014901161,
+        w: 1}
+      scale: {x: 1, y: 0.99999714, z: 1.0000001}
+    - name: 'NPC L Finger10 [LF10]'
+      parentName: 'NPC L Hand [LHnd]'
+      position: {x: 0.0000073801875, y: 0.0000010141016, z: 0.000025470295}
+      rotation: {x: 0.058988318, y: 0.12877314, z: 0.004960784, w: 0.9899057}
+      scale: {x: 1.000001, y: 1.0000006, z: 1.000001}
+    - name: 'NPC L Finger11 [LF11]'
+      parentName: 'NPC L Finger10 [LF10]'
+      position: {x: -1.192093e-11, y: -2.9802326e-12, z: 0.000011588048}
+      rotation: {x: 0.14339079, y: -0.0000000372529, z: -0.0000000037252899, w: 0.98966616}
+      scale: {x: 1.0000006, y: 0.9999986, z: 1.000003}
+    - name: 'NPC L Finger00 [LF00]'
+      parentName: 'NPC L Hand [LHnd]'
+      position: {x: 0.000007773882, y: -0.0000022047045, z: 0.000011592109}
+      rotation: {x: -0.12637354, y: 0.14683338, z: -0.7040049, w: 0.68326193}
+      scale: {x: 1.0000025, y: 0.9999998, z: 1.0000002}
+    - name: 'NPC L Finger01 [LF01]'
+      parentName: 'NPC L Finger00 [LF00]'
+      position: {x: -5.960465e-12, y: 0, z: 0.0000132019995}
+      rotation: {x: 0.24689999, y: 0.0069922796, z: -0.02763768, w: 0.9686215}
+      scale: {x: 1.0000018, y: 0.99999934, z: 1.0000021}
+    - name: 'NPC L Finger20 [LF20]'
+      parentName: 'NPC L Hand [LHnd]'
+      position: {x: -0.000004516673, y: 0.000001119864, z: 0.000026863638}
+      rotation: {x: 0.06318706, y: 0.10455112, z: 0.11034107, w: 0.98635757}
+      scale: {x: 1.000002, y: 1.0000002, z: 1.0000013}
+    - name: 'NPC L Finger21 [LF21]'
+      parentName: 'NPC L Finger20 [LF20]'
+      position: {x: -0, y: -8.940696e-12, z: 0.000010039247}
+      rotation: {x: 0.16534676, y: 0.000000055879358, z: -0.000000021420421, w: 0.9862355}
+      scale: {x: 1.0000005, y: 0.999999, z: 1.0000017}
+    - name: 'NPC Neck [Neck]'
+      parentName: 'NPC Spine2 [Spn2]'
+      position: {x: 2.8014185e-10, y: 0.0000005165338, z: 0.000039682225}
+      rotation: {x: 0.08173756, y: 0.000049655137, z: 0.0010808867, w: 0.9966534}
+      scale: {x: 1.000004, y: 1.000002, z: 1.0000004}
+    - name: 'NPC Head [Head]'
+      parentName: 'NPC Neck [Neck]'
+      position: {x: 7.0035464e-11, y: 0.000007363402, z: 0.000015753403}
+      rotation: {x: 0.23134851, y: 0.0000066837183, z: -0.0009949427, w: 0.97287047}
+      scale: {x: 1.0000012, y: 1, z: 1.0000017}
+    - name: MagicEffectsNode
+      parentName: 'NPC Head [Head]'
+      position: {x: -1.8626454e-13, y: 0.000016486909, z: -0.000004678929}
+      rotation: {x: 0.00000002980233, y: -0.0000000016880223, z: 0.0000000026848286,
+        w: 1}
+      scale: {x: 0.99999994, y: 0.99999976, z: 0.9999998}
+    - name: NPC Ear Right01
+      parentName: 'NPC Head [Head]'
+      position: {x: -0.000013117002, y: 0.0000044861017, z: 0.000014410413}
+      rotation: {x: -0.0000032335508, y: -0.8433915, z: 0.0000050961953, w: 0.5372996}
+      scale: {x: 1.0000007, y: 0.9999996, z: 0.999999}
+    - name: NPC Ear Right02
+      parentName: NPC Ear Right01
+      position: {x: -0, y: -5.960465e-12, z: 0.000009449954}
+      rotation: {x: -0.043577783, y: -0.043578014, z: 0.0019027012, w: 0.99809736}
+      scale: {x: 1.0000005, y: 1.0000007, z: 1.0000002}
+    - name: NPC Ear Left01
+      parentName: 'NPC Head [Head]'
+      position: {x: 0.000012206601, y: 0.0000042157026, z: 0.000014516294}
+      rotation: {x: 0.037779, y: -0.8183721, z: 0.021814657, w: -0.57303065}
+      scale: {x: 1.0000006, y: 0.99999994, z: 0.99999815}
+    - name: NPC Ear Left02
+      parentName: NPC Ear Left01
+      position: {x: -1.192093e-11, y: -2.9802326e-12, z: 0.000010180634}
+      rotation: {x: 0.000000044703462, y: 0.17364818, z: 0.000000044703462, w: 0.9848077}
+      scale: {x: 0.9999991, y: 1.0000001, z: 1.0000005}
+    - name: 'NPC Jaw [Jaw]'
+      parentName: 'NPC Head [Head]'
+      position: {x: 6.519259e-13, y: 0.000008673465, z: 0.0000027578717}
+      rotation: {x: -0.86063075, y: -0.0000000032086973, z: 1.0822987e-10, w: 0.50922966}
+      scale: {x: 1.0000006, y: 1.0000006, z: 0.9999996}
+    - name: 'NPC R Clavicle [RClv]'
+      parentName: 'NPC Spine2 [Spn2]'
+      position: {x: -0.000017006454, y: 0.0000087782455, z: 0.000041249295}
+      rotation: {x: -0.10193538, y: -0.7754293, z: 0.22376768, w: 0.5815898}
+      scale: {x: 1, y: 1.0000015, z: 1.0000007}
+    - name: 'NPC R UpperArm [RUar]'
+      parentName: 'NPC R Clavicle [RClv]'
+      position: {x: -0, y: 0, z: 0.000026887308}
+      rotation: {x: -0.1156764, y: 0.15489727, z: -0.32044166, w: 0.9273311}
+      scale: {x: 0.99999994, y: 0.99999946, z: 1.0000008}
+    - name: 'NPC R UpperarmTwist1 [RUt1]'
+      parentName: 'NPC R UpperArm [RUar]'
+      position: {x: 1.192093e-11, y: 3.7252907e-13, z: -2.9802326e-12}
+      rotation: {x: -0.11645676, y: 0.69745076, z: 0.1164567, w: 0.6974511}
+      scale: {x: 1.0000007, y: 1, z: 1.0000005}
+    - name: 'NPC R Forearm [RLar]'
+      parentName: 'NPC R UpperArm [RUar]'
+      position: {x: 1.192093e-11, y: 0, z: 0.0000397998}
+      rotation: {x: -0.013016769, y: -0.01216572, z: 0.0007822678, w: 0.999841}
+      scale: {x: 1.0000005, y: 1.0000019, z: 1.0000007}
+    - name: 'NPC R ForearmTwist1 [RLt1]'
+      parentName: 'NPC R Forearm [RLar]'
+      position: {x: -2.8610228e-10, y: 7.227064e-11, z: 0.000014454872}
+      rotation: {x: 0.003689222, y: 0.707088, z: -0.0036847591, w: 0.70710635}
+      scale: {x: 1.0000014, y: 0.9999997, z: 1.0000001}
+    - name: 'NPC R Hand [RHnd]'
+      parentName: 'NPC R Forearm [RLar]'
+      position: {x: -0, y: -5.960465e-12, z: 0.00004716494}
+      rotation: {x: 0.012372643, y: 0.066506445, z: -0.7076422, w: 0.7033253}
+      scale: {x: 1.0000006, y: 0.9999973, z: 0.99999934}
+    - name: Attach_HandRight
+      parentName: 'NPC R Hand [RHnd]'
+      position: {x: -0, y: -0.000003478324, z: 0.000010228641}
+      rotation: {x: 0.50000006, y: -0.49999997, z: 0.49999997, w: 0.50000006}
+      scale: {x: 0.9999973, y: 0.9999988, z: 1.0000012}
+    - name: 'NPC R MagicNode [RMag]'
+      parentName: 'NPC R Hand [RHnd]'
+      position: {x: -0, y: -0.000006126153, z: 0.0000060698662}
+      rotation: {x: 0.00000009685754, y: 0.00000021606681, z: -0.000000044703498,
+        w: 1}
+      scale: {x: 1.0000001, y: 1.0000001, z: 0.9999971}
+    - name: 'NPC R Finger10 [RF10]'
+      parentName: 'NPC R Hand [RHnd]'
+      position: {x: -0.000007380194, y: 0.0000010141016, z: 0.000025470305}
+      rotation: {x: 0.036967292, y: -0.13238738, z: 0.14150704, w: 0.98034835}
+      scale: {x: 0.99999994, y: 1.0000015, z: 0.99999994}
+    - name: 'NPC R Finger11 [RF11]'
+      parentName: 'NPC R Finger10 [RF10]'
+      position: {x: -0, y: 1.192093e-11, z: 0.000011588043}
+      rotation: {x: 0.14339015, y: -0, z: 0.000000014901161, w: 0.9896662}
+      scale: {x: 1.0000001, y: 0.9999991, z: 1.0000005}
+    - name: 'NPC R Finger00 [RF00]'
+      parentName: 'NPC R Hand [RHnd]'
+      position: {x: -0.000007773882, y: -0.0000022047045, z: 0.000011592116}
+      rotation: {x: -0.085852034, y: -0.17729084, z: 0.51068646, w: 0.83689713}
+      scale: {x: 1.0000019, y: 0.9999992, z: 1.0000001}
+    - name: 'NPC R Finger01 [RF01]'
+      parentName: 'NPC R Finger00 [RF00]'
+      position: {x: -5.960465e-12, y: 0, z: 0.000013202004}
+      rotation: {x: 0.24690005, y: -0.0069923094, z: 0.027637783, w: 0.9686215}
+      scale: {x: 1.000001, y: 0.9999961, z: 1.000003}
+    - name: 'NPC R Finger20 [RF20]'
+      parentName: 'NPC R Hand [RHnd]'
+      position: {x: 0.000004516679, y: 0.000001119864, z: 0.00002686363}
+      rotation: {x: 0.05659573, y: -0.10762742, z: -0.055320527, w: 0.99103624}
+      scale: {x: 1.0000008, y: 1.0000018, z: 0.9999996}
+    - name: 'NPC R Finger21 [RF21]'
+      parentName: 'NPC R Finger20 [RF20]'
+      position: {x: -0, y: 0, z: 0.000010039252}
+      rotation: {x: 0.16534624, y: -0.00000002235174, z: 0.00000012665986, w: 0.98623556}
+      scale: {x: 1.0000004, y: 0.9999984, z: 1.0000019}
+    - name: Ogre_Skeleton
+      parentName: Ogre_Skeleton(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogre_Level2
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Body
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Level1
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Level1_Fur
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Level2_Fur
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Level3
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Ogres_Level3_Fur
+      parentName: Ogre_Skeleton
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -91,7 +762,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.01
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
