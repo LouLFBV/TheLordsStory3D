@@ -14,34 +14,11 @@ public class PlayerInteractor : MonoBehaviour
     
     [SerializeField] private Transform playerTransform;
 
-
-    //#region Player Input
-    //[SerializeField] private PlayerInput playerInput;
-    //private bool isInteracting;
-
-    //private void OnEnable()
-    //{
-    //    playerInput.actions["Interact"].Enable();
-    //    playerInput.actions["Interact"].performed += OnInteractPerformed;
-    //    playerInput.actions["Interact"].canceled += OnInteractCanceled;
-    //}
-
-    //private void OnDisable()
-    //{
-    //    playerInput.actions["Interact"].Disable();
-    //    playerInput.actions["Interact"].performed -= OnInteractPerformed;
-    //    playerInput.actions["Interact"].canceled -= OnInteractCanceled;
-    //}
-
-    //private void OnInteractPerformed(InputAction.CallbackContext context) => isInteracting = true;
-    //private void OnInteractCanceled(InputAction.CallbackContext context) => isInteracting = false;
-    //#endregion
-
     private void Update()
     {
         DetectInteractable();
 
-        if (player.Input.InteractPressed || player.Input.DialogueNextPressed)
+        if (player.Input.InteractPressed || player.Input.DialogueNextPressed && !PlayerController.Instance.StateMachine.IsInState(PlayerStateType.UI))
         {
             Debug.Log("Attempting to interact with: " + (currentTarget != null ? currentTarget.ToString() : "nothing"));
             currentTarget?.OnInteract(this);

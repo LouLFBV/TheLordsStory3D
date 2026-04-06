@@ -9,9 +9,6 @@ public class EnemyFollowState : EnemyState
         agent.speed = enemy.enemyData.chaseSpeed;
         agent.isStopped = false;
 
-        // TRÈS IMPORTANT : On remet la distance d'arrêt à presque 0 
-        // pour qu'il accepte de foncer au contact du joueur.
-        agent.stoppingDistance = 1.2f;
     }
 
     public override void Update()
@@ -26,18 +23,27 @@ public class EnemyFollowState : EnemyState
 
 
 
+
+        AttackSO ready = enemy.PeekBestAttack();
+        if (ready != null)
+        {
+            Debug.Log($"<color=green>[FOLLOW]</color> Cible à portée ({distance:F2}m). Transition vers Attack.");
+            enemy.StateMachine.ChangeState(EnemyStateType.Attack);
+            return;
+        }
+
+        // Si on est déjà au contact (agent.stoppingDistance) mais que Peek renvoie null
+        // c'est que les AttackSO sont mal réglés (minDistance trop haute)
+        if (distance <= agent.stoppingDistance + 0.5f && ready == null)
+        {
+            Debug.LogWarning("[FOLLOW] Au contact mais aucune attaque possible. Vérifiez les ranges/cooldowns des SO.");
+        }
+
         if (enemy.AIManager.HasPermission(EnemyStateType.Orbit) && distance <= enemy.AIManager.OrbitDistance + 2f)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
             return;
-        }
-
-        // 1. Si on est assez proche pour attaquer
-        if (enemy.PeekBestAttack() != null)
-        {
-            enemy.StateMachine.ChangeState(EnemyStateType.Attack);
-            return;
-        }
+        } 
 
         // 2. Si le joueur s'est trop éloigné
         if (distance > enemy.enemyData.visionRange * 1.5f)

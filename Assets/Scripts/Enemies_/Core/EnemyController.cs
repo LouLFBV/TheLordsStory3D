@@ -18,6 +18,9 @@ public class EnemyController : MonoBehaviour, ICombatant
     public Dictionary<AttackSO, WeaponDamageDetector> weaponDict;
     [SerializeField] private List<AttackSO> availableAttacks;
     public ItemData PendingWeaponItem { get; set; }
+    private AttackSO _lastPerformedAttack; // On stocke la dernière attaque
+    public float lastAttackExitTime { get; set; }
+    [SerializeField] private BarriereDeCombat[] barriereDeCombat;
 
     [Header("Senses & AI")]
     public Transform target; // Le joueur
@@ -94,6 +97,11 @@ public class EnemyController : MonoBehaviour, ICombatant
                     _attackToWeaponMap.Add(attack, setup);
             }
         }
+
+        foreach (var cooldown in availableAttacks)
+        {
+            cooldown.nextAttackTime = 0f; // S'assure que toutes les attaques sont prêtes au départ
+        }
     }
 
     private void Start()
@@ -111,6 +119,7 @@ public class EnemyController : MonoBehaviour, ICombatant
 
         // 4. Lancement de l'IA
         StateMachine.Initialize(EnemyStateType.Idle);
+
     }
 
     private void Update()
@@ -136,7 +145,7 @@ public class EnemyController : MonoBehaviour, ICombatant
         // LOGIQUE DE TRANSITION :
 
         // 1. Si je suis en Idle ou Patrol et que je vois le joueur -> Poursuite
-        if (distance <= enemyData.visionRange && angleToPlayer < enemyData.visionAngle / 2f)
+        if ((distance <= enemyData.visionRange && angleToPlayer < enemyData.visionAngle / 2f) || distance <= enemyData.detectionRange)
         {
             if (StateMachine.CurrentState == IdleState || StateMachine.CurrentState == PatrolState)
             {
@@ -152,31 +161,55 @@ public class EnemyController : MonoBehaviour, ICombatant
         }
     }
 
-    // Vérifie si une attaque est possible SANS lancer le cooldown
     public AttackSO PeekBestAttack()
     {
         if (target == null) return null;
+        if (Time.time < lastAttackExitTime + 1.5f) return null;
+
         float distance = Vector3.Distance(transform.position, target.position);
+
+        // 1. On crée une liste temporaire des attaques actuellement possibles
+        List<AttackSO> potentialAttacks = new List<AttackSO>();
 
         foreach (var attack in availableAttacks)
         {
-            if (distance >= attack.minDistance && distance <= attack.maxDistance && Time.time >= attack.nextAttackTime)
+            bool cooldownTermine = Time.time >= attack.nextAttackTime;
+            bool distanceOK = distance >= attack.minDistance && distance <= attack.maxDistance;
+
+            if (distanceOK && cooldownTermine)
             {
-                return attack;
+                // On évite toujours la toute dernière attaque pour la variété
+                if (attack == _lastPerformedAttack && availableAttacks.Count > 1) continue;
+
+                potentialAttacks.Add(attack);
             }
         }
+
+        // 2. Si on a plusieurs choix, on en prend un au hasard !
+        if (potentialAttacks.Count > 0)
+        {
+            int randomIndex = Random.Range(0, potentialAttacks.Count);
+            return potentialAttacks[randomIndex];
+        }
+
         return null;
     }
 
-    // Version qui sera appelée UNIQUEMENT dans le Enter() de l'état Attack
     public AttackSO GetBestAttack()
     {
-        AttackSO attack = PeekBestAttack();
+        AttackSO attack = PeekBestAttack(); // On cherche l'attaque
+
         if (attack != null)
         {
+            // FORCE le cooldown ici pour que PeekBestAttack() 
+            // renvoie NULL à la frame suivante !
             attack.nextAttackTime = Time.time + attack.attackCooldown;
+            _lastPerformedAttack = attack;
+
+            Debug.Log($"<color=cyan>[CORE]</color> Cooldown activé pour {attack.animationName}. Prochaine dispo dans {attack.attackCooldown}s");
+            return attack;
         }
-        return attack;
+        return null;
     }
 
     // Implémentation de ICombatant
@@ -217,16 +250,23 @@ public class EnemyController : MonoBehaviour, ICombatant
         }
     }
 
+
     private void OnEnable()
     {
         if (Health != null)
+        {
             Health.OnDeath += HandleDeath;
+            Health.OnHit += GoToFollowState; 
+        }
     }
 
     private void OnDisable()
     {
         if (Health != null)
+        {
             Health.OnDeath -= HandleDeath;
+            Health.OnHit -= GoToFollowState; 
+        }
     }
 
     private void HandleDeath()
@@ -235,6 +275,18 @@ public class EnemyController : MonoBehaviour, ICombatant
 
         NewQuestManager.instance.UpdateQuestProgress(AIManager.GetData().enemyType.ToString(), 1);
         StateMachine.ChangeState(EnemyStateType.Death);
+
+        if (barriereDeCombat != null)
+        {
+            Debug.Log("Raising the combat barrier.");
+            UpAllBarriere();
+        }
+    }
+
+    private void GoToFollowState()
+    {
+        if(StateMachine.CurrentState == FollowState) return;
+        StateMachine.ChangeState(EnemyStateType.Follow);
     }
 
     public void SetLockOnIndicator(bool isLocked)
@@ -243,6 +295,17 @@ public class EnemyController : MonoBehaviour, ICombatant
             lockOnIndicator.SetActive(isLocked);
     }
 
+    private void UpAllBarriere()
+    {
+        if (barriereDeCombat != null)
+        {
+            foreach (var barriere in barriereDeCombat)
+            {
+                Debug.Log("Raising a combat barrier.");
+                barriere.UpBarriere();
+            }
+        }
+    }
     //private void OnDrawGizmosSelected()
     //{
     //    Gizmos.color = Color.yellow;
