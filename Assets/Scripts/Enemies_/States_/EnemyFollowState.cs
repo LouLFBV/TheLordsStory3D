@@ -33,7 +33,7 @@ public class EnemyFollowState : EnemyState
         }
 
         // 1. Si on est assez proche pour attaquer
-        if (distance <= enemy.AttackRadius)
+        if (enemy.PeekBestAttack() != null)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Attack);
             return;

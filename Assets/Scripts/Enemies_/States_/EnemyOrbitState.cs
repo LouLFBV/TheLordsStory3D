@@ -36,7 +36,7 @@ public class EnemyOrbitState : EnemyState
         }
 
         // 2. Si on est à portée d'attaque, on a une chance de frapper
-        if (distance <= enemy.AttackRadius)
+        if (enemy.PeekBestAttack() != null)
         {
             enemy.StateMachine.ChangeState(EnemyStateType.Attack);
             return;

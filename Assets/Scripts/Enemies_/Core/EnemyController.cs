@@ -21,7 +21,6 @@ public class EnemyController : MonoBehaviour, ICombatant
 
     [Header("Senses & AI")]
     public Transform target; // Le joueur
-    public float AttackRadius = 2f;
     [HideInInspector] public NewEnemySO enemyData; 
 
     [Header("UI & Feedback")]
@@ -153,35 +152,31 @@ public class EnemyController : MonoBehaviour, ICombatant
         }
     }
 
-    // Méthode pour choisir une attaque
-    public AttackSO GetBestAttack()
+    // Vérifie si une attaque est possible SANS lancer le cooldown
+    public AttackSO PeekBestAttack()
     {
+        if (target == null) return null;
         float distance = Vector3.Distance(transform.position, target.position);
-        List<AttackSO> possibleAttacks = new List<AttackSO>();
 
         foreach (var attack in availableAttacks)
         {
-            // 1. Check de la distance
-            bool isInRange = distance >= attack.minDistance && distance <= attack.maxDistance;
-
-            // 2. Check du cooldown
-            bool isOffCooldown = Time.time >= attack.lastUsedTime + attack.attackCooldown;
-
-            if (isInRange && isOffCooldown)
+            if (distance >= attack.minDistance && distance <= attack.maxDistance && Time.time >= attack.nextAttackTime)
             {
-                possibleAttacks.Add(attack);
+                return attack;
             }
         }
+        return null;
+    }
 
-        if (possibleAttacks.Count > 0)
+    // Version qui sera appelée UNIQUEMENT dans le Enter() de l'état Attack
+    public AttackSO GetBestAttack()
+    {
+        AttackSO attack = PeekBestAttack();
+        if (attack != null)
         {
-            // On prend une attaque au hasard parmi celles qui sont valides
-            AttackSO selected = possibleAttacks[Random.Range(0, possibleAttacks.Count)];
-            selected.lastUsedTime = Time.time; // On lance le cooldown
-            return selected;
+            attack.nextAttackTime = Time.time + attack.attackCooldown;
         }
-
-        return null; // Aucune attaque n'est prête ou à portée
+        return attack;
     }
 
     // Implémentation de ICombatant
@@ -208,11 +203,17 @@ public class EnemyController : MonoBehaviour, ICombatant
     {
         if (_attackToWeaponMap.TryGetValue(attack, out var setup))
         {
-            // On met à jour l'arme actuelle (pour les dégâts de base)
             PendingWeaponItem = setup.weaponData;
-
-            // On met à jour le détecteur physique (la hitbox)
             Combat.UpdateWeaponDetector(setup.detector);
+
+            // Audio (comme dans ton BossAI)
+            if (attack.attackSound != null)
+            {
+                // On peut utiliser une AudioSource fixe sur l'ennemi pour plus de contrôle
+                AudioSource source = GetComponent<AudioSource>();
+                if (source != null) source.PlayOneShot(attack.attackSound);
+                else AudioSource.PlayClipAtPoint(attack.attackSound, transform.position);
+            }
         }
     }
 
@@ -242,22 +243,22 @@ public class EnemyController : MonoBehaviour, ICombatant
             lockOnIndicator.SetActive(isLocked);
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, enemyData.visionRange);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, AttackRadius);
+    //private void OnDrawGizmosSelected()
+    //{
+    //    Gizmos.color = Color.yellow;
+    //    Gizmos.DrawWireSphere(transform.position, enemyData.visionRange);
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, AttackRadius);
 
-        // Cône de vision
-        Gizmos.color = Color.yellow;
+    //    // Cône de vision
+    //    Gizmos.color = Color.yellow;
 
-        Vector3 leftRay = Quaternion.Euler(0, -enemyData.visionAngle / 2f, 0) * transform.forward;
-        Vector3 rightRay = Quaternion.Euler(0, enemyData.visionAngle / 2f, 0) * transform.forward;
+    //    Vector3 leftRay = Quaternion.Euler(0, -enemyData.visionAngle / 2f, 0) * transform.forward;
+    //    Vector3 rightRay = Quaternion.Euler(0, enemyData.visionAngle / 2f, 0) * transform.forward;
 
-        Gizmos.DrawRay(transform.position, leftRay * enemyData.visionRange);
-        Gizmos.DrawRay(transform.position, rightRay * enemyData.visionRange);
-    }
+    //    Gizmos.DrawRay(transform.position, leftRay * enemyData.visionRange);
+    //    Gizmos.DrawRay(transform.position, rightRay * enemyData.visionRange);
+    //}
 
 
 #if UNITY_EDITOR
@@ -268,8 +269,61 @@ public class EnemyController : MonoBehaviour, ICombatant
             UnityEditor.Handles.Label(transform.position + Vector3.up * 2.5f,
                 $"State: {StateMachine.CurrentState.GetType().Name}");
         }
+        // 2. Dessin des ranges de CHAQUE AttackSO
+        if (availableAttacks != null)
+        {
+            foreach (var attack in availableAttacks)
+            {
+                if (attack == null) continue;
+
+                // On change la couleur en fonction de l'attaque pour les différencier
+                // On utilise le hash du nom pour générer une couleur unique par attaque
+                Random.InitState(attack.animationName.GetHashCode());
+                Color attackColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+
+                // Cercle Max Distance (Plein)
+                Gizmos.color = attackColor;
+                DrawWireDisk(transform.position, attack.maxDistance);
+
+                // Cercle Min Distance (Pointillé ou plus fin)
+                Gizmos.color = new Color(attackColor.r, attackColor.g, attackColor.b, 0.3f);
+                DrawWireDisk(transform.position, attack.minDistance);
+
+
+                // Afficher le nom de l'attaque au bord de sa range
+                UnityEditor.Handles.Label(transform.position + (transform.forward * attack.maxDistance),
+                    $"{attack.animationName} ({attack.minDistance}m - {attack.maxDistance}m)");
+
+            }
+        }
     }
 #endif
+    private void OnDrawGizmosSelected()
+    {
+        // 1. Dessin de la portée de détection (Vision)
+        if (enemyData != null)
+        {
+            Gizmos.color = new Color(1, 1, 0, 0.2f); // Jaune transparent
+            Gizmos.DrawWireSphere(transform.position, enemyData.visionRange);
+        }
+
+        
+    }
+
+    // Petite fonction utilitaire pour dessiner des disques propres au sol
+    private void DrawWireDisk(Vector3 center, float radius)
+    {
+        float angle = 0f;
+        Vector3 lastPoint = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+
+        for (int i = 1; i <= 32; i++)
+        {
+            angle = i * (Mathf.PI * 2f) / 32;
+            Vector3 nextPoint = center + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+            Gizmos.DrawLine(lastPoint, nextPoint);
+            lastPoint = nextPoint;
+        }
+    }
 }
 
 [System.Serializable]
