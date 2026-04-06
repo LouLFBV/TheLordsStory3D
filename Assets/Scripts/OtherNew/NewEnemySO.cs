@@ -7,9 +7,10 @@ public class NewEnemySO : ScriptableObject
     public EnemyType enemyType;
 
     [Header("Permissions")]
-    public bool canOrbit = true;
+    public bool canOrbit = false;
     public bool canFlank = false;
     public bool isAggressive = true; // Fonce directement ou non
+    public bool canBlock = false;
 
     [Header("Orbit Settings")]
     public float idealOrbitDistance = 4f;
@@ -18,6 +19,7 @@ public class NewEnemySO : ScriptableObject
     [Header("Vision")]
     public float visionRange = 10f;
     public float visionAngle = 60f;
+    public float detectionRange = 2f; 
 
     [Header("Speeds")]
     public float walkSpeed = 2f;

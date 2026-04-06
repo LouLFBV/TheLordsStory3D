@@ -9,34 +9,28 @@ public class EnemyAttackState : EnemyState
 
     public EnemyAttackState(EnemyController enemy) : base(enemy) { }
 
+
     public override void Enter()
     {
         isAnimationFinished = false;
         _exitTimer = 0f;
-        _currentAttack = null;
-
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
-
-        FaceTarget();
-
-        // 1. On cherche l'attaque qui remplit les conditions (Range + Cooldown)
         _currentAttack = enemy.GetBestAttack();
 
         if (_currentAttack != null)
         {
-            // 2. On récupère le délai spécifique à cette attaque
+            Debug.Log($"<color=red>[ATTACK]</color> Lancement de : {_currentAttack.animationName}");
             _currentPostAttackDelay = _currentAttack.postAttackDelay;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
 
-            // 3. On prépare l'arme/hitbox et on lance l'anim
             enemy.PrepareAttack(_currentAttack);
             enemy.Combat.ExecuteAttack(_currentAttack);
         }
         else
         {
-            // Sécurité : Si aucune attaque n'est prête, on termine immédiatement
-            _currentPostAttackDelay = 0f;
+            Debug.LogWarning("[ATTACK] Enter sans attaque valide, retour immédiat.");
             isAnimationFinished = true;
+            _currentPostAttackDelay = 0f;
         }
     }
 
@@ -54,29 +48,31 @@ public class EnemyAttackState : EnemyState
             _exitTimer += Time.deltaTime;
             if (_exitTimer >= _currentPostAttackDelay)
             {
+                isAnimationFinished = false; 
                 DetermineNextState();
             }
         }
     }
 
+
     private void DetermineNextState()
     {
-        // On cherche si une attaque est DISPONIBLE (sans AttackRadius)
-        AttackSO nextPotentialAttack = enemy.PeekBestAttack(); // Une méthode qui check sans modifier le temps
+        AttackSO nextPotentialAttack = enemy.PeekBestAttack();
 
         if (nextPotentialAttack != null)
         {
-            // On se relance directement pour l'attaque suivante
-            enemy.StateMachine.ChangeState(EnemyStateType.Attack);
+            Debug.Log($"<color=orange>[COMBO]</color> Enchaînement vers : {nextPotentialAttack.animationName}");
+
+            // CORRECTION : On réinitialise manuellement l'état d'attaque 
+            // au lieu de juste appeler ChangeState qui peut être ignoré
+            this.Enter();
         }
         else
         {
-            // Aucune attaque n'est possible (portée ou cooldown)
-            // Si on est très près, on orbite, sinon on suit
             float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+            Debug.Log($"[ATTACK] Fin d'enchaînement. Distance: {distance:F2}. Go Orbit/Follow.");
 
-            // Utilise une valeur de sécurité (ex: 3m) ou la range max de ton attaque la plus courte
-            if (distance <= 3f)
+            if (distance <= 4f && enemy.AIManager.HasPermission(EnemyStateType.Orbit)) // On augmente un peu la zone pour forcer l'orbite
                 enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
             else
                 enemy.StateMachine.ChangeState(EnemyStateType.Follow);
@@ -107,8 +103,8 @@ public class EnemyAttackState : EnemyState
     {
         // Reset de la vitesse pour le prochain état
         agent.isStopped = false;
-
+        enemy.lastAttackExitTime = Time.time;
         // Cooldown global pour éviter l'orbite spam
-        enemy.AIManager.StartOrbitCooldown(3f);
+        enemy.AIManager.StartOrbitCooldown(2f);
     }
 }

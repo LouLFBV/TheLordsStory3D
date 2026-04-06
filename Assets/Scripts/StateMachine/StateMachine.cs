@@ -39,6 +39,11 @@ public abstract class StateMachine<TState, TType> where TState : State
         return null;
     }
 
+    public bool IsInState(TType type)
+    {
+        return EqualityComparer<TState>.Default.Equals(CurrentState, states[type]);
+    }
+
     public void Update()
     {
         CurrentState?.Update();
