@@ -4,7 +4,8 @@ public class EnemyAttackState : EnemyState
 {
     private bool isAnimationFinished;
     private float _exitTimer;
-    private const float POST_ATTACK_DELAY = 0.5f; // Petit délai de sécurité après l'animation
+    private float _currentPostAttackDelay; // Délai dynamique récupéré de l'AttackSO
+    private AttackSO _currentAttack;
 
     public EnemyAttackState(EnemyController enemy) : base(enemy) { }
 
@@ -12,41 +13,46 @@ public class EnemyAttackState : EnemyState
     {
         isAnimationFinished = false;
         _exitTimer = 0f;
+        _currentAttack = null;
 
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
         FaceTarget();
 
-        // On utilise ta nouvelle méthode intelligente de sélection
-        AttackSO attackToExecute = enemy.GetBestAttack();
+        // 1. On cherche l'attaque qui remplit les conditions (Range + Cooldown)
+        _currentAttack = enemy.GetBestAttack();
 
-        if (attackToExecute != null)
+        if (_currentAttack != null)
         {
-            enemy.PrepareAttack(attackToExecute);
-            enemy.Combat.ExecuteAttack(attackToExecute);
+            // 2. On récupère le délai spécifique à cette attaque
+            _currentPostAttackDelay = _currentAttack.postAttackDelay;
+
+            // 3. On prépare l'arme/hitbox et on lance l'anim
+            enemy.PrepareAttack(_currentAttack);
+            enemy.Combat.ExecuteAttack(_currentAttack);
         }
         else
         {
-            // Si aucune attaque n'est valide (cooldowns ou distance), on quitte
+            // Sécurité : Si aucune attaque n'est prête, on termine immédiatement
+            _currentPostAttackDelay = 0f;
             isAnimationFinished = true;
         }
     }
 
     public override void Update()
     {
-        // On continue de pivoter tant que l'attaque n'est pas "lancée" physiquement
-        // (Certaines attaques de boss demandent de ne plus pivoter à mi-chemin)
+        // On continue de pivoter tant que l'anim n'est pas finie 
+        // (ou tu peux stopper la rotation via un Event si besoin)
         if (!isAnimationFinished)
         {
             FaceTarget();
         }
         else
         {
-            // Une fois l'animation finie, on attend un tout petit peu
-            // pour éviter les transitions trop brusques
+            // 4. Une fois l'animation finie, on attend le délai de l'AttackSO
             _exitTimer += Time.deltaTime;
-            if (_exitTimer >= POST_ATTACK_DELAY)
+            if (_exitTimer >= _currentPostAttackDelay)
             {
                 DetermineNextState();
             }
@@ -55,29 +61,25 @@ public class EnemyAttackState : EnemyState
 
     private void DetermineNextState()
     {
-        float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+        // On cherche si une attaque est DISPONIBLE (sans AttackRadius)
+        AttackSO nextPotentialAttack = enemy.PeekBestAttack(); // Une méthode qui check sans modifier le temps
 
-        // Au lieu de boucler directement (Enter()), on repasse par Follow 
-        // ou Orbit pour laisser le Cooldown de l'AttackSO respirer.
-        if (distance <= enemy.AttackRadius)
+        if (nextPotentialAttack != null)
         {
-            // Si on est encore au corps à corps, on peut tenter une autre attaque
-            // mais on repasse par la StateMachine pour être propre
-            AttackSO nextAttack = enemy.GetBestAttack();
-
-            if (nextAttack != null)
-            {
-                enemy.StateMachine.ChangeState(EnemyStateType.Attack);
-            }
-            else
-            {
-                // Si aucune attaque n'est prête (cooldown), on recule ou on observe
-                enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
-            }
+            // On se relance directement pour l'attaque suivante
+            enemy.StateMachine.ChangeState(EnemyStateType.Attack);
         }
         else
         {
-            enemy.StateMachine.ChangeState(EnemyStateType.Follow);
+            // Aucune attaque n'est possible (portée ou cooldown)
+            // Si on est très près, on orbite, sinon on suit
+            float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+
+            // Utilise une valeur de sécurité (ex: 3m) ou la range max de ton attaque la plus courte
+            if (distance <= 3f)
+                enemy.StateMachine.ChangeState(EnemyStateType.Orbit);
+            else
+                enemy.StateMachine.ChangeState(EnemyStateType.Follow);
         }
     }
 
@@ -91,6 +93,7 @@ public class EnemyAttackState : EnemyState
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
+            // Vitesse de rotation pendant l'attaque (peut être ajustée par SO aussi !)
             enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
     }
@@ -102,8 +105,10 @@ public class EnemyAttackState : EnemyState
 
     public override void Exit()
     {
-        // On lance le cooldown d'orbite global pour que l'IA repasse en "Follow" agressif
-        // si elle n'a plus d'attaques dispos en orbite.
+        // Reset de la vitesse pour le prochain état
+        agent.isStopped = false;
+
+        // Cooldown global pour éviter l'orbite spam
         enemy.AIManager.StartOrbitCooldown(3f);
     }
 }
