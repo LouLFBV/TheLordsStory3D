@@ -144,7 +144,7 @@ public class BowBehaviour : MonoBehaviour
         arrow.transform.parent = null;
         arrow.GetComponent<Rigidbody>().isKinematic = false;
         arrow.GetComponent<BoxCollider>().enabled = true;
-        arrow.GetComponent<HitBoxWeapon>().itemData.attackPoints = weaponActive.damage;
+        arrow.GetComponent<WeaponDamageDetector>().itemData.attackPoints = weaponActive.damage;
 
         AlignArrowSpawnToCamera();
         audioSource.PlayOneShot(bowShootSound);
