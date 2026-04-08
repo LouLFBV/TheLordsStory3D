@@ -85,16 +85,25 @@ public class PlayerCharacterMotor : MonoBehaviour
             RotateTowardsInput(input);
         }
     }
+
     public bool IsGrounded()
     {
         Vector3 start = capsule.bounds.center;
         float radius = capsule.radius * 0.9f;
-        float rayLength = (capsule.height / 2f) - radius + 0.2f;
+        float rayLength = (capsule.height / 2f) - radius + 0.3f;
 
-        bool grounded = Physics.SphereCast(start, radius, Vector3.down, out _, rayLength, ~0, QueryTriggerInteraction.Ignore);
+        if (Physics.SphereCast(start, radius, Vector3.down, out RaycastHit hit, rayLength, ~0, QueryTriggerInteraction.Ignore))
+        {
+            // On calcule l'angle
+            float slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
 
-        Debug.DrawRay(start, Vector3.down * rayLength, grounded ? Color.green : Color.red);
-        return grounded;
+            // Si la pente est trop raide, on renvoie false !
+            // Ça va forcer le passage à l'état Fall
+            if (slopeAngle > 60f) return false;
+
+            return true;
+        }
+        return false;
     }
     public Vector3 GetDirectionFromInput(Vector2 input)
     {

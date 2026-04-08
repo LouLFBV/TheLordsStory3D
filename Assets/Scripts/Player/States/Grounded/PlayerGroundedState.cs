@@ -80,6 +80,33 @@ public class PlayerGroundedState : PlayerState
         }
     }
 
+        public override void FixedUpdate()
+        {
+            base.FixedUpdate();
+
+            // 1. Si on n'a pas d'input, on doit freiner proprement
+            if (player.Input.MoveInput == Vector2.zero)
+            {
+                StopMovementOnSlopes();
+            }
+
+        }
+
+    private void StopMovementOnSlopes()
+    {
+        // Si l'input est nul, on "verrouille" le personnage
+        if (player.Input.MoveInput.sqrMagnitude < 0.01f)
+        {
+            // 1. On annule toute vitesse horizontale immédiatement
+            // 2. On applique une force vers le bas (-2f) pour "plaquer" le perso au sol
+            // Cela empêche le glissement dû à la pente.
+            player.Rigidbody.linearVelocity = new Vector3(0, -2f, 0);
+
+            // 3. On coupe toute rotation résiduelle
+            player.Rigidbody.angularVelocity = Vector3.zero;
+        }
+    }
+
     private void HandleAttackInput(bool isSpecialAttack = false)
     {
         // On récupère l'arme active via ton PaletteSystem

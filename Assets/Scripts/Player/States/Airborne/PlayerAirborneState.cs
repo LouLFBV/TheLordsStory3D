@@ -41,7 +41,7 @@ public class PlayerAirborneState : PlayerState
         }
 
         // --- DÉTECTION DU SOL ---
-        if (player.Motor.IsGrounded() && player.Rigidbody.linearVelocity.y <= 0.1f)
+        if (player.Motor.IsGrounded() && player.Rigidbody.linearVelocity.y <= 0.5f)
         {
             player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
                 ? PlayerStateType.Move
