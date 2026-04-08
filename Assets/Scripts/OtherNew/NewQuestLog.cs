@@ -116,12 +116,12 @@ public class NewQuestLog : MonoBehaviour
     }
     public void OnAffichageQuestPanel(List<QuestInstance> listQuest)
     {
-        foreach (var quest in listQuest)
-            CreateQuestButton(quest);
         ClearChildren(questsFirstList);
         ClearChildren(questsSecondList);
+        foreach (var quest in listQuest)
+            CreateQuestButton(quest);
 
-        panelDescriptionQuest.SetActive(true);
+        panelDescriptionQuest.SetActive(false);
     }
     public void ActiveDesactiveQuestText(QuestSO questSO)
     {
