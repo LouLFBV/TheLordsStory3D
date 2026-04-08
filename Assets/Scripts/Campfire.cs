@@ -12,7 +12,7 @@ public class Campfire : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        if (other.TryGetComponent<PlayerStats>(out var player))
+        if (other.TryGetComponent<HealthSystem>(out var player))
         {
             healRoutine = StartCoroutine(HealOverTime(player));
         }
@@ -29,11 +29,11 @@ public class Campfire : MonoBehaviour
         }
     }
 
-    private IEnumerator HealOverTime(PlayerStats player)
+    private IEnumerator HealOverTime(HealthSystem player)
     {
-        while (player != null && !player.isDead)
+        while (player != null)
         {
-            player.ConsumeItem(healAmount);
+            player.Heal(healAmount);
             yield return new WaitForSeconds(healInterval);
         }
     }

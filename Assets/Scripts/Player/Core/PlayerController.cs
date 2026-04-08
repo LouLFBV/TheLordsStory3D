@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour, ICombatant
     public HandWeapon PendingWeaponType { get; set; }
     public HandWeapon PendingUnequipType { get; set; }
 
+    [Header("Others Settings")]
+    public float rollForce = 4f; 
+
 
     [Header("Library")]
     public EquipmentLibrary equipmentLibrary;

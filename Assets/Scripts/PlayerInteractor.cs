@@ -18,7 +18,7 @@ public class PlayerInteractor : MonoBehaviour
     {
         DetectInteractable();
 
-        if (player.Input.InteractPressed || player.Input.DialogueNextPressed && !PlayerController.Instance.StateMachine.IsInState(PlayerStateType.UI))
+        if (player.Input.InteractPressed || player.Input.DialogueNextPressed /*&& !PlayerController.Instance.StateMachine.IsInState(PlayerStateType.UI)*/)
         {
             Debug.Log("Attempting to interact with: " + (currentTarget != null ? currentTarget.ToString() : "nothing"));
             currentTarget?.OnInteract(this);

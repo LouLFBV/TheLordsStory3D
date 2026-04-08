@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class PlayerRollState : PlayerState
 {
-    private bool isRollFinished;
+    private bool isRollFinished; 
+    private Vector3 rollDirection;
 
     public PlayerRollState(PlayerController player) : base(player) { }
 
@@ -15,7 +16,7 @@ public class PlayerRollState : PlayerState
         player.Stamina.Spend(20f);
 
         // 2. Animation & Root Motion
-        player.Animator.applyRootMotion = true;
+        player.Animator.applyRootMotion = false;
         player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
 
         // 3. Collider & Invincibilité
@@ -23,7 +24,7 @@ public class PlayerRollState : PlayerState
         player.Health.SetInvulnerable(true);
 
         // 4. Direction
-        RotateRollDirection();
+        CalculateRollDirection();
     }
 
     public override void Update()
@@ -34,11 +35,26 @@ public class PlayerRollState : PlayerState
         }
     }
 
+    public override void FixedUpdate() // Utilise FixedUpdate pour la physique
+    {
+        base.FixedUpdate();
+
+        // On applique une vélocité constante vers l'avant pendant la roulade
+        // Cela permet au Rigidbody de détecter les murs correctement
+        if (!isRollFinished)
+        {
+            Vector3 velocity = rollDirection * player.rollForce;
+            velocity.y = player.Rigidbody.linearVelocity.y; // On garde la gravité actuelle
+            player.Rigidbody.linearVelocity = velocity; 
+        }
+    }
+
     public override void Exit()
     {
         base.Exit();
         player.Motor.EndRollCollider();
         player.Health.SetInvulnerable(false);
+        player.Animator.applyRootMotion = true;
     }
 
     // Cette méthode sera appelée par le PlayerController via un Animation Event
@@ -47,13 +63,16 @@ public class PlayerRollState : PlayerState
         isRollFinished = true;
     }
 
-    private void RotateRollDirection()
+    private void CalculateRollDirection()
     {
         Vector2 input = player.Input.MoveInput;
-        Vector3 rollDir = input.sqrMagnitude > 0.1f
+
+        // Si le joueur ne touche pas au stick, on roule vers l'avant du perso
+        rollDirection = input.sqrMagnitude > 0.1f
             ? player.Motor.GetDirectionFromInput(input)
             : player.transform.forward;
 
-        player.transform.rotation = Quaternion.LookRotation(rollDir);
+        // On oriente immédiatement le personnage
+        player.transform.rotation = Quaternion.LookRotation(rollDirection);
     }
 }

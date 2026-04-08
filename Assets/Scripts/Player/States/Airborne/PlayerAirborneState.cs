@@ -13,32 +13,40 @@ public class PlayerAirborneState : PlayerState
         base.Update();
 
         Vector2 input = player.Input.MoveInput;
+        float airSpeed = 5f;
+
+        // --- LOGIQUE DE MOUVEMENT HORIZONTAL ---
         if (input != Vector2.zero)
         {
-            // On récupère la direction du mouvement basée sur la caméra
             Vector3 moveDir = player.Motor.GetDirectionFromInput(input);
-
-            // On définit une vitesse horizontale (ex: 5f)
-            float airSpeed = 5f;
             Vector3 targetVelocity = moveDir * airSpeed;
 
-            // On applique au Rigidbody en gardant sa vitesse de chute (Y)
             player.Rigidbody.linearVelocity = new Vector3(
                 targetVelocity.x,
-                player.Rigidbody.linearVelocity.y,
+                player.Rigidbody.linearVelocity.y, // On préserve la chute
                 targetVelocity.z
             );
 
-            // On fait pivoter le personnage vers cette direction
             player.Motor.RotateTowardsInput(input);
         }
+        else
+        {
+            // SI PAS D'INPUT : On stoppe net le mouvement horizontal (X et Z)
+            // Mais on laisse la gravité (Y) agir normalement
+            player.Rigidbody.linearVelocity = new Vector3(
+                0,
+                player.Rigidbody.linearVelocity.y,
+                0
+            );
+        }
 
+        // --- DÉTECTION DU SOL ---
         if (player.Motor.IsGrounded() && player.Rigidbody.linearVelocity.y <= 0.1f)
         {
-            // Transition vers Idle ou Move selon l'input
             player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
                 ? PlayerStateType.Move
                 : PlayerStateType.Idle);
         }
     }
+
 }

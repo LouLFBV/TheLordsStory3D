@@ -93,6 +93,7 @@ public class UIManagerSystem : MonoBehaviour
     public void OpenQuestsAndCloseOthers()
     {
         CloseAll();
+        NewQuestLog.instance.OnAffichageQuestPanel(NewQuestManager.instance.activeQuests);
         questsPanel.SetActive(true);
     }
     public void OpenEquipmentAndCloseOthers()
