@@ -36,7 +36,28 @@ public class PlayerMoveState : PlayerGroundedState
             player.StateMachine.ChangeState(PlayerStateType.Idle);
             return;
         }
+        // --- CHECK DE PENTE DANS UPDATE ---
+        if (Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit, 0.5f))
+        {
+            float slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
 
+            if (slopeAngle > 45f)
+            {
+                // 1. On coupe la vélocité physique
+                player.Rigidbody.linearVelocity = new Vector3(0, player.Rigidbody.linearVelocity.y, 0);
+
+                // 2. IMPORTANT : On coupe temporairement le Root Motion 
+                // pour que l'animation n'ignore pas la physique
+                player.Animator.applyRootMotion = false;
+
+                return;
+            }
+            else
+            {
+                // On le réactive si on est sur un sol plat
+                player.Animator.applyRootMotion = true;
+            }
+        }
         // Rotation vers l'input
         player.Motor.RotateTowardsInput(input);
 
