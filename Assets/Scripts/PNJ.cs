@@ -416,12 +416,13 @@ public class PNJ : InteractableBase
             var instance = NewQuestManager.instance.GetQuestInstance(questSO);
 
             // 1️⃣ Quête jamais acceptée
-            if (instance == null && !NewQuestManager.instance.IsFinished(questSO))
+            if (instance == null  && !NewQuestManager.instance.IsFinished(questSO))
             {
                 currentQuestSO = questSO;
                 currentQuestIndex = i; //  important
                 return;
             }
+            if (instance == null) continue;
 
             // 2️⃣ Quête en cours
             if (instance.status == QuestStatus.InProgress)
