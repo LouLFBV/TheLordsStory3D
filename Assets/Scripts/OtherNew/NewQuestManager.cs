@@ -43,6 +43,11 @@ public class NewQuestManager : MonoBehaviour
         return activeQuests.Find(q => q.data == questData);
     }
 
+    public bool IsFinished(QuestSO questData)
+    {
+        return finishedQuests.Exists(q => q.data == questData);
+    }
+
     // Vérifier progression (ex : ramasser un objet, tuer un ennemi…)
     public void UpdateQuestProgress(string target, int amount = 1, ItemData itemDataTarget = null)
     {

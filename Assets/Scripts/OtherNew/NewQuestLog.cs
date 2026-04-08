@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class NewQuestLog : MonoBehaviour
 {
@@ -112,6 +113,15 @@ public class NewQuestLog : MonoBehaviour
     {
         foreach (Transform child in parent)
             Destroy(child.gameObject);
+    }
+    public void OnAffichageQuestPanel(List<QuestInstance> listQuest)
+    {
+        foreach (var quest in listQuest)
+            CreateQuestButton(quest);
+        ClearChildren(questsFirstList);
+        ClearChildren(questsSecondList);
+
+        panelDescriptionQuest.SetActive(true);
     }
     public void ActiveDesactiveQuestText(QuestSO questSO)
     {
