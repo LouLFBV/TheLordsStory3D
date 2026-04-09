@@ -36,29 +36,38 @@ public class PlayerMoveState : PlayerGroundedState
             player.StateMachine.ChangeState(PlayerStateType.Idle);
             return;
         }
-        // --- CHECK DE PENTE DANS UPDATE ---
-        if (Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit, 0.5f))
+
+        // --- SYSTÈME DE SÉCURITÉ (Pente & Mur) ---
+        bool shouldBlockMovement = false;
+
+        // Check Pente
+        if (Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit slopeHit, 0.5f, ~0, QueryTriggerInteraction.Ignore))
         {
-            float slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
-
-            if (slopeAngle > 45f)
-            {
-                // 1. On coupe la vélocité physique
-                player.Rigidbody.linearVelocity = new Vector3(0, player.Rigidbody.linearVelocity.y, 0);
-
-                // 2. IMPORTANT : On coupe temporairement le Root Motion 
-                // pour que l'animation n'ignore pas la physique
-                player.Animator.applyRootMotion = false;
-
-                return;
-            }
-            else
-            {
-                // On le réactive si on est sur un sol plat
-                player.Animator.applyRootMotion = true;
-            }
+            float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            if (slopeAngle > 45f) shouldBlockMovement = true;
         }
-        // Rotation vers l'input
+
+        // Check Mur
+        Vector3 rayOrigin = player.transform.position + Vector3.up * 1f;
+        if (Physics.Raycast(rayOrigin, player.transform.forward, out RaycastHit wallHit, 0.7f, ~0, QueryTriggerInteraction.Ignore))
+        {
+            shouldBlockMovement = true;
+        }
+
+        // Application de la sécurité
+        if (shouldBlockMovement)
+        {
+            player.Rigidbody.linearVelocity = new Vector3(0, player.Rigidbody.linearVelocity.y, 0);
+            player.Animator.applyRootMotion = false;
+            // On peut s'arrêter là pour cette frame si on est bloqué
+            return;
+        }
+        else
+        {
+            player.Animator.applyRootMotion = true;
+        }
+
+        // --- RESTE DU CODE (Rotation, Sprint, Anim) ---
         player.Motor.RotateTowardsInput(input);
 
         // Sprint

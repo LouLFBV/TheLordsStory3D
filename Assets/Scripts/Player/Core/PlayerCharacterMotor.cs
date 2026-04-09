@@ -15,6 +15,15 @@ public class PlayerCharacterMotor : MonoBehaviour
     private Vector3 originalCapsuleCenter;
     private CapsuleCollider capsule;
 
+    [Header("Physics Materials")]
+    [SerializeField] private PhysicsMaterial frictionMaterial;
+    [SerializeField] private PhysicsMaterial slipperyMaterial;
+
+    public void SetFriction(bool hasFriction)
+    {
+        // On change le matériau du collider selon le besoin
+        capsule.material = hasFriction ? frictionMaterial : slipperyMaterial;
+    }
     private void Awake()
     {
         capsule = player.GetComponent<CapsuleCollider>();
