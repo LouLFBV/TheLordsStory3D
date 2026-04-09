@@ -98,8 +98,8 @@ public class PlayerCharacterMotor : MonoBehaviour
     public bool IsGrounded()
     {
         Vector3 start = capsule.bounds.center;
-        float radius = capsule.radius * 0.9f;
-        float rayLength = (capsule.height / 2f) - radius + 0.3f;
+        float radius = capsule.radius * 0.9f; 
+        float rayLength = (capsule.height / 2f) - radius + 0.6f;
 
         if (Physics.SphereCast(start, radius, Vector3.down, out RaycastHit hit, rayLength, ~0, QueryTriggerInteraction.Ignore))
         {

@@ -11,7 +11,8 @@ public class PlayerRollState : PlayerState
     {
         base.Enter();
         isRollFinished = false;
-
+        player.Rigidbody.linearVelocity = Vector3.zero;
+        player.Rigidbody.angularVelocity = Vector3.zero; // On vide aussi la rotation physique
         // 1. Stamina
         player.Stamina.Spend(20f);
 
@@ -37,7 +38,7 @@ public class PlayerRollState : PlayerState
 
     public override void FixedUpdate() // Utilise FixedUpdate pour la physique
     {
-        base.FixedUpdate();
+        //base.FixedUpdate();
 
         // On applique une vélocité constante vers l'avant pendant la roulade
         // Cela permet au Rigidbody de détecter les murs correctement
@@ -47,6 +48,7 @@ public class PlayerRollState : PlayerState
             velocity.y = player.Rigidbody.linearVelocity.y; // On garde la gravité actuelle
             player.Rigidbody.linearVelocity = velocity; 
         }
+        Debug.Log($"rollDirection: {rollDirection}, velocity: {player.Rigidbody.linearVelocity}");
     }
 
     public override void Exit()
@@ -67,12 +69,16 @@ public class PlayerRollState : PlayerState
     {
         Vector2 input = player.Input.MoveInput;
 
-        // Si le joueur ne touche pas au stick, on roule vers l'avant du perso
-        rollDirection = input.sqrMagnitude > 0.1f
-            ? player.Motor.GetDirectionFromInput(input)
-            : player.transform.forward;
+        if (input.sqrMagnitude > 0.1f)
+        {
+            // On normalise TOUJOURS pour que la direction ait une force de 1.0
+            rollDirection = player.Motor.GetDirectionFromInput(input).normalized;
+        }
+        else
+        {
+            rollDirection = player.transform.forward.normalized;
+        }
 
-        // On oriente immédiatement le personnage
         player.transform.rotation = Quaternion.LookRotation(rollDirection);
     }
 }

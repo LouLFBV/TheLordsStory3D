@@ -11,42 +11,48 @@ public class PlayerAirborneState : PlayerState
     }
     public override void Update()
     {
-        base.Update();
-
+        // On garde la base
         Vector2 input = player.Input.MoveInput;
         float airSpeed = 5f;
 
-        // --- LOGIQUE DE MOUVEMENT HORIZONTAL ---
         if (input != Vector2.zero)
         {
             Vector3 moveDir = player.Motor.GetDirectionFromInput(input);
             Vector3 targetVelocity = moveDir * airSpeed;
 
-            player.Rigidbody.linearVelocity = new Vector3(
-                targetVelocity.x,
-                player.Rigidbody.linearVelocity.y, // On préserve la chute
-                targetVelocity.z
-            );
+            // --- DÉTECTION DE MUR INTELLIGENTE ---
+            // On check devant
+            if (Physics.Raycast(player.transform.position + Vector3.up * 1f, moveDir, out RaycastHit wallHit, 0.8f, ~0, QueryTriggerInteraction.Ignore))
+            {
+                // 1. Calcul de la direction de glisse (on projette le mouvement sur le plan du mur)
+                // Cela empêche la force de pousser "vers le haut" ou "à travers"
+                Vector3 frictionFreeMove = Vector3.ProjectOnPlane(targetVelocity, wallHit.normal);
+
+                // 2. On force la direction vers le bas ou l'horizontale, jamais vers le haut !
+                float verticalVel = player.Rigidbody.linearVelocity.y;
+                if (verticalVel > 0) verticalVel = 0;
+
+                player.Rigidbody.linearVelocity = new Vector3(frictionFreeMove.x, verticalVel, frictionFreeMove.z);
+            }
+            else
+            {
+                // Mouvement aérien normal
+                player.Rigidbody.linearVelocity = new Vector3(targetVelocity.x, player.Rigidbody.linearVelocity.y, targetVelocity.z);
+            }
 
             player.Motor.RotateTowardsInput(input);
         }
         else
         {
-            // SI PAS D'INPUT : On stoppe net le mouvement horizontal (X et Z)
-            // Mais on laisse la gravité (Y) agir normalement
-            player.Rigidbody.linearVelocity = new Vector3(
-                0,
-                player.Rigidbody.linearVelocity.y,
-                0
-            );
+            // Freinage progressif
+            Vector3 currentVel = player.Rigidbody.linearVelocity;
+            player.Rigidbody.linearVelocity = new Vector3(currentVel.x * 0.9f, currentVel.y, currentVel.z * 0.9f);
         }
 
-        // --- DÉTECTION DU SOL ---
-        if (player.Motor.IsGrounded() && player.Rigidbody.linearVelocity.y <= 0.5f)
+        // --- SORTIE D'ÉTAT ---
+        if (player.Motor.IsGrounded())
         {
-            player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero
-                ? PlayerStateType.Move
-                : PlayerStateType.Idle);
+            player.StateMachine.ChangeState(player.Input.MoveInput != Vector2.zero ? PlayerStateType.Move : PlayerStateType.Idle);
         }
     }
 
