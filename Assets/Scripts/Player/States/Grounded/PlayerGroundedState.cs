@@ -28,6 +28,12 @@ public class PlayerGroundedState : PlayerState
         // 2. PRIORITÉ : Le Saut
         if (player.Input.JumpPressed)
         {
+            // On vérifie si assez de temps s'est écoulé depuis le dernier saut
+            if (Time.time < player.lastJumpTime + player.jumpCooldown)
+            {
+                return; // Trop tôt, on ignore l'input
+            }
+
             // On empêche le saut pendant les transitions d'équipement
             if (player.StateMachine.CurrentState is PlayerEquipState ||
                 player.StateMachine.CurrentState is PlayerUnequipState)
@@ -35,6 +41,8 @@ public class PlayerGroundedState : PlayerState
                 return;
             }
 
+            // Si on arrive ici, le saut est autorisé
+            player.lastJumpTime = Time.time; // On enregistre le moment du saut
             player.Input.UseJumpInput();
             player.StateMachine.ChangeState(PlayerStateType.Jump);
             return;
@@ -80,33 +88,6 @@ public class PlayerGroundedState : PlayerState
             return;
         }
     }
-
-    //public override void FixedUpdate()
-    //{
-    //    base.FixedUpdate();
-
-    //    // 1. Si on n'a pas d'input, on doit freiner proprement
-    //    if (player.Input.MoveInput == Vector2.zero)
-    //    {
-    //        StopMovementOnSlopes();
-    //    }
-
-    //}
-
-    //private void StopMovementOnSlopes()
-    //{
-    //    // Si l'input est nul, on "verrouille" le personnage
-    //    if (player.Input.MoveInput.sqrMagnitude < 0.01f)
-    //    {
-    //        // 1. On annule toute vitesse horizontale immédiatement
-    //        // 2. On applique une force vers le bas (-2f) pour "plaquer" le perso au sol
-    //        // Cela empêche le glissement dû à la pente.
-    //        player.Rigidbody.linearVelocity = new Vector3(0, -2f, 0);
-
-    //        // 3. On coupe toute rotation résiduelle
-    //        player.Rigidbody.angularVelocity = Vector3.zero;
-    //    }
-    //}
 
     private void HandleAttackInput(bool isSpecialAttack = false)
     {

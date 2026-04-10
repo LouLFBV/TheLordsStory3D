@@ -38,34 +38,27 @@ public class PlayerMoveState : PlayerGroundedState
         }
 
         // --- SYSTÈME DE SÉCURITÉ (Pente & Mur) ---
-        bool shouldBlockMovement = false;
+        //bool isBlocked = false;
 
-        // Check Pente
-        if (Physics.Raycast(player.transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit slopeHit, 0.5f, ~0, QueryTriggerInteraction.Ignore))
-        {
-            float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            if (slopeAngle > 45f) shouldBlockMovement = true;
-        }
+        //// Check Mur/Pente
+        //Vector3 rayOrigin = player.transform.position + Vector3.up * 1f;
+        //if (Physics.Raycast(rayOrigin, player.transform.forward, 0.7f, ~0, QueryTriggerInteraction.Ignore))
+        //{
+        //    isBlocked = true;
+        //}
 
-        // Check Mur
-        Vector3 rayOrigin = player.transform.position + Vector3.up * 1f;
-        if (Physics.Raycast(rayOrigin, player.transform.forward, out RaycastHit wallHit, 0.7f, ~0, QueryTriggerInteraction.Ignore))
-        {
-            shouldBlockMovement = true;
-        }
-
-        // Application de la sécurité
-        if (shouldBlockMovement)
-        {
-            player.Rigidbody.linearVelocity = new Vector3(0, player.Rigidbody.linearVelocity.y, 0);
-            player.Animator.applyRootMotion = false;
-            // On peut s'arrêter là pour cette frame si on est bloqué
-            return;
-        }
-        else
-        {
-            player.Animator.applyRootMotion = true;
-        }
+        //if (isBlocked)
+        //{
+        //    // On ne coupe la vélocité QUE si on n'est pas en train de transitionner vers la roulade
+        //    // et on utilise une approche plus douce
+        //    player.Animator.applyRootMotion = false;
+        //    Vector3 v = player.Rigidbody.linearVelocity;
+        //    player.Rigidbody.linearVelocity = new Vector3(0, v.y, 0);
+        //}
+        //else
+        //{
+        //    player.Animator.applyRootMotion = true;
+        //}
 
         // --- RESTE DU CODE (Rotation, Sprint, Anim) ---
         player.Motor.RotateTowardsInput(input);
