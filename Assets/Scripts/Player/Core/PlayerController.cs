@@ -48,7 +48,11 @@ public class PlayerController : MonoBehaviour, ICombatant
     public HandWeapon PendingWeaponType { get; set; }
     public HandWeapon PendingUnequipType { get; set; }
 
-    [Header("Others Settings")]
+    [Header("Jump Settings")]
+    public float jumpCooldown = 0.5f; // Temps entre deux sauts
+    public float lastJumpTime; // Stocke le moment du dernier saut
+
+    [Header("Roll Settings")]
     public float rollForce = 4f; 
 
 

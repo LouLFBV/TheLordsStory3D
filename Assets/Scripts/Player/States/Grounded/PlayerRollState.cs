@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerRollState : PlayerState
 {
-    private bool isRollFinished; 
+    private bool isRollFinished;
     private Vector3 rollDirection;
 
     public PlayerRollState(PlayerController player) : base(player) { }
@@ -11,20 +11,21 @@ public class PlayerRollState : PlayerState
     {
         base.Enter();
         isRollFinished = false;
+
+        // --- RESET TOTAL ---
+        player.Rigidbody.isKinematic = true;  // On "éteint" la physique
+        player.Rigidbody.isKinematic = false; // On la rallume immédiatement
         player.Rigidbody.linearVelocity = Vector3.zero;
-        player.Rigidbody.angularVelocity = Vector3.zero; // On vide aussi la rotation physique
-        // 1. Stamina
-        player.Stamina.Spend(20f);
+        player.Rigidbody.angularVelocity = Vector3.zero;
 
-        // 2. Animation & Root Motion
+        player.Motor.SetFriction(false); // Utilise ton SlipperyMaterial à 0 friction
         player.Animator.applyRootMotion = false;
-        player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
 
-        // 3. Collider & Invincibilité
+        player.Stamina.Spend(20f); 
+        player.Animator.SetTrigger(AnimatorHashes.rollTrigger);
         player.Motor.StartRollCollider();
         player.Health.SetInvulnerable(true);
 
-        // 4. Direction
         CalculateRollDirection();
     }
 
@@ -36,19 +37,19 @@ public class PlayerRollState : PlayerState
         }
     }
 
-    public override void FixedUpdate() // Utilise FixedUpdate pour la physique
+    public override void FixedUpdate()
     {
-        //base.FixedUpdate();
-
-        // On applique une vélocité constante vers l'avant pendant la roulade
-        // Cela permet au Rigidbody de détecter les murs correctement
         if (!isRollFinished)
         {
-            Vector3 velocity = rollDirection * player.rollForce;
-            velocity.y = player.Rigidbody.linearVelocity.y; // On garde la gravité actuelle
-            player.Rigidbody.linearVelocity = velocity; 
+            // LOG 3 : On regarde si la vélocité a changé entre la frame précédente et celle-ci (pollution externe ?)
+            Vector3 velBefore = player.Rigidbody.linearVelocity;
+
+            Vector3 targetVelocity = rollDirection * player.rollForce;
+            targetVelocity.y = player.Rigidbody.linearVelocity.y;
+
+            player.Rigidbody.linearVelocity = targetVelocity;
+
         }
-        Debug.Log($"rollDirection: {rollDirection}, velocity: {player.Rigidbody.linearVelocity}");
     }
 
     public override void Exit()
@@ -59,7 +60,6 @@ public class PlayerRollState : PlayerState
         player.Animator.applyRootMotion = true;
     }
 
-    // Cette méthode sera appelée par le PlayerController via un Animation Event
     public void OnRollAnimationEnd()
     {
         isRollFinished = true;
@@ -70,14 +70,9 @@ public class PlayerRollState : PlayerState
         Vector2 input = player.Input.MoveInput;
 
         if (input.sqrMagnitude > 0.1f)
-        {
-            // On normalise TOUJOURS pour que la direction ait une force de 1.0
             rollDirection = player.Motor.GetDirectionFromInput(input).normalized;
-        }
         else
-        {
             rollDirection = player.transform.forward.normalized;
-        }
 
         player.transform.rotation = Quaternion.LookRotation(rollDirection);
     }

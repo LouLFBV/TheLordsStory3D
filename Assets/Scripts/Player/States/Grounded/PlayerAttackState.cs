@@ -40,7 +40,7 @@ public class PlayerAttackState : PlayerGroundedState
     public override void Update()
     {
         // 1. Buffer d'input : si on clique pendant que canCombo est vrai
-        if (player.Input.AttackPressed && player.Combat.CanComboNext())
+        if (player.Input.AttackSpecialPressed && player.Combat.CanComboNext())
         {
             Debug.Log("Input d'attaque enregistré pour le combo !");
             player.Input.UseAttackInput();
