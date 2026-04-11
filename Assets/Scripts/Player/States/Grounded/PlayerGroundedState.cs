@@ -77,7 +77,7 @@ public class PlayerGroundedState : PlayerState
         }
 
         // 6. PRIORITÉ : Le Crouch
-        HandleCrouchInput();
+        //HandleCrouchInput();
 
         // 7. PRIORITÉ : Le LockOn
         if (player.Input.LockOnPressed)

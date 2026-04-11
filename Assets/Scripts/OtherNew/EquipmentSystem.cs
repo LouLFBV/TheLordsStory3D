@@ -147,6 +147,12 @@ public class EquipmentSystem : MonoBehaviour
                 element.SetActive(true);
             }
             equipmentLibraryItem.itemPrefab.SetActive(false);
+
+            foreach (GameObject element in equipmentLibraryItem.elementsToDisableEquipment)
+            {
+                element.SetActive(true);
+            }
+            equipmentLibraryItem.itemPrefabEquipment.SetActive(false);
         }
         if (currentItem)
         {
@@ -365,6 +371,16 @@ public class EquipmentSystem : MonoBehaviour
             element.SetActive(false);
         }
         equipmentLibraryItem.itemPrefab.SetActive(true);
+
+        ActiveItemVisuelInEquipment(equipmentLibraryItem);
+    }
+    private void ActiveItemVisuelInEquipment(EquipmentLibraryItem equipmentLibraryItem)
+    {
+        foreach (GameObject element in equipmentLibraryItem.elementsToDisableEquipment)
+        {
+            element.SetActive(false);
+        }
+        equipmentLibraryItem.itemPrefabEquipment.SetActive(true);
     }
 }
 
