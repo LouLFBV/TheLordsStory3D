@@ -44,6 +44,12 @@ public class EquipmentLibrary : MonoBehaviour
 public class EquipmentLibraryItem
 {
     public ItemData itemData;
+
+    [Header("Player In Game")]
     public GameObject itemPrefab;
     public GameObject[] elementsToDisable;
+
+    [Header("Player In Equipment Panel")]
+    public GameObject itemPrefabEquipment;
+    public GameObject[] elementsToDisableEquipment;
 }

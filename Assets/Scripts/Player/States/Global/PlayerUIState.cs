@@ -19,6 +19,7 @@ public class PlayerUIState : PlayerState
         }
 
         player.Input.SwitchActionMap("UI");
+        player.OnOpenUIEvent(true);
         UIManagerSystem.Instance.ToggleCursor(true);
     }
 
@@ -41,6 +42,7 @@ public class PlayerUIState : PlayerState
         }
         player.RequestedPanelType = UIPanelType.None;
         player.Input.SwitchActionMap("Player");
+        player.OnOpenUIEvent(false);
         UIManagerSystem.Instance.ToggleCursor(false);
         InventorySystem.instance.itemActionsSystem.CloseActionPanel();
     }

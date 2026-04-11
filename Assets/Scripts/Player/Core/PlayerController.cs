@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICombatant
@@ -53,7 +54,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     public float lastJumpTime; // Stocke le moment du dernier saut
 
     [Header("Roll Settings")]
-    public float rollForce = 4f; 
+    public float rollForce = 4f;
 
 
     [Header("Library")]
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour, ICombatant
     [Header("Others")]
     [SerializeField] private InteractSystem interactSystem;
     public UIPanelType RequestedPanelType { get; set; }
+    public event Action<bool> OnOpenUI;
     private UIPanelType? _previousPanelType = null;
     public ItemData ItemQueuedToEquip;
     public bool IsDead { get; set; }
@@ -264,6 +266,10 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     public float GetBaseWeaponDamage() => PendingWeaponItem.attackPoints;
 
+    public void OnOpenUIEvent(bool isOpen)
+    {
+        OnOpenUI?.Invoke(isOpen);
+    }
 
     private void OnEnable()
     {
