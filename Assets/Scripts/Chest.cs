@@ -231,6 +231,8 @@ public class Chest : InteractableBase
 
     private void ShowDescriptionPanel()
     {
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(descriptionPanel);
         descriptionPanel.SetActive(true);
 
         nameText.text = rewardItem.itemName;

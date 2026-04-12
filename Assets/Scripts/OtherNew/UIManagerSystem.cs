@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class UIManagerSystem : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class UIManagerSystem : MonoBehaviour
     [SerializeField] private GameObject tooltipPanel;
 
     [SerializeField] private GameObject pauseMenuPanel;
+
+    [Header("HUD Elements")]
+    public List<GameObject> hudElements;
 
     void Awake()
     {
@@ -73,6 +77,7 @@ public class UIManagerSystem : MonoBehaviour
         mapPanel.SetActive(false);
         tooltipPanel.SetActive(false);
         NewQuestLog.instance.DesactivePanel();
+        ActiveDesactiveHUD(true);
     }
 
 
@@ -99,12 +104,22 @@ public class UIManagerSystem : MonoBehaviour
     public void OpenEquipmentAndCloseOthers()
     {
         CloseAll();
+        ActiveDesactiveHUD(false);
         equipmentPanel.SetActive(true);
     }
     public void OpenMapAndCloseOthers()
     {
         CloseAll();
         mapPanel.SetActive(true);
+    }
+
+    private void ActiveDesactiveHUD(bool actived)
+    {
+        foreach (GameObject element in hudElements)
+        {
+            if (element != null)
+                element.SetActive(actived);
+        }
     }
     #endregion 
 }
