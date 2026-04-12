@@ -34,6 +34,9 @@ public class PopupDescription : MonoBehaviour
     }
     private void ShowDescriptionPanel(string desc)
     {
+
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(popupDescriptionPanel);
         popupDescriptionPanel.SetActive(true);
         descriptionText.text = desc;
 
