@@ -49,6 +49,10 @@ public class ThirdPersonCameraController : MonoBehaviour
     [Header("Lock-On Settings")]
     [SerializeField] private float lockOnHeight = 0.5f;
 
+    [Header("Lock Transition")]
+    private bool _isLocked = false;
+    public bool IsLocked => _isLocked;
+
     // Valeurs de travail
     private Vector3 currentPivotOffset;
     private Vector3 currentCamOffset;
@@ -84,10 +88,16 @@ public class ThirdPersonCameraController : MonoBehaviour
 
         yaw = target.eulerAngles.y;
         currentCollisionDistance = defaultCamOffset.magnitude;
+
     }
 
+    private void Start()
+    {
+        _isLocked = false;
+    }
     private void LateUpdate()
     {
+        if (_isLocked) return; // Si la caméra est verrouillée, on ignore tout input de rotation
         HandleInput();
         UpdateCameraPosition();
     }
@@ -187,6 +197,18 @@ public class ThirdPersonCameraController : MonoBehaviour
     }
     public void SetFOV(float fov) => targetFOV = fov;
     public void ResetFOV() => targetFOV = defaultFOV;
+    public void LockCamera() => _isLocked = true;
+    public void UnlockCamera() => _isLocked = false;
+
+    public void SetLockCamera(bool locked)
+    {
+        _isLocked = locked;
+    }
+    public void SetRotation(float newYaw, float newPitch)
+    {
+        yaw = newYaw;
+        pitch = newPitch;
+    }
 }
 
 public static class CameraEvents

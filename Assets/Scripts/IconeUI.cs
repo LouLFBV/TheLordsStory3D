@@ -4,6 +4,7 @@ using System.Collections;
 
 public class IconeUI : MonoBehaviour
 {
+    [SerializeField] private string actionName = "Interact";
     private Image icone;
     private DeviceType currentDevice;
 
@@ -54,7 +55,7 @@ public class IconeUI : MonoBehaviour
             return;
 
         InputRebindManager.UpdateBindingDisplayForAction(
-            InputProvider.Instance.UIInput.actions["Interact"],
+            InputProvider.Instance.UIInput.actions[actionName],
             icone,
             currentDevice
         );

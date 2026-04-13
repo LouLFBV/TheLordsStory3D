@@ -47,6 +47,9 @@ public class EnemyController : MonoBehaviour, ICombatant
     public EnemyStunnedState StunnedState { get; private set; }
     public EnemyDeathState DeathState { get; private set; }
 
+    [Header("Other")]
+    private WorldObjectID _worldID; 
+
     private void Awake()
     {
         // 1. Initialisation des composants physiques
@@ -102,6 +105,8 @@ public class EnemyController : MonoBehaviour, ICombatant
         {
             cooldown.nextAttackTime = 0f; // S'assure que toutes les attaques sont prêtes au départ
         }
+
+        _worldID = GetComponent<WorldObjectID>();
     }
 
     private void Start()
@@ -276,6 +281,11 @@ public class EnemyController : MonoBehaviour, ICombatant
         NewQuestManager.instance.UpdateQuestProgress(AIManager.GetData().enemyType.ToString(), 1);
         StateMachine.ChangeState(EnemyStateType.Death);
 
+        if (_worldID != null)
+        {
+            WorldStateManager.Instance.RegisterCollectedObject(_worldID.UniqueID);
+            Debug.LogWarning($"<color=purple>[{name}] registered as collected in WorldStateManager, with ID : {_worldID.UniqueID}.</color>");
+        }
         if (barriereDeCombat != null)
         {
             Debug.Log("Raising the combat barrier.");
