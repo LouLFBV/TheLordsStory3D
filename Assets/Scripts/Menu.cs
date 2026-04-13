@@ -27,8 +27,11 @@ public class Menu : MonoBehaviour
     [SerializeField]
     private Toggle fullScreenToggle;
 
-    [SerializeField]
-    private GameObject optionsPanel;
+    [Header("Settings Panel")]
+    [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject controllerInputPanel;
+    [SerializeField] private GameObject keyboardInpuPanel;
 
     [SerializeField] private bool isMainMenu = false;
     [SerializeField] private GameObject partiesPanel;
@@ -179,10 +182,6 @@ public class Menu : MonoBehaviour
     }
 
 
-    public void EnableDisableOptionsPanel()
-    {
-        optionsPanel.SetActive(!optionsPanel.activeSelf);
-    }
 
     #region Save System
 
@@ -261,6 +260,46 @@ public class Menu : MonoBehaviour
         // ouvrir un popup "Êtes-vous sûr ?"
     }
 
+
+    #endregion
+
+    #region Settings Panel
+
+    public void OpenSettingsPanel()
+    {
+        settingsPanel.SetActive(true);
+        optionsPanel.SetActive(true);
+        controllerInputPanel.SetActive(false);
+        keyboardInpuPanel.SetActive(false);
+    }
+
+    public void OpenControllerInputPanel()
+    {
+        controllerInputPanel.SetActive(true);
+        keyboardInpuPanel.SetActive(false);
+        optionsPanel.SetActive(false);
+    }
+
+    public void OpenKeyboardInputPanel()
+    {
+        controllerInputPanel.SetActive(false);
+        keyboardInpuPanel.SetActive(true);
+        optionsPanel.SetActive(false);
+    }
+
+    public void OpenOptionsPanel()
+    {
+        optionsPanel.SetActive(true);
+        controllerInputPanel.SetActive(false);
+        keyboardInpuPanel.SetActive(false);
+    }
+    public void CloseAllSettingsPanel()
+    {
+        settingsPanel.SetActive(false);
+        controllerInputPanel.SetActive(false);
+        keyboardInpuPanel.SetActive(false);
+        optionsPanel.SetActive(false);
+    }
 
     #endregion
 }

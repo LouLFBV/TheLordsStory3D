@@ -158,6 +158,7 @@ public class NewItemActionsSystem : MonoBehaviour
             destroyItemButton.gameObject.SetActive(false);
             desequipmentItemButton.gameObject.SetActive(!InventorySystem.instance.IsFullEquipment());
         }
+        destroyItemButton.gameObject.SetActive(false);
         //actionPanel.transform.position = slotPosition;
         itemNameText.text = item.itemName;
         itemDescriptionText.text = item.description;
@@ -219,9 +220,9 @@ public class NewItemActionsSystem : MonoBehaviour
 
     public void DestroyActionButton()
     {
-        InventorySystem.instance.RemoveItem(itemCurrentlySelected);
-        CloseActionPanel();
-        InventorySystem.instance.RefreshContent();
+        //InventorySystem.instance.RemoveItem(itemCurrentlySelected);
+        //CloseActionPanel();
+        //InventorySystem.instance.RefreshContent();
     }
 
     public void DesequipActionButton()
