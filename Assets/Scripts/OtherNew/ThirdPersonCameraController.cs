@@ -17,12 +17,6 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float distance = 3f; // Gardé selon ta demande
     [SerializeField] private float height = 1.7f; // Gardé selon ta demande
 
-    [Header("Speeds")]
-    [SerializeField] private float rotationSpeed = 180f;
-    [SerializeField] private float verticalSpeed = 120f;
-    public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = value; }
-    public float VerticalSpeed { get => verticalSpeed; set => verticalSpeed = value; }
-
     [Header("FOV Settings")]
     public float SprintFOV { get; private set; }
     [SerializeField] private float sprintFOV = 80f;
@@ -110,8 +104,8 @@ public class ThirdPersonCameraController : MonoBehaviour
             return; // On ignore l'input de la souris/stick
         }
         Vector2 look = input.MouseLook + input.GamepadLook;
-        yaw += look.x * rotationSpeed * Time.deltaTime;
-        pitch -= look.y * verticalSpeed * Time.deltaTime;
+        yaw += look.x  * Time.deltaTime;
+        pitch -= look.y * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle);
     }
     // La nouvelle méthode qui calcule la rotation vers l'ennemi
