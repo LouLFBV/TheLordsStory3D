@@ -5,6 +5,7 @@ public class UIManagerSystem : MonoBehaviour
 {
     public static UIManagerSystem Instance;
 
+    [SerializeField] private Menu menu;
     // On garde les valeurs en mémoire pour les rétablir plus tard
     private float _defaultRotationSpeed;
     private float _defaultVerticalSpeed;
@@ -76,6 +77,7 @@ public class UIManagerSystem : MonoBehaviour
         equipmentPanel.SetActive(false);
         mapPanel.SetActive(false);
         tooltipPanel.SetActive(false);
+        menu.CloseAllSettingsPanel();
         NewQuestLog.instance.DesactivePanel();
         ActiveDesactiveHUD(true);
     }
