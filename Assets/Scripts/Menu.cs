@@ -28,8 +28,8 @@ public class Menu : MonoBehaviour
     private Toggle fullScreenToggle;
 
     [Header("Settings Panel")]
-    [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject controllerInputPanel;
     [SerializeField] private GameObject keyboardInpuPanel;
 
