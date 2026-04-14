@@ -36,6 +36,11 @@ public class Menu : MonoBehaviour
     [SerializeField] private bool isMainMenu = false;
     [SerializeField] private GameObject partiesPanel;
 
+    [Header("Input Settings UI")]
+    [SerializeField] private Slider mouseSensitivitySlider;
+    [SerializeField] private Slider gamepadSensitivitySlider;
+    [SerializeField] private Slider deadzoneSlider;
+
 
     private int pendingSlot;
     private bool isNewGame;
@@ -52,6 +57,7 @@ public class Menu : MonoBehaviour
     {
         if (isMainMenu)
         {
+            Time.timeScale = 1f; // Assurez-vous que le temps est normalisé au démarrage du menu
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -114,6 +120,14 @@ public class Menu : MonoBehaviour
             {
                 currentResolutionIndex = i;
             }
+        }
+
+        if (PlayerController.Instance != null && PlayerController.Instance.Input != null)
+        {
+            var input = PlayerController.Instance.Input;
+            mouseSensitivitySlider.value = input.mouseSensitivity;
+            gamepadSensitivitySlider.value = input.gamepadSensitivity;
+            deadzoneSlider.value = input.stickDeadzone;
         }
 
         resolutionDropdown.AddOptions(resolutionsOptions);
@@ -299,6 +313,35 @@ public class Menu : MonoBehaviour
         controllerInputPanel.SetActive(false);
         keyboardInpuPanel.SetActive(false);
         optionsPanel.SetActive(false);
+        PlayerPrefs.Save();
+    }
+
+    public void OnMouseSensitivityChanged(float value)
+    {
+        if (PlayerController.Instance != null && PlayerController.Instance.Input != null)
+        {
+            PlayerController.Instance.Input.mouseSensitivity = value;
+            // Optionnel : Sauvegarder immédiatement
+            PlayerPrefs.SetFloat("MouseSensi", value);
+        }
+    }
+
+    public void OnGamepadSensitivityChanged(float value)
+    {
+        if (PlayerController.Instance != null && PlayerController.Instance.Input != null)
+        {
+            PlayerController.Instance.Input.gamepadSensitivity = value;
+            PlayerPrefs.SetFloat("GamepadSensi", value);
+        }
+    }
+
+    public void OnDeadzoneChanged(float value)
+    {
+        if (PlayerController.Instance != null && PlayerController.Instance.Input != null)
+        {
+            PlayerController.Instance.Input.stickDeadzone = value;
+            PlayerPrefs.SetFloat("Deadzone", value);
+        }
     }
 
     #endregion

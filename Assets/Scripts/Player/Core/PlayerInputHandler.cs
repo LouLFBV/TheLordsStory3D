@@ -204,4 +204,5 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseAttackSpecialInput() => AttackSpecialPressed = false;
     public void UseLockOnInput() => LockOnPressed = false;
     public void UseSubmitInput() => SubmitPressed = false;
+    public void UseDropActionInput() => DropActionPressed = false;
 }

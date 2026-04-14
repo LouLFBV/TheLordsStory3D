@@ -79,15 +79,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dodge",
-                    "type": "Button",
-                    "id": "dc1bf645-9242-49d8-ab0e-93592224d4d2",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ForwardRoll",
                     "type": "Button",
                     "id": "6fbfdc24-b80e-4dd5-baf7-97c176ec3122",
@@ -290,9 +281,9 @@
                 {
                     "name": "2D Vector",
                     "id": "b90fc0cf-2333-4782-8798-454bf6e993c7",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
-                    "processors": "StickDeadzone",
+                    "processors": "",
                     "groups": "",
                     "action": "LookGamepad",
                     "isComposite": true,
@@ -361,28 +352,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Emote",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c0118082-e59a-4e47-80d8-0bf9b146c52c",
-                    "path": "<Keyboard>/v",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dodge",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4ed4be70-571e-4c2c-a5e7-6c80a550df33",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Dodge",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -488,7 +457,7 @@
                 {
                     "name": "",
                     "id": "cdc32ba1-681d-4b66-a9d7-371fbe470f54",
-                    "path": "<Gamepad>/dpad/left",
+                    "path": "<Gamepad>/dpad/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -532,7 +501,7 @@
                 {
                     "name": "",
                     "id": "0b76ea98-8be8-43dc-8e42-93b62547343c",
-                    "path": "<Gamepad>/dpad/up",
+                    "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -682,6 +651,17 @@
                     "action": "LockOn",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "871fa7ad-3b22-4da8-8622-77e741bb837c",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockOn",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -793,7 +773,7 @@
                 {
                     "name": "Joystick",
                     "id": "a0eace3b-e30c-4f1f-8075-b0b2ab368a2d",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

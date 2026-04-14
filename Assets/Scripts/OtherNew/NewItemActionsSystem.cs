@@ -77,7 +77,7 @@ public class NewItemActionsSystem : MonoBehaviour
         // Détruire
         else if (player.Input.DestroyActionPressed && destroyItemButton.gameObject.activeInHierarchy)
         {
-            DestroyActionButton();
+            //DestroyActionButton();
         }
 
         // Déséquiper
@@ -216,13 +216,15 @@ public class NewItemActionsSystem : MonoBehaviour
         instantiatedItem.transform.position = dropPoint.position;
         instantiatedItem.GetComponent<Item>().enableFloating = true;
         DestroyActionButton();
+        player.Input.UseDropActionInput();
+
     }
 
     public void DestroyActionButton()
     {
-        //InventorySystem.instance.RemoveItem(itemCurrentlySelected);
-        //CloseActionPanel();
-        //InventorySystem.instance.RefreshContent();
+        InventorySystem.instance.RemoveItem(itemCurrentlySelected);
+        CloseActionPanel();
+        InventorySystem.instance.RefreshContent();
     }
 
     public void DesequipActionButton()

@@ -165,15 +165,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Dodge"",
-                    ""type"": ""Button"",
-                    ""id"": ""dc1bf645-9242-49d8-ab0e-93592224d4d2"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""ForwardRoll"",
                     ""type"": ""Button"",
                     ""id"": ""6fbfdc24-b80e-4dd5-baf7-97c176ec3122"",
@@ -376,9 +367,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""b90fc0cf-2333-4782-8798-454bf6e993c7"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
-                    ""processors"": ""StickDeadzone"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""LookGamepad"",
                     ""isComposite"": true,
@@ -447,28 +438,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Emote"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c0118082-e59a-4e47-80d8-0bf9b146c52c"",
-                    ""path"": ""<Keyboard>/v"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Dodge"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""4ed4be70-571e-4c2c-a5e7-6c80a550df33"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Dodge"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -574,7 +543,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""cdc32ba1-681d-4b66-a9d7-371fbe470f54"",
-                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""path"": ""<Gamepad>/dpad/up"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -618,7 +587,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0b76ea98-8be8-43dc-8e42-93b62547343c"",
-                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""path"": ""<Gamepad>/dpad/left"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -768,6 +737,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""LockOn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""871fa7ad-3b22-4da8-8622-77e741bb837c"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LockOn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -879,7 +859,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""Joystick"",
                     ""id"": ""a0eace3b-e30c-4f1f-8075-b0b2ab368a2d"",
-                    ""path"": ""2DVector"",
+                    ""path"": ""2DVector(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -1342,7 +1322,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
         m_Player_LookGamepad = m_Player.FindAction("LookGamepad", throwIfNotFound: true);
         m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
-        m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
         m_Player_ForwardRoll = m_Player.FindAction("ForwardRoll", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
@@ -1456,7 +1435,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_LookMouse;
     private readonly InputAction m_Player_LookGamepad;
     private readonly InputAction m_Player_Emote;
-    private readonly InputAction m_Player_Dodge;
     private readonly InputAction m_Player_ForwardRoll;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Menu;
@@ -1511,10 +1489,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Emote".
         /// </summary>
         public InputAction @Emote => m_Wrapper.m_Player_Emote;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Dodge".
-        /// </summary>
-        public InputAction @Dodge => m_Wrapper.m_Player_Dodge;
         /// <summary>
         /// Provides access to the underlying input action "Player/ForwardRoll".
         /// </summary>
@@ -1609,9 +1583,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Emote.started += instance.OnEmote;
             @Emote.performed += instance.OnEmote;
             @Emote.canceled += instance.OnEmote;
-            @Dodge.started += instance.OnDodge;
-            @Dodge.performed += instance.OnDodge;
-            @Dodge.canceled += instance.OnDodge;
             @ForwardRoll.started += instance.OnForwardRoll;
             @ForwardRoll.performed += instance.OnForwardRoll;
             @ForwardRoll.canceled += instance.OnForwardRoll;
@@ -1680,9 +1651,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Emote.started -= instance.OnEmote;
             @Emote.performed -= instance.OnEmote;
             @Emote.canceled -= instance.OnEmote;
-            @Dodge.started -= instance.OnDodge;
-            @Dodge.performed -= instance.OnDodge;
-            @Dodge.canceled -= instance.OnDodge;
             @ForwardRoll.started -= instance.OnForwardRoll;
             @ForwardRoll.performed -= instance.OnForwardRoll;
             @ForwardRoll.canceled -= instance.OnForwardRoll;
@@ -2018,13 +1986,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEmote(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Dodge" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDodge(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ForwardRoll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

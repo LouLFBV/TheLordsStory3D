@@ -16,9 +16,9 @@ public class HitBoxAttack : MonoBehaviour
         // --- Gestion des dégâts sur le joueur ---
         if (other.CompareTag("Player"))
         {
-            if (other.TryGetComponent<PlayerStats>(out var playerHealth))
+            if (other.TryGetComponent<DamageReceiver>(out var playerHealth))
             {
-                playerHealth.TakeDamage(damageAmount, damageType);
+                playerHealth.TakeDamage(damageAmount, 20, damageType);
             }
         }
 
