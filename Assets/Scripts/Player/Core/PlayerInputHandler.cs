@@ -3,10 +3,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public Vector2 MoveInput { get; private set; }
 
+    [Header("Mouse Settings")]
+    public float mouseSensitivity = 1f;
+
+    [Header("Gamepad Settings")]
+    public float gamepadSensitivity = 5f;
+    public float stickDeadzone = 0.15f;
+
+    public Vector2 MoveInput { get; private set; }
     public Vector2 MouseLook { get; private set; }
     public Vector2 GamepadLook { get; private set; }
+    public Vector2 NavigateLook { get; private set; }
     public bool AttackPressed { get; private set; }
     public bool AttackSpecialPressed { get; private set; }
     public bool RollPressed { get; private set; }
@@ -43,8 +51,34 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        input.actions["Move"].performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
-        input.actions["Move"].canceled += ctx => MoveInput = Vector2.zero;
+        // --- MOVE avec Deadzone ---
+        input.actions["Move"].performed += ctx => {
+            Vector2 raw = ctx.ReadValue<Vector2>();
+            // Si le stick est moins incliné que la deadzone, on met à 0
+            MoveInput = (raw.magnitude < stickDeadzone) ? Vector2.zero : raw;
+        };
+        input.actions["Move"].canceled += _ => MoveInput = Vector2.zero;
+
+        // --- LOOK (Souris et Gamepad) ---
+        // On multiplie par la sensibilité EN DIRECT pour que les changements dans l'UI soient immédiats
+        input.actions["LookMouse"].performed += ctx => MouseLook = ctx.ReadValue<Vector2>() * mouseSensitivity;
+        input.actions["LookMouse"].canceled += _ => MouseLook = Vector2.zero;
+
+        input.actions["LookGamepad"].performed += ctx => GamepadLook = ctx.ReadValue<Vector2>() * gamepadSensitivity;
+        input.actions["LookGamepad"].canceled += _ => GamepadLook = Vector2.zero;
+
+        // --- NAVIGATE (UI) avec Deadzone ---
+        input.actions["Navigate"].performed += ctx => {
+            Vector2 raw = ctx.ReadValue<Vector2>();
+            // Important pour l'UI : si le stick "drifte" un peu, le curseur ne bougera pas tout seul
+            NavigateLook = (raw.magnitude < stickDeadzone) ? Vector2.zero : raw;
+            NavigationInput = NavigateLook; // Pour garder tes deux variables synchro
+        };
+        input.actions["Navigate"].canceled += _ => {
+            NavigateLook = Vector2.zero;
+            NavigationInput = Vector2.zero;
+        };
+
 
         input.actions["Attack"].performed += ctx => AttackPressed = true;
         input.actions["Attack"].canceled += ctx => AttackPressed = false;
@@ -75,14 +109,6 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["LockOn"].performed += ctx => LockOnPressed = true;
         input.actions["LockOn"].canceled += ctx => LockOnPressed = false;
-
-        // Souris
-        input.actions["LookMouse"].performed += ctx => MouseLook = ctx.ReadValue<Vector2>();
-        input.actions["LookMouse"].canceled += _ => MouseLook = Vector2.zero;
-
-        // Gamepad
-        input.actions["LookGamepad"].performed += ctx => GamepadLook = ctx.ReadValue<Vector2>();
-        input.actions["LookGamepad"].canceled += _ => GamepadLook = Vector2.zero;
 
 
         input.actions["Aim"].performed += ctx => AimHeld = true;
@@ -177,4 +203,5 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseAttackInput() => AttackPressed = false;
     public void UseAttackSpecialInput() => AttackSpecialPressed = false;
     public void UseLockOnInput() => LockOnPressed = false;
+    public void UseSubmitInput() => SubmitPressed = false;
 }

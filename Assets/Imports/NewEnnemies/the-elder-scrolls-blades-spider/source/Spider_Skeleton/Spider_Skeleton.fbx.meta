@@ -22,7 +22,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -83,7 +83,392 @@ ModelImporter:
   humanDescription:
     serializedVersion: 3
     human: []
-    skeleton: []
+    skeleton:
+    - name: Spider_Skeleton(Clone)
+      parentName: 
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: NPC
+      parentName: Spider_Skeleton(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0.0000006843249, y: 0.70710623, z: 0.70710737, w: 0.0000002572451}
+      scale: {x: 0.99999994, y: 1, z: 0.99999994}
+    - name: 'NPC Root [Root]'
+      parentName: Spider_Skeleton(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.7071067, y: -2.0097175e-14, z: -2.0097176e-14, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'Body[COM]'
+      parentName: 'NPC Root [Root]'
+      position: {x: -0.000938438, y: 0.0015536603, z: 0.013067185}
+      rotation: {x: 0.00000032782555, y: -0.7071066, z: -0.00000014901161, w: -0.70710695}
+      scale: {x: 0.99999994, y: 1, z: 1}
+    - name: MagicEffectsNode
+      parentName: 'Body[COM]'
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -0.0000000013969839, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'NPC Head [Head]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0005192959, y: 0.0020253253, z: 3.72529e-10}
+      rotation: {x: -0.0000000013969839, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'NPC L MagicNode [LMag]'
+      parentName: 'NPC Head [Head]'
+      position: {x: -0.0005266553, y: 0.0013486325, z: 2.9802322e-10}
+      rotation: {x: -0.00081841426, y: -0.7071076, z: -0.00081841, w: 0.70710504}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'ArmRCollarbone[RClv]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0010316693, y: 0.0017756742, z: -0.0020653114}
+      rotation: {x: 0.000000021228518, y: 0.25037944, z: 0.000000046302194, w: -0.9681478}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000001}
+    - name: 'ArmR[RUar]'
+      parentName: 'ArmRCollarbone[RClv]'
+      position: {x: -0.0019805431, y: 2.9802322e-10, z: 0}
+      rotation: {x: 0.16603887, y: 0.19144602, z: -0.023314543, w: 0.967076}
+      scale: {x: 0.9999992, y: 1, z: 1.0000001}
+    - name: 'ArmR[RLar]'
+      parentName: 'ArmR[RUar]'
+      position: {x: -0.0054700393, y: 0, z: 0}
+      rotation: {x: 0.03864092, y: 0.028438706, z: 0.804462, w: -0.59206325}
+      scale: {x: 1.0000005, y: 1.0000014, z: 1}
+    - name: 'ArmRClaw[RHnd]'
+      parentName: 'ArmR[RLar]'
+      position: {x: -0.0050500543, y: 0, z: -2.9802322e-10}
+      rotation: {x: 0.000000046566132, y: -0.000000048428777, z: 0.2798292, w: 0.9600498}
+      scale: {x: 0.9999994, y: 1.0000001, z: 1}
+    - name: 'ArmLCollarbone[LClv]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0010316687, y: 0.0017756742, z: 0.0020653114}
+      rotation: {x: -0.0000000045924655, y: -0.11320383, z: -0.000000016283254, w: -0.9935718}
+      scale: {x: 1, y: 1.0000004, z: 1.0000005}
+    - name: 'ArmL[LUar]'
+      parentName: 'ArmLCollarbone[LClv]'
+      position: {x: -0.0019805436, y: -2.9802322e-10, z: 2.9802322e-10}
+      rotation: {x: 0.16674712, y: -0.15757906, z: -0.017546596, w: 0.97316825}
+      scale: {x: 1.0000006, y: 1.0000001, z: 0.99999994}
+    - name: 'ArmL[LLar]'
+      parentName: 'ArmL[LUar]'
+      position: {x: -0.00547004, y: 0, z: -4.4703483e-10}
+      rotation: {x: -0.03864111, y: -0.028438913, z: 0.8044621, w: -0.59206325}
+      scale: {x: 1.0000002, y: 1.0000001, z: 1}
+    - name: 'ArmLClaw[LHnd]'
+      parentName: 'ArmL[LLar]'
+      position: {x: -0.0050500548, y: 5.9604643e-10, z: 2.9802322e-10}
+      rotation: {x: -0.000000044703484, y: 0.000000020489097, z: 0.27982894, w: 0.9600499}
+      scale: {x: 1.0000002, y: 1, z: 0.9999999}
+    - name: 'FangR[00]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0031197232, y: 0.0026222807, z: -0.00085085403}
+      rotation: {x: 0.09918086, y: -0.17294665, z: -0.85006136, w: 0.48749188}
+      scale: {x: 1.0000006, y: 1.0000007, z: 1.0000005}
+    - name: 'FangR[01]'
+      parentName: 'FangR[00]'
+      position: {x: -0.0014205497, y: 0, z: -2.9802322e-10}
+      rotation: {x: 0.000000044703484, y: -0.000000029802322, z: -0.1016352, w: 0.9948217}
+      scale: {x: 0.99999994, y: 0.99999994, z: 0.9999999}
+    - name: 'FangR[02]'
+      parentName: 'FangR[01]'
+      position: {x: -0.0014205495, y: 0, z: 0}
+      rotation: {x: -0.000000014344042, y: -0.000000027373355, z: -0.15212335, w: 0.98836154}
+      scale: {x: 0.9999997, y: 0.9999996, z: 0.9999999}
+    - name: 'Leg_R[RLeg]'
+      parentName: 'Body[COM]'
+      position: {x: 0.00011094033, y: 0.0011004233, z: -0.0019058198}
+      rotation: {x: -0.030025631, y: 0.59425616, z: 0.031640437, w: -0.8030922}
+      scale: {x: 1.0000004, y: 1.0000007, z: 1.0000002}
+    - name: 'Leg_R[RHip]'
+      parentName: 'Leg_R[RLeg]'
+      position: {x: -0.001875126, y: 2.9802322e-10, z: 0}
+      rotation: {x: 0.84477985, y: -0.1242507, z: -0.45733014, w: 0.24851172}
+      scale: {x: 1.0000007, y: 0.99999994, z: 1.0000006}
+    - name: 'Leg_R[Thg]'
+      parentName: 'Leg_R[RHip]'
+      position: {x: -0.0046926597, y: -8.9406965e-10, z: -8.9406965e-10}
+      rotation: {x: -0.089713395, y: -0.03503567, z: 0.76129603, w: 0.6412117}
+      scale: {x: 1.0000005, y: 0.99999994, z: 0.99999994}
+    - name: 'Leg_R[RClf]'
+      parentName: 'Leg_R[Thg]'
+      position: {x: -0.004300858, y: 0, z: 0.0000000011920929}
+      rotation: {x: 0.0041229725, y: -0.014388263, z: 0.33370864, w: 0.9425575}
+      scale: {x: 1.0000005, y: 1.0000002, z: 0.9999998}
+    - name: 'Leg_R[Rft]'
+      parentName: 'Leg_R[RClf]'
+      position: {x: -0.0040933145, y: 0, z: 0}
+      rotation: {x: 0.00006696582, y: -0.00005531311, z: -0.30024642, w: 0.9538617}
+      scale: {x: 0.9999997, y: 0.9999997, z: 1.0000004}
+    - name: '[RToe0]'
+      parentName: 'Leg_R[Rft]'
+      position: {x: -0.0018137025, y: 0.000102681515, z: -0.000023141205}
+      rotation: {x: -0.07208775, y: 0.03097103, z: -0.39352697, w: 0.91595894}
+      scale: {x: 1.0000005, y: 1.0000001, z: 1.0000004}
+    - name: 'Leg_R04[01]'
+      parentName: 'Body[COM]'
+      position: {x: 5.9604643e-10, y: -0.0022592442, z: -0.0014956602}
+      rotation: {x: 0.30349547, y: 0.58751047, z: -0.25241476, w: -0.70640546}
+      scale: {x: 1.0000004, y: 1.0000005, z: 1.0000007}
+    - name: 'Leg_R04[02]'
+      parentName: 'Leg_R04[01]'
+      position: {x: -0.0021308246, y: 0, z: 0}
+      rotation: {x: 0.55069685, y: 0.34968543, z: -0.1594033, w: 0.74097484}
+      scale: {x: 1.0000002, y: 0.99999976, z: 1.0000005}
+    - name: 'Leg_R04[03]'
+      parentName: 'Leg_R04[02]'
+      position: {x: -0.004629883, y: 2.9802322e-10, z: 0.000000001490116}
+      rotation: {x: 0.000000044703484, y: 0.000000059604645, z: 0.7578319, w: 0.65244985}
+      scale: {x: 1.0000007, y: 1.0000007, z: 1.0000007}
+    - name: 'Leg_R04[04]'
+      parentName: 'Leg_R04[03]'
+      position: {x: -0.0042138724, y: 0, z: 0}
+      rotation: {x: 0.000000007450581, y: 0.000000029802322, z: 0.22964719, w: 0.973274}
+      scale: {x: 1.0000004, y: 0.99999946, z: 0.99999994}
+    - name: 'Leg_R04[05]'
+      parentName: 'Leg_R04[04]'
+      position: {x: -0.004091184, y: 0, z: 1.4901161e-10}
+      rotation: {x: -0.00000008940697, y: -0.00000023841858, z: -0.25239944, w: 0.9676231}
+      scale: {x: 0.99999946, y: 0.99999994, z: 0.9999998}
+    - name: '[RToe3]'
+      parentName: 'Leg_R04[05]'
+      position: {x: -0.0018805873, y: 0.000045433044, z: -0.00000016763806}
+      rotation: {x: -0.00000002085538, y: -0.000000019529123, z: -0.3338066, w: 0.94264156}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000002}
+    - name: 'Leg_R02[01]'
+      parentName: 'Body[COM]'
+      position: {x: 0.00011094033, y: 0.00008967459, z: -0.0019058198}
+      rotation: {x: 0.05058156, y: 0.5894083, z: -0.03461614, w: -0.80550677}
+      scale: {x: 1.0000001, y: 1.0000007, z: 1.0000011}
+    - name: 'Leg_R02[02]'
+      parentName: 'Leg_R02[01]'
+      position: {x: -0.0021001413, y: -5.9604643e-10, z: 0}
+      rotation: {x: 0.9305109, y: 0.023264833, z: -0.34794202, w: 0.11200297}
+      scale: {x: 0.99999976, y: 0.99999994, z: 0.99999946}
+    - name: 'Leg_R02[03]'
+      parentName: 'Leg_R02[02]'
+      position: {x: -0.004834853, y: 1.4901161e-10, z: -0.000000001490116}
+      rotation: {x: -0.17056468, y: 0.2734611, z: 0.7942925, w: 0.5150012}
+      scale: {x: 1.0000001, y: 1.0000002, z: 0.9999999}
+    - name: 'Leg_R02[04]'
+      parentName: 'Leg_R02[03]'
+      position: {x: -0.004300858, y: 0, z: -2.9802322e-10}
+      rotation: {x: -0.003948016, y: 0.015585721, z: 0.32124934, w: 0.94685817}
+      scale: {x: 1, y: 1.0000004, z: 1.0000004}
+    - name: 'Leg_R02[05]'
+      parentName: 'Leg_R02[04]'
+      position: {x: -0.0040933145, y: 0, z: 0}
+      rotation: {x: 0.0001244843, y: -0.00007596612, z: -0.3162036, w: 0.9486914}
+      scale: {x: 0.9999998, y: 0.9999998, z: 1}
+    - name: '[RToe1]'
+      parentName: 'Leg_R02[05]'
+      position: {x: -0.0018137019, y: 0.00010268092, z: -0.000023142098}
+      rotation: {x: -0.07208762, y: 0.030971084, z: -0.39352697, w: 0.9159589}
+      scale: {x: 0.9999999, y: 1.0000001, z: 1.0000001}
+    - name: 'R[Jaw]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0013133031, y: 0.0026105964, z: 0.0006402135}
+      rotation: {x: -0.14832923, y: 0.97124565, z: -0.1861967, w: 0.0033425689}
+      scale: {x: 1.0000008, y: 1.0000007, z: 1.0000005}
+    - name: 'L[Jaw]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0013133031, y: 0.0026105964, z: -0.0006402134}
+      rotation: {x: 0.14832914, y: -0.9712456, z: -0.18619686, w: 0.0033436718}
+      scale: {x: 1.0000012, y: 1.0000005, z: 1.0000007}
+    - name: Tail1
+      parentName: 'Body[COM]'
+      position: {x: 8.9406965e-10, y: -0.0028703813, z: -4.842877e-10}
+      rotation: {x: -0.00000046350183, y: -0.0000003576279, z: -0.70028657, w: -0.7138619}
+      scale: {x: 1.0000005, y: 1.0000002, z: 1.0000004}
+    - name: Tail2
+      parentName: Tail1
+      position: {x: -0.0027700728, y: -2.9802322e-10, z: 3.7252902e-11}
+      rotation: {x: 0.0000000041909516, y: 0.000000059604645, z: 0.024432192, w: 0.9997015}
+      scale: {x: 0.9999998, y: 0.9999998, z: 1.0000002}
+    - name: Tail3
+      parentName: Tail2
+      position: {x: -0.0027700728, y: 0, z: -7.4505804e-11}
+      rotation: {x: -0.00000000876323, y: -0.000000016686421, z: 0.03664378, w: 0.9993284}
+      scale: {x: 1, y: 1, z: 0.99999964}
+    - name: 'Leg_R03[01]'
+      parentName: 'Body[COM]'
+      position: {x: 5.9604643e-10, y: -0.0010847696, z: -0.001676712}
+      rotation: {x: 0.01976048, y: 0.89413035, z: -0.09183019, w: 0.4378443}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1.0000005}
+    - name: 'Leg_R03[02]'
+      parentName: 'Leg_R03[01]'
+      position: {x: -0.0021338456, y: 0, z: -2.9802322e-10}
+      rotation: {x: 0.45482272, y: 0.47883263, z: -0.470128, w: 0.58552134}
+      scale: {x: 1.0000004, y: 1.0000001, z: 1.0000005}
+    - name: 'Leg_R03[03]'
+      parentName: 'Leg_R03[02]'
+      position: {x: -0.005156209, y: 2.9802322e-10, z: -7.45058e-10}
+      rotation: {x: 0.23044547, y: -0.025826976, z: 0.2238664, w: 0.9466318}
+      scale: {x: 0.9999997, y: 1, z: 1.0000005}
+    - name: 'Leg_R03[04]'
+      parentName: 'Leg_R03[03]'
+      position: {x: -0.0042945105, y: 0, z: -1.4901161e-10}
+      rotation: {x: 0.02718495, y: 0.04748486, z: 0.33504185, w: 0.94061315}
+      scale: {x: 1.0000005, y: 1.0000004, z: 1.0000004}
+    - name: 'Leg_R03[05]'
+      parentName: 'Leg_R03[04]'
+      position: {x: -0.0042616497, y: 0, z: -7.45058e-10}
+      rotation: {x: 0.32611614, y: 0.06461142, z: -0.539488, w: 0.7735802}
+      scale: {x: 0.99999994, y: 1.0000005, z: 0.99999994}
+    - name: '[RToe2]'
+      parentName: 'Leg_R03[05]'
+      position: {x: -0.0017459124, y: 0.00012800872, z: -0.0000066654384}
+      rotation: {x: -0.042959858, y: -0.046530046, z: -0.44824305, w: 0.8916657}
+      scale: {x: 0.9999998, y: 1.0000001, z: 1}
+    - name: 'Leg_L[LLeg]'
+      parentName: 'Body[COM]'
+      position: {x: 0.00011094033, y: 0.0011004233, z: 0.0019058198}
+      rotation: {x: -0.030025598, y: 0.5942572, z: -0.031640377, w: 0.8030914}
+      scale: {x: 1.0000006, y: 1.0000004, z: 1.0000006}
+    - name: 'Leg_L[LHip]'
+      parentName: 'Leg_L[LLeg]'
+      position: {x: -0.0018751263, y: 2.9802322e-10, z: 0}
+      rotation: {x: -0.84179604, y: 0.1956639, z: -0.478915, w: 0.15406343}
+      scale: {x: 1.0000001, y: 1.0000002, z: 0.9999997}
+    - name: 'Leg_L[LThg]'
+      parentName: 'Leg_L[LHip]'
+      position: {x: -0.0046926597, y: -0.0000000011920929, z: 7.45058e-10}
+      rotation: {x: 0.15996525, y: -0.031773683, z: 0.76153874, w: 0.6272642}
+      scale: {x: 1.0000008, y: 0.9999998, z: 1}
+    - name: 'Leg_L[LClf]'
+      parentName: 'Leg_L[LThg]'
+      position: {x: -0.004300858, y: 0.0000000011920929, z: -5.9604643e-10}
+      rotation: {x: 0.004156373, y: -0.014640687, z: -0.3397605, w: -0.9403888}
+      scale: {x: 1.0000005, y: 1.0000007, z: 1.0000007}
+    - name: 'Leg_L[LLft]'
+      parentName: 'Leg_L[LClf]'
+      position: {x: -0.004093314, y: 0, z: -2.9802322e-10}
+      rotation: {x: -0.00008183718, y: 0.000027477741, z: 0.30579177, w: -0.9520984}
+      scale: {x: 1.0000004, y: 0.9999997, z: 0.9999997}
+    - name: '[LToe0]'
+      parentName: 'Leg_L[LLft]'
+      position: {x: -0.0018137019, y: 0.000102681515, z: 0.000023142098}
+      rotation: {x: 0.07208759, y: -0.030971082, z: -0.39352706, w: 0.9159589}
+      scale: {x: 0.9999998, y: 1, z: 0.99999994}
+    - name: 'Leg_L03[01]'
+      parentName: 'Body[COM]'
+      position: {x: 5.9604643e-10, y: -0.0010847694, z: 0.0016767117}
+      rotation: {x: -0.14682566, y: -0.7482997, z: -0.17653848, w: -0.62235355}
+      scale: {x: 1.0000006, y: 1.0000005, z: 1.000001}
+    - name: 'Leg_L03[02]'
+      parentName: 'Leg_L03[01]'
+      position: {x: -0.002133845, y: 2.9802322e-10, z: 0}
+      rotation: {x: -0.72132355, y: 0.057136387, z: 0.16305324, w: 0.6707022}
+      scale: {x: 0.99999994, y: 0.9999998, z: 1.0000002}
+    - name: 'Leg_L03[03]'
+      parentName: 'Leg_L03[02]'
+      position: {x: -0.00515621, y: -7.45058e-10, z: -2.9802322e-10}
+      rotation: {x: -0.033041775, y: -0.045094997, z: 0.8486515, w: 0.52598995}
+      scale: {x: 1.0000008, y: 0.9999998, z: 1.000001}
+    - name: 'Leg_L03[04]'
+      parentName: 'Leg_L03[03]'
+      position: {x: -0.00429451, y: -5.9604643e-10, z: -5.9604643e-10}
+      rotation: {x: -0.054032166, y: 0.116385415, z: -0.29725066, w: 0.94613796}
+      scale: {x: 1.0000002, y: 0.99999994, z: 0.9999998}
+    - name: 'Leg_L03[05]'
+      parentName: 'Leg_L03[04]'
+      position: {x: -0.00426165, y: 0, z: 0}
+      rotation: {x: -0.16419813, y: -0.02904661, z: -0.47441092, w: 0.86436653}
+      scale: {x: 0.99999994, y: 0.9999998, z: 1.0000002}
+    - name: '[LToe2]'
+      parentName: 'Leg_L03[05]'
+      position: {x: -0.0017459108, y: 0.00012800752, z: 0.0000066649914}
+      rotation: {x: 0.04296001, y: 0.046530288, z: -0.44824308, w: 0.89166564}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: 'Leg_L04[01]'
+      parentName: 'Body[COM]'
+      position: {x: 5.9604643e-10, y: -0.0022592442, z: 0.0014956605}
+      rotation: {x: 0.30349573, y: 0.5875114, z: 0.2524145, w: 0.70640475}
+      scale: {x: 1.000001, y: 1.0000006, z: 1.0000008}
+    - name: 'Leg_L04[02]'
+      parentName: 'Leg_L04[01]'
+      position: {x: -0.002130825, y: 0, z: 0}
+      rotation: {x: 0.5890485, y: 0.5045832, z: 0.044327706, w: -0.629645}
+      scale: {x: 1.0000001, y: 0.9999996, z: 1.0000001}
+    - name: 'Leg_L04[03]'
+      parentName: 'Leg_L04[02]'
+      position: {x: -0.0046298844, y: 5.9604643e-10, z: -0.0000000010430813}
+      rotation: {x: -0.00000011920929, y: -0.00000044703484, z: 0.76092017, w: 0.6488456}
+      scale: {x: 1.0000008, y: 0.9999997, z: 1.0000001}
+    - name: 'Leg_L04[04]'
+      parentName: 'Leg_L04[03]'
+      position: {x: -0.004213872, y: 5.9604643e-10, z: 0}
+      rotation: {x: -0.00000043213362, y: -0.00000026822087, z: 0.2306975, w: 0.9730255}
+      scale: {x: 1, y: 0.99999994, z: 0.9999997}
+    - name: 'Leg_L04[05]'
+      parentName: 'Leg_L04[04]'
+      position: {x: -0.004091183, y: 0.0000000011920929, z: 0}
+      rotation: {x: 0.0000005066395, y: 0.0000002682209, z: -0.2536399, w: 0.96729875}
+      scale: {x: 1.0000005, y: 0.99999994, z: 1.0000001}
+    - name: '[LToe3]'
+      parentName: 'Leg_L04[05]'
+      position: {x: -0.0018805896, y: 0.00004543364, z: 0.00000016644597}
+      rotation: {x: 0.00000012962346, y: 0.00000009072586, z: -0.3338067, w: 0.9426416}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: 'Leg_L02[01]'
+      parentName: 'Body[COM]'
+      position: {x: 0.00011094033, y: 0.00008967459, z: 0.0019058198}
+      rotation: {x: 0.061065465, y: 0.22716257, z: 0.013357429, w: 0.97184867}
+      scale: {x: 1.000001, y: 1.0000007, z: 1.000001}
+    - name: 'Leg_L02[02]'
+      parentName: 'Leg_L02[01]'
+      position: {x: -0.0021001408, y: 0, z: 2.9802322e-10}
+      rotation: {x: 0.89247423, y: -0.08888118, z: 0.42955422, w: -0.10522857}
+      scale: {x: 1, y: 0.9999998, z: 1}
+    - name: 'Leg_L02[03]'
+      parentName: 'Leg_L02[02]'
+      position: {x: -0.004834853, y: -2.9802322e-10, z: 1.4901161e-10}
+      rotation: {x: 0.5269401, y: -0.26479176, z: 0.26579964, w: 0.76260734}
+      scale: {x: 1.0000004, y: 0.99999994, z: 1}
+    - name: 'Leg_L02[04]'
+      parentName: 'Leg_L02[03]'
+      position: {x: -0.004300857, y: 0, z: -7.45058e-10}
+      rotation: {x: 0.059591033, y: -0.16848414, z: 0.13456272, w: 0.9746563}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1}
+    - name: 'Leg_L02[05]'
+      parentName: 'Leg_L02[04]'
+      position: {x: -0.0040933136, y: 0, z: 0}
+      rotation: {x: -0.033292376, y: -0.08953736, z: -0.11939039, w: 0.98824114}
+      scale: {x: 1.0000005, y: 0.9999991, z: 1.0000005}
+    - name: '[LToe1]'
+      parentName: 'Leg_L02[05]'
+      position: {x: -0.0018137009, y: 0.000102681515, z: 0.000023141949}
+      rotation: {x: 0.07208769, y: -0.03097104, z: -0.39352706, w: 0.9159588}
+      scale: {x: 1, y: 1, z: 1}
+    - name: 'FangL[00]'
+      parentName: 'Body[COM]'
+      position: {x: -0.0031197232, y: 0.0026222807, z: 0.00085085415}
+      rotation: {x: -0.099181816, y: 0.17294729, z: -0.85006124, w: 0.48749167}
+      scale: {x: 1.0000012, y: 1.0000014, z: 1.0000006}
+    - name: 'FangL[01]'
+      parentName: 'FangL[00]'
+      position: {x: -0.0014205495, y: -5.9604643e-10, z: -2.9802322e-10}
+      rotation: {x: -0.000000044703487, y: -0.000000029802326, z: -0.101635136, w: 0.9948217}
+      scale: {x: 1.0000008, y: 1.000001, z: 1.0000006}
+    - name: 'FangL[02]'
+      parentName: 'FangL[01]'
+      position: {x: -0.00142055, y: 0, z: 2.9802322e-10}
+      rotation: {x: 0.0000000016882425, y: 0.000000025383075, z: -0.15212344, w: 0.9883615}
+      scale: {x: 1.0000004, y: 1.0000004, z: 1.0000004}
+    - name: Spider_Skeleton
+      parentName: Spider_Skeleton(Clone)
+      position: {x: 0.00009079158, y: 0.006900553, z: -0.00036839664}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: S_Body0180percent
+      parentName: Spider_Skeleton
+      position: {x: -0.00009079158, y: -0.00036839664, z: -0.006900553}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: S_Hiars01Reduced
+      parentName: Spider_Skeleton
+      position: {x: -0.00009079158, y: -0.00036839664, z: -0.006900553}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 0.5, y: 0.5, z: 0.5}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -100,7 +485,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

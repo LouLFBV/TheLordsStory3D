@@ -144,6 +144,7 @@ public class PlayerController : MonoBehaviour, ICombatant
         // --- LOGIQUE D'OUVERTURE ---
         if (Input.MenuPressed || Input.InventoryPressed)
         {
+            Debug.Log("Menu ou Inventaire Pressé - Tentative d'ouverture de l'UI");
             UIPanelType newType = Input.MenuPressed ? UIPanelType.PauseMenu : UIPanelType.Inventory;
 
             // SI on est déjà en dialogue, on sauvegarde cet état
