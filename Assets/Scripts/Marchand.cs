@@ -22,6 +22,8 @@ public class Marchand : InteractableBase
     private DialogueResponse[] currentDialogue; // tableau actif
     private bool firstDialoguePlayerDone = false, firstDialoguePnjDone = false;
     private Transform playerTransform;
+    private PlayerController player;
+    private bool isPlayerInZone;
     private Animator animator;
 
 
@@ -35,7 +37,6 @@ public class Marchand : InteractableBase
     {
        
         animator = GetComponent<Animator>();
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
     public override void OnInteract(PlayerInteractor player)
     {
@@ -51,20 +52,32 @@ public class Marchand : InteractableBase
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            player = other.GetComponent<PlayerController>();
+            playerTransform = other.transform;
+            isPlayerInZone = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = false;
+            player = null;
+        }
+    }
+
     // GESTION DU DIALOGUE
     public void StartDialogue(DialogueResponse[] sentence)
     {
         if (!isOnDial)
         {
-            var uiManager = UIManager.instance;
-            if (uiManager != null)
-            {
-                uiManager.HandlePanelOpened();
-            }
             isOnDial = true;
-
-            BasicBehaviour behaviourManager = playerTransform.GetComponent<BasicBehaviour>();
-            behaviourManager.GetAnim.SetFloat("Speed", 0f, 0f, Time.deltaTime);
+            player.RequestedPanelType = UIPanelType.Dialogue;
+            player.StateMachine.ChangeState(PlayerStateType.UI);
 
             DialogueManager.instance.textName.text = namePNJ;
 
@@ -126,11 +139,7 @@ public class Marchand : InteractableBase
         dialogueEndTime = Time.time;
         animatorPanelProduits.SetBool("PanelIsOpen", false);
         isActive.SetActive(false);
-        var uiManager = UIManager.instance;
-        if (uiManager != null)
-        {
-            uiManager.HandlePanelClosed();
-        }
+        player.StateMachine.ChangeState(PlayerStateType.Idle);
         if (navManager != null)
         {
             navManager.onCancel = null;
@@ -157,9 +166,6 @@ public class Marchand : InteractableBase
         animatorPanelProduits.SetBool("PanelIsOpen", true);
         RefreshProduits();
         isActive.SetActive(true);
-
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
         if (navManager != null)
         {
             navManager.onCancel = EndCommerce;
@@ -218,11 +224,9 @@ public class Marchand : InteractableBase
 
     private void Acheter(ItemData produit)
     {
-        if (produit.prix <= PlayerStats.instance.goldAmount && !Inventory.instance.IsFull())
+        if (player.Wallet.SpendGold(produit.prix) && !InventorySystem.instance.IsFullEquipment())
         {
-            PlayerStats.instance.goldAmount -= produit.prix;
-            PlayerStats.instance.UpdateGoldText();
-            Inventory.instance.AddItem(produit);
+            InventorySystem.instance.AddItem(produit);
             RefreshProduits();
         }
     }
@@ -230,7 +234,7 @@ public class Marchand : InteractableBase
     private void VerfifButtonAcheter(ItemData produit, Button buyButton)
     {
         Image buttonImage = buyButton.GetComponent<Image>();
-        if (produit.prix <= PlayerStats.instance.goldAmount && VerifInInventoryAndPalette(produit))
+        if (player.Wallet.CanSpendGold(produit.prix)  && VerifInInventoryAndPalette(produit))
         {
             buttonImage.color = Color.green; // Set button color to white if affordable
             buyButton.interactable = true;

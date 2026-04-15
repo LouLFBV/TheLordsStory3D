@@ -9,6 +9,7 @@ public class QuestSO : ScriptableObject
     public string questID;
     public string questName;
     [TextArea] public string description;
+    public string[] objectifs;
 
 
     [Header("Dialogues")]
@@ -37,6 +38,7 @@ public class QuestSO : ScriptableObject
     public string namePNJ;       // nom/ID du PNJ à aller voir (si Interaction/Escort)
 
     [Header("Récompenses")]
+    public string[] rewardsText;
     public QuestReward rewards;
 
     public bool IsComplete(int currentCount, bool interactionDone = false, bool escortFinished = false)

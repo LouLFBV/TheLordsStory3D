@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.InputSystem;
 
 public class InventorySystem : MonoBehaviour
 {
@@ -13,13 +12,19 @@ public class InventorySystem : MonoBehaviour
 
     [Header("Other scripts References")]
     [SerializeField] private EquipmentSystem equipment;
-    [SerializeField] private NewItemActionsSystem itemActionsSystem;
+    public NewItemActionsSystem itemActionsSystem;
     [SerializeField] private PlayerController player;
 
     [Header("Inventory System Variables")]
-    [SerializeField] private List<ItemInInventory> content = new List<ItemInInventory>();
-    [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private Transform inventorySlotsParent;
+
+    [SerializeField] private Transform inventoryRessourcesSlotsParent;
+    [SerializeField] private List<ItemInInventory> contentRessources = new List<ItemInInventory>();
+
+    [SerializeField] private Transform inventoryEquipmentSlotsParent;
+    [SerializeField] private List<ItemInInventory> contentEquipment = new List<ItemInInventory>();
+
+    [SerializeField] private Transform inventoryCraftSlotsParent;
+    [SerializeField] private List<ItemInInventory> contentCraft = new List<ItemInInventory>();
 
     public Sprite emptySlotVisual;
 
@@ -47,45 +52,47 @@ public class InventorySystem : MonoBehaviour
     }
 
 
-    public void OpenInventory()
-    {
-        inventoryPanel.SetActive(true);
-        player.StateMachine.ChangeState(PlayerStateType.UI);
-        RefreshContent();
+    //public void OpenInventory()
+    //{
+    //    inventoryPanel.SetActive(true);
+    //    player.StateMachine.ChangeState(PlayerStateType.UI);
+    //    RefreshContent();
 
-        // On force la State Machine à passer dans un état "Menu" ou "Idle" 
-        // pour empêcher le joueur de frapper/courir pendant qu'il trie ses objets
-        //player.StateMachine.ChangeState(PlayerStateType.Idle);
+    //    // On force la State Machine à passer dans un état "Menu" ou "Idle" 
+    //    // pour empêcher le joueur de frapper/courir pendant qu'il trie ses objets
+    //    //player.StateMachine.ChangeState(PlayerStateType.Idle);
 
-        // Si tu as un état spécifique "UI" ou "Pause", c'est encore mieux :
-        // player.StateMachine.ChangeState(PlayerStateType.InventoryOpen);
+    //    // Si tu as un état spécifique "UI" ou "Pause", c'est encore mieux :
+    //    // player.StateMachine.ChangeState(PlayerStateType.InventoryOpen);
 
-        PaletteSystem.instance.UpdateEquipmentsDesequipButtons();
+    //    PaletteSystem.instance.UpdateEquipmentsDesequipButtons();
 
-        if (navManager != null) navManager.onCancel = CloseInventory;
-    }
+    //    if (navManager != null) navManager.onCancel = CloseInventory;
+    //}
 
-    public void CloseInventory()
-    {
-        if (itemActionsSystem.actionPanel.activeSelf) return;
+    //public void CloseInventory()
+    //{
+    //    if (itemActionsSystem.actionPanel.activeSelf) return;
 
-        inventoryPanel.SetActive(false); 
-        itemActionsSystem.actionPanel.SetActive(false);
-        TooltipSystem.instance.Hide();
+    //    inventoryPanel.SetActive(false); 
+    //    itemActionsSystem.actionPanel.SetActive(false);
+    //    TooltipSystem.instance.Hide();
 
-        PaletteSystem.instance.UpdateEquipmentsDesequipButtons();
+    //    PaletteSystem.instance.UpdateEquipmentsDesequipButtons();
 
-        if (navManager != null) navManager.onCancel = null;
-    }
+    //    if (navManager != null) navManager.onCancel = null;
+    //}
 
 
     public void AddItem(ItemData item)
     {
         Debug.Log("Adding item: " + item.itemName);
+
+        // Cas spécial flèches
         if (equipment.arrowItemInInventory.itemData != null)
         {
-            Debug.Log("Checking for arrow stacking.");
-            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType && item.equipmentType == EquipmentType.Arrow)
+            if (item.damageType == equipment.arrowItemInInventory.itemData.damageType
+                && item.equipmentType == EquipmentType.Arrow)
             {
                 equipment.arrowItemInInventory.count++;
                 equipment.UpdateArrowsText();
@@ -93,81 +100,126 @@ public class InventorySystem : MonoBehaviour
                 return;
             }
         }
-        ItemInInventory[] itemInInventory = content.Where(i => i.itemData == item).ToArray();
+
+        List<ItemInInventory> targetList = null;
+
+        switch (item.itemType)
+        {
+            case ItemType.Equipment:
+            case ItemType.Consumable:
+                targetList = contentEquipment;
+                break;
+
+            case ItemType.Ressource:
+                targetList = contentRessources;
+                break;
+
+            case ItemType.Craft:
+                targetList = contentCraft;
+                break;
+
+            default:
+                targetList = contentRessources;
+                break;
+        }
+
+        // Recherche de stacks existants
+        var stacks = targetList.Where(i => i.itemData == item).ToList();
 
         bool itemAdded = false;
 
-        if (itemInInventory.Length > 0 && item.stackable)
+        if (stacks.Count > 0 && item.stackable)
         {
-            Debug.Log("Item already in inventory, trying to stack.");
-            for (int i = 0; i < itemInInventory.Length; i++)
+            foreach (var stack in stacks)
             {
-                if (itemInInventory[i].count < item.maxStack)
+                if (stack.count < item.maxStack)
                 {
+                    stack.count++;
                     itemAdded = true;
-                    itemInInventory[i].count++;
                     break;
                 }
             }
+        }
 
-            if (!itemAdded)
-            {
-                Debug.Log("All stacks full, adding new stack.");
-                content.Add(
-                    new ItemInInventory
-                    {
-                        itemData = item,
-                        count = 1
-                    }
-                );
-            }
-        }
-        else
+        if (!itemAdded)
         {
-            Debug.Log("Item not in inventory, adding new item.");
-            content.Add(
-                    new ItemInInventory
-                    {
-                        itemData = item,
-                        count = 1
-                    }
-                );
+            targetList.Add(new ItemInInventory
+            {
+                itemData = item,
+                count = 1
+            });
         }
+
         RefreshContent();
     }
 
     public void RemoveItem(ItemData item)
     {
-        ItemInInventory itemInInventory = content.Where(i => i.itemData == item).FirstOrDefault();
+        List<ItemInInventory> targetList = null;
 
-        if (itemInInventory != null && itemInInventory.count > 1)
+        switch (item.itemType)
         {
+            case ItemType.Equipment:
+            case ItemType.Consumable:
+                targetList = contentEquipment;
+                break;
+
+            case ItemType.Ressource:
+                targetList = contentRessources;
+                break;
+
+            case ItemType.Craft:
+                targetList = contentCraft;
+                break;
+
+            default:
+                targetList = contentRessources;
+                break;
+        }
+
+        ItemInInventory itemInInventory = targetList
+            .FirstOrDefault(i => i.itemData == item);
+
+        if (itemInInventory == null)
+            return;
+
+        if (itemInInventory.count > 1)
             itemInInventory.count--;
-        }
         else
-        {
-            content.Remove(itemInInventory);
-        }
+            targetList.Remove(itemInInventory);
+
         RefreshContent();
     }
 
     public List<ItemInInventory> GetContent()
     {
+        List<ItemInInventory> content = new List<ItemInInventory>();
+
+        content.AddRange(contentRessources);
+        content.AddRange(contentCraft);
+        content.AddRange(contentEquipment);
+
         return content;
     }
 
     public void SetContent(List<ItemInInventory> newContent)
     {
-        content = newContent;
+        //content = newContent;
     }
 
 
     public void RefreshContent()
     {
+        RefreshCraftContent();
+        RefreshRessourcesContent();
+        RefreshEquipmentContent();
+    }
+    public void RefreshCraftContent()
+    {
         //On vide tous les slots / visuels
-        for (int i = 0; i < inventorySlotsParent.childCount; i++)
+        for (int i = 0; i < inventoryCraftSlotsParent.childCount; i++)
         {
-            Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
+            Slot currentSlot = inventoryCraftSlotsParent.GetChild(i).GetComponent<Slot>();
 
             currentSlot.item = null;
             currentSlot.itemVisual.sprite = emptySlotVisual;
@@ -175,102 +227,211 @@ public class InventorySystem : MonoBehaviour
         }
 
         //On peuple le visuel des slots selon le contenu de l'inventaire
-        for (int i = 0; i < content.Count; i++)
+        for (int i = 0; i < contentCraft.Count; i++)
         {
-            Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
-            if (content[i].itemData == null)
+            Slot currentSlot = inventoryCraftSlotsParent.GetChild(i).GetComponent<Slot>();
+            if (contentCraft[i].itemData == null)
             {
-                RemoveItem(content[i].itemData);
+                RemoveItem(contentCraft[i].itemData);
                 continue;
             }
-            currentSlot.item = content[i].itemData;
-            currentSlot.itemVisual.sprite = content[i].itemData.visual;
+            currentSlot.item = contentCraft[i].itemData;
+            currentSlot.itemVisual.sprite = contentCraft[i].itemData.visual;
 
             if (currentSlot.item.stackable)
             {
-                currentSlot.countTexte.text = content[i].count.ToString();
+                currentSlot.countTexte.text = contentCraft[i].count.ToString();
                 currentSlot.countTexte.enabled = true;
             }
         }
-        equipment.UpdateEquipmentsDesequipButtons();
+    }
+    public void RefreshRessourcesContent()
+    {
+        //On vide tous les slots / visuels
+        for (int i = 0; i < inventoryRessourcesSlotsParent.childCount; i++)
+        {
+            Slot currentSlot = inventoryRessourcesSlotsParent.GetChild(i).GetComponent<Slot>();
+
+            currentSlot.item = null;
+            currentSlot.itemVisual.sprite = emptySlotVisual;
+            currentSlot.countTexte.enabled = false;
+        }
+
+        //On peuple le visuel des slots selon le contenu de l'inventaire
+        for (int i = 0; i < contentRessources.Count; i++)
+        {
+            Slot currentSlot = inventoryRessourcesSlotsParent.GetChild(i).GetComponent<Slot>();
+            if (contentRessources[i].itemData == null)
+            {
+                RemoveItem(contentRessources[i].itemData);
+                continue;
+            }
+            currentSlot.item = contentRessources[i].itemData;
+            currentSlot.itemVisual.sprite = contentRessources[i].itemData.visual;
+
+            if (currentSlot.item.stackable)
+            {
+                currentSlot.countTexte.text = contentRessources[i].count.ToString();
+                currentSlot.countTexte.enabled = true;
+            }
+        }
+    }
+    public void RefreshEquipmentContent()
+    {
+        //On vide tous les slots / visuels
+        for (int i = 0; i < inventoryEquipmentSlotsParent.childCount; i++)
+        {
+            Slot currentSlot = inventoryEquipmentSlotsParent.GetChild(i).GetComponent<Slot>();
+
+            currentSlot.item = null;
+            currentSlot.itemVisual.sprite = emptySlotVisual;
+            currentSlot.countTexte.enabled = false;
+        }
+
+        //On peuple le visuel des slots selon le contenu de l'inventaire
+        for (int i = 0; i < contentEquipment.Count; i++)
+        {
+            Slot currentSlot = inventoryEquipmentSlotsParent.GetChild(i).GetComponent<Slot>();
+            if (contentEquipment[i].itemData == null)
+            {
+                RemoveItem(contentEquipment[i].itemData);
+                continue;
+            }
+            currentSlot.item = contentEquipment[i].itemData;
+            currentSlot.itemVisual.sprite = contentEquipment[i].itemData.visual;
+
+            if (currentSlot.item.stackable)
+            {
+                currentSlot.countTexte.text = contentEquipment[i].count.ToString();
+                currentSlot.countTexte.enabled = true;
+            }
+        }
     }
 
-    public bool IsFull()
+    public bool IsFullRessources()
     {
-        return content.Count == InventorySize;
+        return contentRessources.Count == InventorySize;
+    }
+    public bool IsFullCraft()
+    {
+        return contentCraft.Count == InventorySize;
+    }
+    public bool IsFullEquipment()
+    {
+        return contentEquipment.Count == InventorySize;
     }
 
     public void ClearContent()
     {
-        content.Clear();
+        ClearContentRessources();
+        ClearContentCarft();
+        ClearContentEquipment();
+    }
+    public void ClearContentRessources()
+    {
+        contentRessources.Clear();
+    }
+    public void ClearContentCarft()
+    {
+        contentCraft.Clear();
+    }
+    public void ClearContentEquipment()
+    {
+        contentEquipment.Clear();
     }
 
     public bool KeyIsInInventory(ItemData itemData)
     {
-        return content.Any(i => i.itemData == itemData);
+        return contentRessources.Any(i => i.itemData == itemData);
     }
 
-    public InventorySaveData GetSaveData()
-    {
-        InventorySaveData data = new InventorySaveData();
-        data.content = new List<ItemInInventorySave>();
+    #region SaveSystem
 
-        foreach (var item in content)
+    void SaveList(List<ItemInInventory> source, List<ItemInInventorySave> destination)
+    {
+        foreach (var item in source)
         {
-            data.content.Add(new ItemInInventorySave
+            destination.Add(new ItemInInventorySave
             {
                 itemID = item.itemData.itemID,
                 count = item.count
             });
         }
+    }
+    public InventorySaveData GetSaveData()
+    {
+        InventorySaveData data = new InventorySaveData
+        {
+            ressources = new List<ItemInInventorySave>(contentRessources.Count),
+            craft = new List<ItemInInventorySave>(contentCraft.Count),
+            equipment = new List<ItemInInventorySave>(contentEquipment.Count)
+        };
+
+        SaveList(contentRessources, data.ressources);
+        SaveList(contentCraft, data.craft);
+        SaveList(contentEquipment, data.equipment);
 
         return data;
     }
 
-
-    public void LoadSaveData(InventorySaveData data)
+    void LoadList(List<ItemInInventorySave> source, List<ItemInInventory> destination)
     {
-        if (data == null || data.content == null)
-        {
-            Debug.LogWarning("InventorySaveData is null");
-            return;
-        }
-
-        content.Clear();
-
-        foreach (var savedItem in data.content)
+        foreach (var savedItem in source)
         {
             ItemData itemData = itemDatabase.GetItemByID(savedItem.itemID);
             if (itemData == null) continue;
 
-            content.Add(new ItemInInventory
+            destination.Add(new ItemInInventory
             {
                 itemData = itemData,
                 count = savedItem.count
             });
         }
+    }
+    public void LoadSaveData(InventorySaveData data)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning("InventorySaveData is null");
+            return;
+        }
+
+        contentRessources.Clear();
+        contentCraft.Clear();
+        contentEquipment.Clear();
+
+        if (data.ressources != null)
+            LoadList(data.ressources, contentRessources);
+
+        if (data.craft != null)
+            LoadList(data.craft, contentCraft);
+
+        if (data.equipment != null)
+            LoadList(data.equipment, contentEquipment);
 
         RefreshContent();
     }
-
+    #endregion
 }
 
-//[System.Serializable]
-//public class ItemInInventory
-//{
-//    public ItemData itemData;
-//    public int count;
-//}
+[System.Serializable]
+public class ItemInInventory
+{
+    public ItemData itemData;
+    public int count;
+}
 
-//[System.Serializable]
-//public class ItemInInventorySave
-//{
-//    public string itemID;
-//    public int count;
-//}
+[System.Serializable]
+public class ItemInInventorySave
+{
+    public string itemID;
+    public int count;
+}
 
-//[System.Serializable]
-//public class InventorySaveData
-//{
-//    public List<ItemInInventorySave> content;
-//}
+[System.Serializable]
+public class InventorySaveData
+{
+    public List<ItemInInventorySave> ressources;
+    public List<ItemInInventorySave> craft;
+    public List<ItemInInventorySave> equipment;
+}

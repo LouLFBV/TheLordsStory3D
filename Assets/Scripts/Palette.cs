@@ -904,20 +904,20 @@ public class Palette : MonoBehaviour
 
 }
 
-[System.Serializable]
-public class PaletteSaveData
-{
-    public PaletteSlotSave weapon1;
-    public PaletteSlotSave weapon2;
+//[System.Serializable]
+//public class PaletteSaveData
+//{
+//    public PaletteSlotSave weapon1;
+//    public PaletteSlotSave weapon2;
 
-    public PaletteSlotSave object1;
-    public PaletteSlotSave object2;
-}
+//    public PaletteSlotSave object1;
+//    public PaletteSlotSave object2;
+//}
 
-[System.Serializable]
-public class PaletteSlotSave
-{
-    public string itemID;
-    public int count;
-    public bool isEquipped;
-}
+//[System.Serializable]
+//public class PaletteSlotSave
+//{
+//    public string itemID;
+//    public int count;
+//    public bool isEquipped;
+//}

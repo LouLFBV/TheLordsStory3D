@@ -4,21 +4,17 @@ public class Coin : InteractableBase
 {
     public int goldAmount = 1;
 
-    public void Collect(PlayerStats playerStats)
+    public override void OnInteract(PlayerInteractor interactor)
     {
-        if (playerStats != null)
+        // On passe par le Singleton du PlayerController
+        if (PlayerController.Instance != null)
         {
-            playerStats.AddGold(goldAmount);
+            PlayerController.Instance.Wallet.AddGold(goldAmount);
+
+            // Si tu as un système de feedback visuel/sonore plus global, 
+            // c'est ici qu'on le triggerait.
+            SetTargeted(false, interactor.transform); // On désélectionne la pièce avant de la détruire
             Destroy(gameObject);
         }
-        else
-        {
-            Debug.LogWarning("PlayerStats component not found on the player.");
-        }
-    }
-
-    public override void OnInteract(PlayerInteractor player)
-    {
-        Collect(player.PlayerTransform.GetComponent<PlayerStats>());
     }
 }

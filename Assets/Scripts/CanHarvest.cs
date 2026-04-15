@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CanHarvest : MonoBehaviour
 {
-    [SerializeField] private InteractBehaviour interactBehaviour;
+    [SerializeField] private InteractSystem interactBehaviour;
 
     [SerializeField] private bool isAxe = false;
 
@@ -10,6 +10,7 @@ public class CanHarvest : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("Enabling CanHarvest: " + gameObject.name);
         if (isAxe)
         {
             interactBehaviour.canAxe = true;

@@ -202,10 +202,3 @@ public class QuestManager : MonoBehaviour
     }
 
 }
-
-[System.Serializable]
-public class QuestSaveData
-{
-    public List<QuestInstanceSaveData> activeQuests = new();
-    public List<QuestInstanceSaveData> completedQuests = new();
-}

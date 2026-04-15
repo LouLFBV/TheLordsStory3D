@@ -6,6 +6,7 @@ using System.Collections;
 public class ZoneNameTrigger : MonoBehaviour
 {
     [Header("UI Settings")]
+    [SerializeField] private GameObject zoneNamePanel;
     public TextMeshProUGUI zoneTextUI;
     [TextArea]
     public string zoneName = "Nom de la zone";
@@ -31,6 +32,8 @@ public class ZoneNameTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player") && !_isOnCooldown && !_isUsed)
         {
+            if (UIManagerSystem.Instance != null)
+                UIManagerSystem.Instance.hudElements.Add(zoneNamePanel);
             StartCoroutine(ShowZoneName());
         }
     }

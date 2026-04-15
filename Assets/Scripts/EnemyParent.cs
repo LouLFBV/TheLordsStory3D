@@ -10,7 +10,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
     [HideInInspector]public NavMeshAgent agent;
     protected Animator animator;
 
-    [SerializeField] private BarriereDeCombat barriereDeCombat;
+    [SerializeField] private BarriereDeCombat[] barriereDeCombat;
 
 
     [SerializeField] protected Image healthBar;
@@ -19,7 +19,7 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
     protected float currentHealth;
 
     protected Transform player;
-    protected PlayerStats playerStats;
+    protected PlayerController playerStats;
 
     [SerializeField] protected GameObject itemToDrop;
 
@@ -56,12 +56,13 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
 
     void Start()
     {
-        playerStats = PlayerStats.instance;
+        playerStats = PlayerController.Instance;
         player = playerStats.transform;
     }
 
-    public virtual void TakeDamage(float damage, DamageType damageType)
+    public virtual void TakeDamage(float damage, float poisedamage, DamageType damageType)
     {
+        Debug.Log($"[{name}] TakeDamage called with damage: {damage}, poiseDamage: {poisedamage}, damageType: {damageType}");
         if (IsDead) return;
 
         foreach (DamageType type in defensePointFortType)
@@ -114,7 +115,18 @@ public abstract class EnemyParent : WorldDisappearOnCollected, IDamageable
         if (barriereDeCombat != null)
         {
             Debug.Log("Raising the combat barrier.");
-            barriereDeCombat.UpBarriere();
+            UpAllBarriere();
+        }
+    }
+    private void UpAllBarriere()
+    {
+        if (barriereDeCombat != null)
+        {
+            foreach (var barriere in barriereDeCombat)
+            {
+                Debug.Log("Raising a combat barrier.");
+                barriere.UpBarriere();
+            }
         }
     }
 

@@ -50,10 +50,10 @@ public class EnemyAI : EnemyParent
     {
         if (playerStats == null)
         {
-            playerStats = PlayerStats.instance;
+            playerStats = PlayerController.Instance;
             player = playerStats.transform;
         }
-        if (IsDead || playerStats.isDead) return;
+        if (IsDead || PlayerController.Instance.IsDead) return;
 
 
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
@@ -153,7 +153,7 @@ public class EnemyAI : EnemyParent
 
         yield return null; // Laisse une frame
 
-        playerStats.TakeDamage(damageDealt, damageType);
+        playerStats.DmgReceiver.TakeDamage(damageDealt,0, damageType);
 
         yield return new WaitForSeconds(attackDelay);
 
@@ -164,12 +164,12 @@ public class EnemyAI : EnemyParent
     }
 
 
-    public override void TakeDamage(float damage, DamageType damageType)
+    public override void TakeDamage(float damage, float poiseDamage, DamageType damageType)
     {
         if (IsDead) return;
         vie.SetActive(true);
         beAttacked = true;
-        base.TakeDamage(damage, damageType);
+        base.TakeDamage(damage, poiseDamage, damageType);
     }
 
 
@@ -179,7 +179,7 @@ public class EnemyAI : EnemyParent
         IsDead = true;
 
         vie.SetActive(false);
-        if (enemyData.enemyType == EnemyType.Squelette || enemyData.enemyType == EnemyType.Zombie)
+        if (enemyData.enemyType == EnemyType.Squelette)
         {
             agent.isStopped = true;
             if(gameObject.TryGetComponent<Rigidbody>(out var rb))
@@ -195,7 +195,7 @@ public class EnemyAI : EnemyParent
         {
             itemToDrop.SetActive(true);
         }
-        QuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
+        NewQuestManager.instance.UpdateQuestProgress(enemyData.enemyType.ToString(), 1);
     }
 
     #region Déplacement

@@ -3,14 +3,23 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    public Vector2 MoveInput { get; private set; }
 
-    public Vector2 mouseLook { get; private set; }
-    public Vector2 gamepadLook { get; private set; }
+    [Header("Mouse Settings")]
+    public float mouseSensitivity = 1f;
+
+    [Header("Gamepad Settings")]
+    public float gamepadSensitivity = 5f;
+    public float stickDeadzone = 0.15f;
+
+    public Vector2 MoveInput { get; private set; }
+    public Vector2 MouseLook { get; private set; }
+    public Vector2 GamepadLook { get; private set; }
+    public Vector2 NavigateLook { get; private set; }
     public bool AttackPressed { get; private set; }
+    public bool AttackSpecialPressed { get; private set; }
     public bool RollPressed { get; private set; }
     public bool SprintHeld { get; private set; }
-    public bool CrouchHeld { get; private set; }
+    public bool CrouchPressed { get; private set; }
     public bool AimHeld { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool Weapon1Pressed { get; private set; }
@@ -24,6 +33,14 @@ public class PlayerInputHandler : MonoBehaviour
     public bool CancelPressed { get; private set; }
     public bool CloseMenuPressed { get; private set; }
     public bool CloseInventoryPressed { get; private set; }
+    public bool InteractPressed { get; private set; }
+    public bool DialogueNextPressed { get; private set; }
+    public bool UseActionPressed { get; private set; }
+    public bool EqupActionPressed { get; private set; }
+    public bool DropActionPressed { get; private set; }
+    public bool DestroyActionPressed { get; private set; }
+    public bool UnequipActionPressed { get; private set; }
+    public bool LockOnPressed { get; private set; }
 
     private PlayerInput input;
 
@@ -34,20 +51,49 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        input.actions["Move"].performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
-        input.actions["Move"].canceled += ctx => MoveInput = Vector2.zero;
+        // --- MOVE avec Deadzone ---
+        input.actions["Move"].performed += ctx => {
+            Vector2 raw = ctx.ReadValue<Vector2>();
+            // Si le stick est moins incliné que la deadzone, on met à 0
+            MoveInput = (raw.magnitude < stickDeadzone) ? Vector2.zero : raw;
+        };
+        input.actions["Move"].canceled += _ => MoveInput = Vector2.zero;
+
+        // --- LOOK (Souris et Gamepad) ---
+        // On multiplie par la sensibilité EN DIRECT pour que les changements dans l'UI soient immédiats
+        input.actions["LookMouse"].performed += ctx => MouseLook = ctx.ReadValue<Vector2>() * mouseSensitivity;
+        input.actions["LookMouse"].canceled += _ => MouseLook = Vector2.zero;
+
+        input.actions["LookGamepad"].performed += ctx => GamepadLook = ctx.ReadValue<Vector2>() * gamepadSensitivity;
+        input.actions["LookGamepad"].canceled += _ => GamepadLook = Vector2.zero;
+
+        // --- NAVIGATE (UI) avec Deadzone ---
+        input.actions["Navigate"].performed += ctx => {
+            Vector2 raw = ctx.ReadValue<Vector2>();
+            // Important pour l'UI : si le stick "drifte" un peu, le curseur ne bougera pas tout seul
+            NavigateLook = (raw.magnitude < stickDeadzone) ? Vector2.zero : raw;
+            NavigationInput = NavigateLook; // Pour garder tes deux variables synchro
+        };
+        input.actions["Navigate"].canceled += _ => {
+            NavigateLook = Vector2.zero;
+            NavigationInput = Vector2.zero;
+        };
+
 
         input.actions["Attack"].performed += ctx => AttackPressed = true;
         input.actions["Attack"].canceled += ctx => AttackPressed = false;
 
-        input.actions["ForwardRool"].performed += ctx => RollPressed = true;
-        input.actions["ForwardRool"].canceled += ctx => RollPressed = false;
+        input.actions["AttackSpecial"].performed += ctx => AttackSpecialPressed = true;
+        input.actions["AttackSpecial"].canceled += ctx => AttackSpecialPressed = false;
+
+        input.actions["ForwardRoll"].performed += ctx => RollPressed = true;
+        input.actions["ForwardRoll"].canceled += ctx => RollPressed = false;
 
         input.actions["Sprint"].performed += ctx => SprintHeld = true;
         input.actions["Sprint"].canceled += ctx => SprintHeld = false;
 
-        input.actions["Crouch"].performed += ctx => CrouchHeld = true;
-        input.actions["Crouch"].canceled += ctx => CrouchHeld = false;
+        input.actions["Crouch"].performed += ctx => CrouchPressed = true;
+        input.actions["Crouch"].canceled += ctx => CrouchPressed = false;
 
         input.actions["Jump"].performed += ctx => JumpPressed = true;
         input.actions["Jump"].canceled += ctx => JumpPressed = false;
@@ -58,14 +104,11 @@ public class PlayerInputHandler : MonoBehaviour
         input.actions["Menu"].performed += ctx => MenuPressed = true;
         input.actions["Menu"].canceled += ctx => MenuPressed = false;
 
+        input.actions["Interact"].performed += ctx => InteractPressed = true;
+        input.actions["Interact"].canceled += ctx => InteractPressed = false;
 
-        // Souris
-        input.actions["LookMouse"].performed += ctx => mouseLook = ctx.ReadValue<Vector2>();
-        input.actions["LookMouse"].canceled += _ => mouseLook = Vector2.zero;
-
-        // Gamepad
-        input.actions["LookGamepad"].performed += ctx => gamepadLook = ctx.ReadValue<Vector2>();
-        input.actions["LookGamepad"].canceled += _ => gamepadLook = Vector2.zero;
+        input.actions["LockOn"].performed += ctx => LockOnPressed = true;
+        input.actions["LockOn"].canceled += ctx => LockOnPressed = false;
 
 
         input.actions["Aim"].performed += ctx => AimHeld = true;
@@ -100,20 +143,43 @@ public class PlayerInputHandler : MonoBehaviour
 
         input.actions["CloseInventory"].performed += ctx => CloseInventoryPressed = true;
         input.actions["CloseInventory"].canceled += ctx => CloseInventoryPressed = false;
+
+
+        input.actions["DialogueNext"].performed += ctx => DialogueNextPressed = true;
+        input.actions["DialogueNext"].canceled += ctx => DialogueNextPressed = false;
+
+        // Slot Actions 
+
+        input.actions["UseAction"].performed += ctx => UseActionPressed = true;
+        input.actions["UseAction"].canceled += ctx => UseActionPressed = false;
+
+        input.actions["EquipAction"].performed += ctx => EqupActionPressed = true;
+        input.actions["EquipAction"].canceled += ctx => EqupActionPressed = false;
+
+        input.actions["DropAction"].performed += ctx => DropActionPressed = true;
+        input.actions["DropAction"].canceled += ctx => DropActionPressed = false;
+
+        input.actions["DestroyAction"].performed += ctx => DestroyActionPressed = true;
+        input.actions["DestroyAction"].canceled += ctx => DestroyActionPressed = false;
+
+        input.actions["UnequipAction"].performed += ctx => UnequipActionPressed = true;
+        input.actions["UnequipAction"].canceled += ctx => UnequipActionPressed = false;
     }
 
     // --- LA MÉTHODE PRO ---
     public void SwitchActionMap(string mapName)
     {
+        Debug.Log($"Switching to action map: {mapName}");
         input.SwitchCurrentActionMap(mapName);
 
         // Reset des valeurs pour éviter que le perso continue de courir 
         // si on ouvre l'inventaire en plein sprint
         MoveInput = Vector2.zero;
         AttackPressed = false;
+        AttackSpecialPressed = false;
         RollPressed = false;
         SprintHeld = false;
-        CrouchHeld = false;
+        CrouchPressed = false;
         AimHeld = false;
         JumpPressed = false;
         Weapon1Pressed = false;
@@ -125,4 +191,18 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseMenuInput() => MenuPressed = false;
     public void UseCloseMenuInput() => CloseMenuPressed = false;
     public void UseCloseInventoryInput() => CloseInventoryPressed = false;
+    public void UseWeapon1Pressed() => Weapon1Pressed = false;
+    public void UseWeapon2Pressed() => Weapon2Pressed = false;
+    public void UseObject1Pressed() => Object1Pressed = false;
+    public void UseObject2Pressed() => Object2Pressed = false;
+    public void UseInteractInput() => InteractPressed = false;
+    public void UseDialogueNextInput() => DialogueNextPressed = false;
+    public void UseCrouchInput() => CrouchPressed = false;
+    public void UseJumpInput() => JumpPressed = false;
+    public void UseRollInput() => RollPressed = false;
+    public void UseAttackInput() => AttackPressed = false;
+    public void UseAttackSpecialInput() => AttackSpecialPressed = false;
+    public void UseLockOnInput() => LockOnPressed = false;
+    public void UseSubmitInput() => SubmitPressed = false;
+    public void UseDropActionInput() => DropActionPressed = false;
 }

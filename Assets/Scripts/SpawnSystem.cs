@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using System.Collections;
 
 public sealed class SpawnSystem
@@ -53,7 +52,7 @@ public sealed class SpawnSystem
             yield break;
         }
 
-        PlayerStats player = PlayerStats.instance;
+        PlayerController player = PlayerController.Instance;
 
         if (player == null)
         {

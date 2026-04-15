@@ -54,12 +54,12 @@ public class Forgeron : PNJParent
         if (!isOnDial)
         {
             StartCoroutine(RotateTowardsPlayer());
-            moveBehaviour.StopPlayer();
+
+            player.RequestedPanelType = UIPanelType.Dialogue;
+            player.StateMachine.ChangeState(PlayerStateType.UI);
             isOnDial = true;
             animator.SetBool("isTalking", true);
 
-            BasicBehaviour behaviourManager = playerTransform.GetComponent<BasicBehaviour>();
-            behaviourManager.GetAnim.SetFloat("Speed", 0f, 0f, Time.deltaTime);
 
             DialogueManager.instance.textName.text = namePNJ;
 
@@ -316,8 +316,8 @@ public class Forgeron : PNJParent
 
         produit.prix += prixDeLAmelioration;
         produit.levelAmelioration += 1;
-        PlayerStats.instance.goldAmount -= prixDeLAmelioration;
-        PlayerStats.instance.UpdateGoldText();
+        if (player.Wallet.SpendGold(prixDeLAmelioration)) 
+            Debug.Log($"Achat réussi : {produit.itemName} amélioré !");
         UpdateText(produit);
         RefreshProduits();
     }
