@@ -7,23 +7,27 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public Image itemVisual;
     public Image itemTypeVisual;
     public Text countTexte;
+    [SerializeField] private bool isEquipmentSlot;
 
     [SerializeField]
-    private ItemActionsSystem itemActionsSystem;
-    //private NewItemActionsSystem itemActionsSystem;
+    //private ItemActionsSystem itemActionsSystem;
+    private NewItemActionsSystem itemActionsSystem;
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item != null)
-        TooltipSystem.instance.Show(item.description, item.itemName);
+        //if (item != null)
+        //    TooltipSystem.instance.Show(item.description, item.itemName);
+
+        itemActionsSystem.OpenActionPanel(item, isEquipmentSlot);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        TooltipSystem.instance.Hide();
+        //TooltipSystem.instance.Hide();
+        itemActionsSystem.CloseActionPanel();
     }
 
-    public void ClickOnSlot()
-    {
-        itemActionsSystem.OpenActionPanel(item, transform.position - new Vector3(0, 15, 0));
-    }
+    //public void ClickOnSlot()
+    //{
+    //    itemActionsSystem.OpenActionPanel(item,isEquipmentSlot/*, transform.position - new Vector3(0, 15, 0)*/);
+    //}
 }
