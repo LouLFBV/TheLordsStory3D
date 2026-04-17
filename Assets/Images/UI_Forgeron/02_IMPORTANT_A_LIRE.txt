@@ -1,3 +1,0 @@
-Pour les slots, la sélection de slots et les icones : utiliser les mêmes que pour l'UI d'inventaire 
-
-Pour les niveaux des armes : utiliser les memes icones que dans l'UI de quetes
