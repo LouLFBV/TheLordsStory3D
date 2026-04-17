@@ -156,15 +156,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Emote"",
-                    ""type"": ""Button"",
-                    ""id"": ""1085722c-d6d8-4a9c-845f-1340162684ca"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""ForwardRoll"",
                     ""type"": ""Button"",
                     ""id"": ""6fbfdc24-b80e-4dd5-baf7-97c176ec3122"",
@@ -418,28 +409,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""LookGamepad"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""317e99f4-bd4a-4161-ab9d-05a60647f2f0"",
-                    ""path"": ""<Keyboard>/semicolon"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Emote"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2237dfbc-4e60-4fa8-bdff-602fee0e4b66"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Emote"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
@@ -1321,7 +1290,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
         m_Player_LookGamepad = m_Player.FindAction("LookGamepad", throwIfNotFound: true);
-        m_Player_Emote = m_Player.FindAction("Emote", throwIfNotFound: true);
         m_Player_ForwardRoll = m_Player.FindAction("ForwardRoll", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
@@ -1434,7 +1402,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_LookMouse;
     private readonly InputAction m_Player_LookGamepad;
-    private readonly InputAction m_Player_Emote;
     private readonly InputAction m_Player_ForwardRoll;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Menu;
@@ -1485,10 +1452,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/LookGamepad".
         /// </summary>
         public InputAction @LookGamepad => m_Wrapper.m_Player_LookGamepad;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Emote".
-        /// </summary>
-        public InputAction @Emote => m_Wrapper.m_Player_Emote;
         /// <summary>
         /// Provides access to the underlying input action "Player/ForwardRoll".
         /// </summary>
@@ -1580,9 +1543,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LookGamepad.started += instance.OnLookGamepad;
             @LookGamepad.performed += instance.OnLookGamepad;
             @LookGamepad.canceled += instance.OnLookGamepad;
-            @Emote.started += instance.OnEmote;
-            @Emote.performed += instance.OnEmote;
-            @Emote.canceled += instance.OnEmote;
             @ForwardRoll.started += instance.OnForwardRoll;
             @ForwardRoll.performed += instance.OnForwardRoll;
             @ForwardRoll.canceled += instance.OnForwardRoll;
@@ -1648,9 +1608,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LookGamepad.started -= instance.OnLookGamepad;
             @LookGamepad.performed -= instance.OnLookGamepad;
             @LookGamepad.canceled -= instance.OnLookGamepad;
-            @Emote.started -= instance.OnEmote;
-            @Emote.performed -= instance.OnEmote;
-            @Emote.canceled -= instance.OnEmote;
             @ForwardRoll.started -= instance.OnForwardRoll;
             @ForwardRoll.performed -= instance.OnForwardRoll;
             @ForwardRoll.canceled -= instance.OnForwardRoll;
@@ -1979,13 +1936,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLookGamepad(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Emote" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnEmote(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ForwardRoll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

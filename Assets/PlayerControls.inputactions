@@ -70,15 +70,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Emote",
-                    "type": "Button",
-                    "id": "1085722c-d6d8-4a9c-845f-1340162684ca",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ForwardRoll",
                     "type": "Button",
                     "id": "6fbfdc24-b80e-4dd5-baf7-97c176ec3122",
@@ -332,28 +323,6 @@
                     "action": "LookGamepad",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "317e99f4-bd4a-4161-ab9d-05a60647f2f0",
-                    "path": "<Keyboard>/semicolon",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Emote",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2237dfbc-4e60-4fa8-bdff-602fee0e4b66",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Emote",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

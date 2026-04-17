@@ -41,5 +41,6 @@ public static class InputBindingDisplay
         // 3. Aucun icône ? on affiche du texte
         // -------------------------
         iconField.enabled = false;
+
     }
 }

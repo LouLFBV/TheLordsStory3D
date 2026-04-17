@@ -64,6 +64,6 @@ public static class InputRebindManager
         }
 
         //// Fallback sécurité
-        //iconField.enabled = false;
+        iconField.enabled = false;
     }
 }

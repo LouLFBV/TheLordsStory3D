@@ -70,6 +70,7 @@ public class InputRebindUI : MonoBehaviour
             });
 
         rebindOperation.Start();
+
     }
 
 
@@ -78,7 +79,7 @@ public class InputRebindUI : MonoBehaviour
     {
         // Sauvegarder automatiquement
         InputRebindManager.SaveRebinds(playerInput);
-
+        
         RefreshDisplay();
     }
 
