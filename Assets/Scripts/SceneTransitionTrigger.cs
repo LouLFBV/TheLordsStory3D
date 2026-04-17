@@ -35,6 +35,7 @@ public sealed class SceneTransitionTrigger : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         GameManager.Instance.SpawnSystem.SetSpawn(targetSpawnID);
+        ThirdPersonCameraController.Instance.SetLockCamera(false);
         SceneManager.LoadSceneAsync(sceneToLoad);
     }
 }

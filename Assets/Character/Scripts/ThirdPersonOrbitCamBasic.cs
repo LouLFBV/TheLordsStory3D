@@ -417,8 +417,4 @@ public class ThirdPersonOrbitCamBasic : MonoBehaviour
     }
 }
 
-public static class CameraEvents
-{
-    public static Action<float, float> OnCameraShake;
-    // amplitude, duration
-}
+

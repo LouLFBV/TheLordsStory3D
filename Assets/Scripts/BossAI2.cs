@@ -43,9 +43,9 @@ public class BossAI2 : EnemyParent
 
     private void Update()
     {
-        if (player == null) player = PlayerStats.instance.transform;
+        if (player == null) player = PlayerController.Instance.transform;
         if (IsDead || agent == null) return;
-        if (PlayerStats.instance.currentHealth <= 0) return;
+        //if (PlayerStats.instance.currentHealth <= 0) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -73,7 +73,7 @@ public class BossAI2 : EnemyParent
     }
 
 
-    public override void TakeDamage(float damage, DamageType damageType)
+    public override void TakeDamage(float damage, float poisedamage, DamageType damageType)
     {
         if (isDefending || isAttacking || IsDead)
             return;

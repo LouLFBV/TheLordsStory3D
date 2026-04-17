@@ -6,7 +6,7 @@ public class PNJ : InteractableBase
 {
     #region Champs/Paramètres
     [Header("Dialogue")]
-    [SerializeField] private float distanceToInteract = 2f;
+    //[SerializeField] private float distanceToInteract = 2f;
     public string namePNJ;
     public DialogueResponse[] sentences; // Dialogue par défaut
     public DialogueResponse[] sentencesIfPlayerIsBad;
@@ -37,16 +37,14 @@ public class PNJ : InteractableBase
     private float wanderTimer;
     private Vector3 targetPosition;
 
-    private Transform playerTransform;
-    private MoveBehaviour moveBehaviour;
-    private JumpBehaviour jumpBehaviour;
-    private AimBehaviourBasic aimBehaviour;
+    private Transform playerTransform; 
+    private PlayerController player; 
+    private bool isPlayerInZone;
 
     private Animator animator;
     private NavMeshAgent agent;
     private float vitesseDeRotation = 0.15f;
 
-    private bool playerIsClose;
     public float dialogueEndTime;
     public float inputCooldown = 1f;
     private float dialogueStartTime;
@@ -55,10 +53,6 @@ public class PNJ : InteractableBase
 
     private void Start()
     {
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
-        jumpBehaviour = playerTransform.GetComponent<JumpBehaviour>();
-        aimBehaviour = playerTransform.GetComponent<AimBehaviourBasic>();
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
 
@@ -84,18 +78,32 @@ public class PNJ : InteractableBase
             SetTargeted(false, playerTransform);
         }
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            player = other.GetComponent<PlayerController>();
+            playerTransform = other.transform;
+            isPlayerInZone = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = false;
+            player = null;
+        }
+    }
     private void Update()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-        playerIsClose = distanceToPlayer <= distanceToInteract;
-
-        if (playerIsClose)
+        if (isPlayerInZone)
         {
             agent.ResetPath();
             animator.SetFloat("Speed", 0f);
         }
 
-        if (canWander && !isOnDial && !playerIsClose)
+        if (canWander && !isOnDial && !isPlayerInZone)
             Wander();
 
         animator.SetFloat("Speed", agent.velocity.magnitude);
@@ -127,15 +135,23 @@ public class PNJ : InteractableBase
     {
         if (canGiveQuest)
             ResolveQuestInstance();
-        moveBehaviour.StopPlayer();
 
+        if (player == null)
+        {
+            Debug.LogError("Player reference is null in PNJ. Cannot start dialogue.");
+            return;
+        }
+        player.RequestedPanelType = UIPanelType.Dialogue;
+        player.StateMachine.ChangeState(PlayerStateType.UI);
+
+        // 2. Logique propre au PNJ
         StartCoroutine(RotateTowardsToPlayer());
         animator.SetFloat("Speed", 0f);
         canWander = false;
-        aimBehaviour.enabled = false;
-        jumpBehaviour.canJump = false;
         isOnDial = true;
         agent.isStopped = true;
+
+        StartCoroutine(RotateTowardsToPlayer());
 
         DialogueManager.instance.textName.text = namePNJ;
         index = 0;
@@ -145,12 +161,6 @@ public class PNJ : InteractableBase
         VerifObjectsInInventory();
         AddEnemiesKilled();
 
-
-        var uiManager = UIManager.instance;
-        if (uiManager != null)
-        {
-            uiManager.HandlePanelOpened();
-        }
 
         if (canGiveQuest && currentQuestSO != null)
         {
@@ -164,7 +174,7 @@ public class PNJ : InteractableBase
                 switch (activeQuestInstance.status)
                 {
                     case QuestStatus.InProgress:
-                        if (QuestManager.instance.CanCompleteQuest(activeQuestInstance))
+                        if (NewQuestManager.instance.CanCompleteQuest(activeQuestInstance))
                             CompleteQuest();
                         else
                             currentDialogue = currentQuestSO.sentencesQuestInProgress;
@@ -176,7 +186,7 @@ public class PNJ : InteractableBase
                 }
             }
         }
-        else
+        else if (!isPnjInteraction)
         {
             currentDialogue = sentences;
         }
@@ -202,31 +212,24 @@ public class PNJ : InteractableBase
 
         animator.SetBool("isTalking", false);
         if (canWanderOnStart) canWander = true;
-        moveBehaviour.StartPlayer();
-        jumpBehaviour.canJump = true;
-        aimBehaviour.enabled = true;
+        player.StateMachine.ChangeState(PlayerStateType.Idle);
         agent.isStopped = false;
         if (isPnjInteraction) isPnjInteraction = false;
-        var uiManager = UIManager.instance;
-        if (uiManager != null)
-        {
-            uiManager.HandlePanelClosed();
-        }
     }
 #endregion
     public void NextLine()
     {
         Debug.Log("NextLine called for PNJ: " + namePNJ);
         // Vérifie si le joueur a une mauvaise réputation
-        if (PlayerStats.instance.reputationData.reputationPoints < seuilDeReputationQuest
-            && sentencesIfPlayerIsBad.Length > 0
-            && (activeQuestInstance != null && !currentQuestSO.isMainQuest)
-            && currentDialogue != sentencesIfPlayerIsBad)
-        {
-            currentDialogue = sentencesIfPlayerIsBad;
-            index = 0;
-            sentenceIndex = 0;
-        }
+        //if (PlayerStats.instance.reputationData.reputationPoints < seuilDeReputationQuest
+        //    && sentencesIfPlayerIsBad.Length > 0
+        //    && (activeQuestInstance != null && !currentQuestSO.isMainQuest)
+        //    && currentDialogue != sentencesIfPlayerIsBad)
+        //{
+        //    currentDialogue = sentencesIfPlayerIsBad;
+        //    index = 0;
+        //    sentenceIndex = 0;
+        //}
 
         if (index >= currentDialogue.Length)
         {
@@ -236,7 +239,7 @@ public class PNJ : InteractableBase
                 {
                     if (activeQuestInstance.status == QuestStatus.Completed && !activeQuestInstance.rewardsGiven)
                     {
-                        QuestManager.instance.ApplyRewards(activeQuestInstance);
+                        NewQuestManager.instance.ApplyRewards(activeQuestInstance);
                         EndDialogue();
                     }
                     else
@@ -303,15 +306,15 @@ public class PNJ : InteractableBase
     #region Accept/Refuse Quest
     public void AcceptQuest()
     {
-        QuestManager.instance.AddQuest(currentQuestSO);
-        activeQuestInstance = QuestManager.instance.GetQuestInstance(currentQuestSO);
+        NewQuestManager.instance.AddQuest(currentQuestSO);
+        activeQuestInstance = NewQuestManager.instance.GetQuestInstance(currentQuestSO);
 
         DialogueManager.instance.HideQuestButtons();
 
         animator.SetBool("isTalking", true);
         index = 0;
         currentDialogue = currentQuestSO.sentencesQuestAccepted;
-        QuestLog.instance.ActiveDesactiveQuestText(currentQuestSO.questName);
+        NewQuestLog.instance.ActiveDesactiveQuestText(currentQuestSO);
         Debug.Log("Quest accepted: " + currentQuestSO.questName);
         NextLine();
     }
@@ -332,17 +335,18 @@ public class PNJ : InteractableBase
     {
         if (activeQuestInstance == null) return;
 
-        QuestManager.instance.CompleteQuest(activeQuestInstance);
+        NewQuestManager.instance.CompleteQuest(activeQuestInstance);
 
-        DeleteObjectsInInventory(
+        if (currentQuestSO.requiredItem != null)
+            DeleteObjectsInInventory(
             currentQuestSO.requiredItem,
             currentQuestSO.requiredItemCount
         );
 
-        if (currentQuestSO.questName == QuestLog.instance.QuestActiveText.text)
+        if (currentQuestSO.questName == NewQuestLog.instance.QuestActiveText.text)
         {
-            QuestLog.instance.QuestActiveText.gameObject.SetActive(false);
-            QuestLog.instance.questToggle.isOn = false;
+            NewQuestLog.instance.QuestActiveText.gameObject.SetActive(false);
+            //NewQuestLog.instance.questToggle.isOn = false;
         }
 
         index = 0;
@@ -356,7 +360,7 @@ public class PNJ : InteractableBase
     private void VerifObjectsInInventory()
     {
         if (activeQuestInstance == null || activeQuestInstance.status != QuestStatus.InProgress || currentQuestSO.requiredItem == null) return;
-        foreach (var obj in Inventory.instance.GetContent())
+        foreach (var obj in InventorySystem.instance.GetContent())
         {
             if (currentQuestSO.requiredItem == obj.itemData)
             {
@@ -368,7 +372,7 @@ public class PNJ : InteractableBase
     private void AddEnemiesKilled()
     {
         if (activeQuestInstance == null || activeQuestInstance.status != QuestStatus.InProgress || currentQuestSO.questType != QuestType.Hunt) return;
-        foreach (var quest in QuestManager.instance.activeQuests)
+        foreach (var quest in NewQuestManager.instance.activeQuests)
         {
             if (quest.data == currentQuestSO)
             {
@@ -381,12 +385,12 @@ public class PNJ : InteractableBase
     {
         for (int i = 0; i < count; i++)
         {
-            Inventory.instance.RemoveItem(itemData);
+            InventorySystem.instance.RemoveItem(itemData);
         }
     }
     private void VerifIfIntercationQuest()
     {
-        foreach (var quest in QuestManager.instance.activeQuests)
+        foreach (var quest in NewQuestManager.instance.activeQuests)
         {
             if (quest.data.namePNJ == namePNJ && quest.status == QuestStatus.InProgress)
             {
@@ -405,22 +409,27 @@ public class PNJ : InteractableBase
         activeQuestInstance = null;
         currentQuestSO = null;
 
-        foreach (var questSO in questsDisponibles)
+        //  On commence à l'index courant
+        for (int i = currentQuestIndex; i < questsDisponibles.Length; i++)
         {
-            var instance = QuestManager.instance.GetQuestInstance(questSO);
+            var questSO = questsDisponibles[i];
+            var instance = NewQuestManager.instance.GetQuestInstance(questSO);
 
             // 1️⃣ Quête jamais acceptée
-            if (instance == null)
+            if (instance == null  && !NewQuestManager.instance.IsFinished(questSO))
             {
                 currentQuestSO = questSO;
+                currentQuestIndex = i; //  important
                 return;
             }
+            if (instance == null) continue;
 
             // 2️⃣ Quête en cours
             if (instance.status == QuestStatus.InProgress)
             {
                 activeQuestInstance = instance;
                 currentQuestSO = questSO;
+                currentQuestIndex = i;
                 return;
             }
 
@@ -429,11 +438,14 @@ public class PNJ : InteractableBase
             {
                 activeQuestInstance = instance;
                 currentQuestSO = questSO;
+                currentQuestIndex = i;
                 return;
             }
+
+            // 4️⃣ Si elle est totalement terminée  on passe à la suivante
         }
 
-        // 4️⃣ Toutes les quêtes sont terminées
+        // 5️⃣ Toutes les quêtes sont terminées
         canGiveQuest = false;
     }
 
@@ -459,8 +471,8 @@ public class PNJ : InteractableBase
     }
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, distanceToInteract);
+        //Gizmos.color = Color.green;
+        //Gizmos.DrawWireSphere(transform.position, distanceToInteract);
 
         if (wanderCenter != null)
         {

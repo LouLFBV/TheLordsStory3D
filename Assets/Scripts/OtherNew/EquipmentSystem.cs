@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EquipmentSystem : MonoBehaviour
 {
@@ -21,21 +18,16 @@ public class EquipmentSystem : MonoBehaviour
 
     [SerializeField] private EquipmentLibrary equipmentLibrary;
 
-    [SerializeField] private Image headSlotImage, chestSlotImage, handsSlotImage, legslotImage, feetSlotImage, arrowSlotImage;
+    public Slot headSlot, chestSlot, handsSlot, legsSlot, feetSlot, arrowSlot;
 
-    [HideInInspector]
-    public ItemData equipmentHeadItem, equipmentChestItem, equipmentHandsItem, equipmentLegsItem, equipmentFeetItem;
 
     [HideInInspector]
     public ItemInInventory arrowItemInInventory;
 
-    [SerializeField] private TextMeshProUGUI arrowText;
 
-    [SerializeField] private Button headSlotDesequipButton, chestSlotDesequipButton, handsSlotDesequipButton, legsSlotDesequipButton, feetSlotDesequipButton, arrowSlotDesequipButton;
+    public AudioSource audioSource;
 
-    [HideInInspector] public AudioSource audioSource;
-
-    [HideInInspector] public AudioClip equipSound;
+    public AudioClip equipSound;
 
     private bool isLoading = false;
 
@@ -54,11 +46,11 @@ public class EquipmentSystem : MonoBehaviour
     }
     public bool IsEquipped(ItemData item)
     {
-        return equipmentHeadItem == item ||
-               equipmentChestItem == item ||
-               equipmentHandsItem == item ||
-               equipmentLegsItem == item ||
-               equipmentFeetItem == item ||
+        return headSlot.item == item ||
+               chestSlot.item == item ||
+               handsSlot.item == item ||
+               legsSlot.item == item ||
+               feetSlot.item == item ||
                arrowItemInInventory.itemData == item;
     }
     private void DisablePreviousEquipedEquipment(ItemData itemToDisable)
@@ -68,7 +60,7 @@ public class EquipmentSystem : MonoBehaviour
             return;
         }
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == itemToDisable).First();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(itemToDisable);
 
         if (equipmentLibraryItem != null)
         {
@@ -98,7 +90,7 @@ public class EquipmentSystem : MonoBehaviour
 
     public void DesequipEquipment(EquipmentType equipmentType)
     {
-        if (InventorySystem.instance.IsFull())
+        if (InventorySystem.instance.IsFullEquipment())
         {
             Debug.LogWarning("Cannot desequip item, inventory is full.");
             return;
@@ -109,38 +101,44 @@ public class EquipmentSystem : MonoBehaviour
         switch (equipmentType)
         {
             case EquipmentType.Head:
-                currentItem = equipmentHeadItem;
-                headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentHeadItem = null;
+                currentItem = headSlot.item;
+                headSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                headSlot.item = null;
+                headSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Chest:
-                currentItem = equipmentChestItem;
-                chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentChestItem = null;
+                currentItem = chestSlot.item;
+                chestSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                chestSlot.item = null;
+                chestSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Hands:
-                currentItem = equipmentHandsItem;
-                handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentHandsItem = null;
+                currentItem = handsSlot.item;
+                handsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                handsSlot.item = null;
+                handsSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Legs:
-                currentItem = equipmentLegsItem;
-                legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentLegsItem = null;
+                currentItem = legsSlot.item;
+                legsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                legsSlot.item = null;
+                legsSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Feet:
-                currentItem = equipmentFeetItem;
-                feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-                equipmentFeetItem = null;
+                currentItem = feetSlot.item;
+                feetSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                feetSlot.item = null;
+                feetSlot.itemTypeVisual.gameObject.SetActive(true);
                 break;
             case EquipmentType.Arrow:
                 currentItem = arrowItemInInventory.itemData;
-                arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+                arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                arrowSlot.itemTypeVisual.gameObject.SetActive(true);
                 arrowItemInInventory.itemData = null;
                 break;
         }
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == currentItem).FirstOrDefault();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(currentItem);
 
         if (equipmentLibraryItem != null)
         {
@@ -149,6 +147,12 @@ public class EquipmentSystem : MonoBehaviour
                 element.SetActive(true);
             }
             equipmentLibraryItem.itemPrefab.SetActive(false);
+
+            foreach (GameObject element in equipmentLibraryItem.elementsToDisableEquipment)
+            {
+                element.SetActive(true);
+            }
+            equipmentLibraryItem.itemPrefabEquipment.SetActive(false);
         }
         if (currentItem)
         {
@@ -170,41 +174,14 @@ public class EquipmentSystem : MonoBehaviour
             }
             else
                 InventorySystem.instance.AddItem(currentItem);
-            UpdateEquipmentsDesequipButtons();
+            //UpdateEquipmentsDesequipButtons();
         }
     }
 
     public void UpdateArrowsText()
     {
-        arrowText.gameObject.SetActive(arrowItemInInventory.itemData != null);
-        arrowText.text = arrowItemInInventory.count.ToString();
-    }
-
-    public void UpdateEquipmentsDesequipButtons()
-    {
-        headSlotDesequipButton.onClick.RemoveAllListeners();
-        headSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Head); });
-        headSlotDesequipButton.gameObject.SetActive(equipmentHeadItem);
-
-        chestSlotDesequipButton.onClick.RemoveAllListeners();
-        chestSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Chest); });
-        chestSlotDesequipButton.gameObject.SetActive(equipmentChestItem);
-
-        handsSlotDesequipButton.onClick.RemoveAllListeners();
-        handsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Hands); });
-        handsSlotDesequipButton.gameObject.SetActive(equipmentHandsItem);
-
-        legsSlotDesequipButton.onClick.RemoveAllListeners();
-        legsSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Legs); });
-        legsSlotDesequipButton.gameObject.SetActive(equipmentLegsItem);
-
-        feetSlotDesequipButton.onClick.RemoveAllListeners();
-        feetSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Feet); });
-        feetSlotDesequipButton.gameObject.SetActive(equipmentFeetItem);
-
-        arrowSlotDesequipButton.onClick.RemoveAllListeners();
-        arrowSlotDesequipButton.onClick.AddListener(delegate { DesequipEquipment(EquipmentType.Arrow); });
-        arrowSlotDesequipButton.gameObject.SetActive(arrowItemInInventory.itemData);
+        arrowSlot.countTexte.gameObject.SetActive(arrowItemInInventory.itemData != null);
+        arrowSlot.countTexte.text = arrowItemInInventory.count.ToString();
     }
 
     public void EquipAction(ItemData equipment = null)
@@ -213,46 +190,51 @@ public class EquipmentSystem : MonoBehaviour
         ItemData itemToEquip = equipment ? equipment : itemActionsSystem.itemCurrentlySelected;
         print("Equip item : " + itemToEquip.name);
 
-        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.content.Where(x => x.itemData == itemToEquip).FirstOrDefault();
+        EquipmentLibraryItem equipmentLibraryItem = equipmentLibrary.Get(itemToEquip);
 
         if (equipmentLibraryItem != null)
         {
             switch (itemToEquip.equipmentType)
             {
                 case EquipmentType.Head:
-                    DisablePreviousEquipedEquipment(equipmentHeadItem);
-                    headSlotImage.sprite = itemToEquip.visual;
-                    equipmentHeadItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(headSlot.item);
+                    headSlot.itemVisual.sprite = itemToEquip.visual;
+                    headSlot.item = itemToEquip;
+                    headSlot.item = itemToEquip;
+                    headSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Chest:
-                    DisablePreviousEquipedEquipment(equipmentChestItem);
-                    chestSlotImage.sprite = itemToEquip.visual;
-                    equipmentChestItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(chestSlot.item);
+                    chestSlot.itemVisual.sprite = itemToEquip.visual;
+                    chestSlot.item = itemToEquip;
+                    chestSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Hands:
-                    DisablePreviousEquipedEquipment(equipmentHandsItem);
-                    handsSlotImage.sprite = itemToEquip.visual;
-                    equipmentHandsItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(handsSlot.item);
+                    handsSlot.itemVisual.sprite = itemToEquip.visual;
+                    handsSlot.item = itemToEquip;
+                    handsSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Legs:
-                    DisablePreviousEquipedEquipment(equipmentLegsItem);
-                    legslotImage.sprite = itemToEquip.visual;
-                    equipmentLegsItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(legsSlot.item);
+                    legsSlot.itemVisual.sprite = itemToEquip.visual;
+                    legsSlot.item = itemToEquip;
+                    legsSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Feet:
-                    DisablePreviousEquipedEquipment(equipmentFeetItem);
-                    feetSlotImage.sprite = itemToEquip.visual;
-                    equipmentFeetItem = itemToEquip;
+                    DisablePreviousEquipedEquipment(feetSlot.item);
+                    feetSlot.itemVisual.sprite = itemToEquip.visual;
+                    feetSlot.item = itemToEquip;
+                    feetSlot.itemTypeVisual.gameObject.SetActive(false);
                     ActiveItemVisuel(equipmentLibraryItem);
                     break;
                 case EquipmentType.Weapon:
-                    palette.AddWeapon(itemToEquip);
                     // 1. On l'ajoute à la palette (logique de données)
-                    palette.AddWeapon(itemToEquip);
+                    palette.slotManager.AddWeapon(itemToEquip);
 
                     //// 2. Si on n'est pas en train de charger une sauvegarde, on déclenche l'animation
                     //if (!isLoading)
@@ -272,9 +254,11 @@ public class EquipmentSystem : MonoBehaviour
                     break;
                 case EquipmentType.Arrow:
                     DisablePreviousEquipedEquipment(arrowItemInInventory.itemData);
-                    arrowSlotImage.sprite = itemToEquip.visual;
+                    arrowSlot.itemVisual.sprite = itemToEquip.visual;
                     arrowItemInInventory.itemData = itemToEquip;
                     arrowItemInInventory.count = InventorySystem.instance.GetContent().Find(x => x.itemData == itemToEquip).count;
+                    PaletteSystem.instance.slotManager.AddArrow(itemToEquip);
+                    PaletteSystem.instance.slotManager.UpdateCountArrow(arrowItemInInventory.count);
                     for (int i = 0; i < arrowItemInInventory.count; i++)
                     {
                         InventorySystem.instance.RemoveItem(itemToEquip);
@@ -286,7 +270,7 @@ public class EquipmentSystem : MonoBehaviour
             }
             if (itemToEquip.itemType == ItemType.Consumable)
             {
-                palette.AddObject(itemToEquip);
+                palette.slotManager.AddObject(itemToEquip);
             }
 
             if (!isLoading && itemToEquip.equipmentType != EquipmentType.Arrow)
@@ -300,18 +284,19 @@ public class EquipmentSystem : MonoBehaviour
         }
 
         itemActionsSystem.CloseActionPanel();
-        UpdateEquipmentsDesequipButtons();
+        //UpdateEquipmentsDesequipButtons();
     }
 
+    #region Save/Load
     public EquipmentSaveData GetSaveData()
     {
         return new EquipmentSaveData
         {
-            headID = equipmentHeadItem ? equipmentHeadItem.itemID : null,
-            chestID = equipmentChestItem ? equipmentChestItem.itemID : null,
-            handsID = equipmentHandsItem ? equipmentHandsItem.itemID : null,
-            legsID = equipmentLegsItem ? equipmentLegsItem.itemID : null,
-            feetID = equipmentFeetItem ? equipmentFeetItem.itemID : null,
+            headID = headSlot.item ? headSlot.item.itemID : null,
+            chestID = chestSlot.item ? chestSlot.item.itemID : null,
+            handsID = handsSlot.item ? handsSlot.item.itemID : null,
+            legsID = legsSlot.item ? legsSlot.item.itemID : null,
+            feetID = feetSlot.item ? feetSlot.item.itemID : null,
 
             arrowID = arrowItemInInventory.itemData ? arrowItemInInventory.itemData.itemID : null,
             arrowCount = arrowItemInInventory.count
@@ -323,21 +308,21 @@ public class EquipmentSystem : MonoBehaviour
         isLoading = true;
 
         // Reset interne SANS toucher l'inventaire
-        equipmentHeadItem = null;
-        equipmentChestItem = null;
-        equipmentHandsItem = null;
-        equipmentLegsItem = null;
-        equipmentFeetItem = null;
+        headSlot.item = null;
+        chestSlot.item = null;
+        handsSlot.item = null;
+        legsSlot.item = null;
+        feetSlot.item = null;
 
         arrowItemInInventory.itemData = null;
         arrowItemInInventory.count = 0;
 
-        headSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        chestSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        handsSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        legslotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        feetSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
-        arrowSlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+        headSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        chestSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        handsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        legsSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        feetSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+        arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
 
         if (data == null)
         {
@@ -357,13 +342,12 @@ public class EquipmentSystem : MonoBehaviour
             arrowItemInInventory.itemData = arrow;
             arrowItemInInventory.count = data.arrowCount;
 
-            arrowSlotImage.sprite = arrow.visual;
+            arrowSlot.itemVisual.sprite = arrow.visual;
             UpdateArrowsText();
             BowBehaviour.instance.UpdateQuiverVisual(data.arrowCount);
         }
 
-        UpdateEquipmentsDesequipButtons();
-        //playerStats.UpddateArmorText();
+        //UpdateEquipmentsDesequipButtons();
 
         isLoading = false;
     }
@@ -379,7 +363,7 @@ public class EquipmentSystem : MonoBehaviour
             EquipAction(item);
         }
     }
-
+    #endregion
     private void ActiveItemVisuel(EquipmentLibraryItem equipmentLibraryItem)
     {
         foreach (GameObject element in equipmentLibraryItem.elementsToDisable)
@@ -387,6 +371,16 @@ public class EquipmentSystem : MonoBehaviour
             element.SetActive(false);
         }
         equipmentLibraryItem.itemPrefab.SetActive(true);
+
+        ActiveItemVisuelInEquipment(equipmentLibraryItem);
+    }
+    private void ActiveItemVisuelInEquipment(EquipmentLibraryItem equipmentLibraryItem)
+    {
+        foreach (GameObject element in equipmentLibraryItem.elementsToDisableEquipment)
+        {
+            element.SetActive(false);
+        }
+        equipmentLibraryItem.itemPrefabEquipment.SetActive(true);
     }
 }
 

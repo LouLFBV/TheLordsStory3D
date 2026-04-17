@@ -8,8 +8,6 @@ using UnityEngine.UI;
 public class Chest : InteractableBase
 {
     #region Champs
-    [Header("References")]
-    [SerializeField] private EquipmentLibrary equipmentLibrary;
 
     [Header("Description Panel")]
     [SerializeField] private GameObject descriptionPanel;
@@ -43,15 +41,20 @@ public class Chest : InteractableBase
     [SerializeField] private int goldAmount = 0;
     [SerializeField] private GameObject goldVisual;
 
+    [Header("UI Animation")]
+    [SerializeField] private CanvasGroup descriptionCanvasGroup;
+    [SerializeField] private float fadeDuration = 1f;
+    [SerializeField] private float displayDuration = 5f;
+
+    [Header("Popup Event")]
+    [SerializeField] private bool triggerPopupOnOpen = false;
+    [SerializeField] private string popupMessage;
+
     private Quaternion closedRotation;
     private Quaternion openRotation;
 
     private bool isOpen = false;
     private bool isAnimating = false;
-    private bool isAlive = true;
-
-    private Animator playerAnimator;
-    private PlayerInput playerInput;
 
     #endregion 
     // -------------------------------------------------------
@@ -65,74 +68,22 @@ public class Chest : InteractableBase
         closedRotation = topChest.transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(openEulerAngles);
 
-        
+
         Debug.Log("<color=cyan>[CHEST] Initialisation du coffre…</color>");
 
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            playerInput = player.GetComponent<PlayerInput>();
-            playerAnimator = player.GetComponent<Animator>();
-            Debug.Log("[CHEST] PlayerInput trouvé !");
-        }
-        else
-        {
-            Debug.LogError("[CHEST] Player introuvable !");
-        }
-
-        if (equipmentLibrary == null)
-            equipmentLibrary = GameObject.FindWithTag("GameManager").GetComponent<EquipmentLibrary>();
-
         if (isLocked)
-            objectType = InteractableObjectType.Key;        
+            objectType = InteractableObjectType.Key;
         else
             objectType = InteractableObjectType.Chest;
         interactUI.SetInteractable(this);
     }
 
 
-    private void ActiveCancel()
-    {
-        if (playerInput != null)
-        {
-            var cancel = playerInput.actions["Cancel"];
-
-            if (cancel == null)
-            {
-                Debug.LogError("[CHEST] Action 'Cancel' introuvable dans PlayerInput !");
-            }
-            else
-            {
-                cancel.performed += OnCancel;
-                cancel.Enable();
-                Debug.Log("<color=lime>[CHEST] Cancel correctement bindé.</color>");
-            }
-        }
-        else
-        {
-            Debug.LogError("[CHEST] PlayerInput est NULL !");
-        }
-    }
     private void OnDisable()
     {
-        if (playerInput != null)
-        {
-            playerInput.actions["Cancel"].performed -= OnCancel;
-        }
         if (WorldStateManager.Instance != null)
         {
             WorldStateManager.Instance.OnWorldStateLoaded -= Apply;
-        }
-    }
-
-
-    private void OnDestroy()
-    {
-        isAlive = false;
-
-        if (playerInput != null)
-        {
-            playerInput.actions["Cancel"].performed -= OnCancel;
         }
     }
 
@@ -154,21 +105,6 @@ public class Chest : InteractableBase
         }
     }
 
-    // -------------------------------------------------------
-    // INPUT : Cancel
-    // -------------------------------------------------------
-
-    private void OnCancel(InputAction.CallbackContext ctx)
-    {
-        if (!isAlive || descriptionPanel == null) return;
-
-        if (descriptionPanel.activeSelf)
-        {
-            descriptionPanel.SetActive(false);
-            playerInput.actions["Cancel"].performed -= OnCancel;
-            playerInput.actions["Cancel"].Disable();
-        }
-    }
 
 
     // -------------------------------------------------------
@@ -186,7 +122,7 @@ public class Chest : InteractableBase
     {
         if (isAnimating) return;
 
-        if (isLocked && Inventory.instance.KeyIsInInventory(keyItem))
+        if (isLocked && InventorySystem.instance.KeyIsInInventory(keyItem))
             TryToOpenWithKey(keyItem);
         else if (!isOpen && !isLocked)
             StartCoroutine(OpenChest());
@@ -204,7 +140,7 @@ public class Chest : InteractableBase
         // Cas 1 : la bonne clé est utilisée
         else if (key == keyItem)
         {
-            Inventory.instance.RemoveItem(key);
+            InventorySystem.instance.RemoveItem(key);
             StartCoroutine(OpenChest());
             return;
         }
@@ -223,10 +159,8 @@ public class Chest : InteractableBase
             else
             {
                 unlockFailSound.PlayOneShot(unlockFailSound.clip);
-                if (PlayerStats.instance.reputationData.reputationPoints > -10)
-                    PlayerStats.instance.reputationData.reputationPoints -= 1;
             }
-            Inventory.instance.RemoveItem(key);
+            InventorySystem.instance.RemoveItem(key);
         }
         else
         {
@@ -261,6 +195,11 @@ public class Chest : InteractableBase
             ShowDescriptionPanel();
         }
 
+        if(triggerPopupOnOpen)
+        {
+            PopupEvent.Raise(popupMessage);
+        }
+
         // Unlocking physics
         topLock.isKinematic = false;
         bottomLock.isKinematic = false;
@@ -292,8 +231,10 @@ public class Chest : InteractableBase
 
     private void ShowDescriptionPanel()
     {
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(descriptionPanel);
         descriptionPanel.SetActive(true);
-        ActiveCancel();
+
         nameText.text = rewardItem.itemName;
         objectImage.sprite = rewardItem.visual;
 
@@ -301,12 +242,45 @@ public class Chest : InteractableBase
         {
             amountText.text = $"x{rewardAmount}";
             for (int i = 0; i < rewardAmount; i++)
-                Inventory.instance.AddItem(rewardItem);
+                InventorySystem.instance.AddItem(rewardItem);
         }
         else
         {
             amountText.text = "";
-            Inventory.instance.AddItem(rewardItem);
+            InventorySystem.instance.AddItem(rewardItem);
         }
+
+        //StopAllCoroutines(); // évite les overlaps
+        StartCoroutine(FadeDescriptionPanel());
+    }
+    private IEnumerator FadeDescriptionPanel()
+    {
+        descriptionCanvasGroup.alpha = 0;
+
+        // --- FADE IN ---
+        float t = 0;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            descriptionCanvasGroup.alpha = t / fadeDuration;
+            yield return null;
+        }
+
+        descriptionCanvasGroup.alpha = 1;
+
+        // --- ATTENTE ---
+        yield return new WaitForSeconds(displayDuration);
+
+        // --- FADE OUT ---
+        t = 0;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            descriptionCanvasGroup.alpha = 1 - (t / fadeDuration);
+            yield return null;
+        }
+
+        descriptionCanvasGroup.alpha = 0;
+        descriptionPanel.SetActive(false);
     }
 }

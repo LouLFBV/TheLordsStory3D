@@ -54,7 +54,7 @@ public class Recipe : MonoBehaviour
 
             requiredItemGO.GetComponent<Slot>().item = requiredItem;
 
-            ItemInInventory[] itemInInventory = Inventory.instance.GetContent().Where(item => item.itemData == requiredItem).ToArray();
+            ItemInInventory[] itemInInventory = InventorySystem.instance.GetContent().Where(item => item.itemData == requiredItem).ToArray();
 
             int totalRequiredItemQuantityInInventory = 0;
 
@@ -94,7 +94,7 @@ public class Recipe : MonoBehaviour
         {
             for (int y = 0; y < currentRecipe.requiredItems[i].count; y++)
             {
-                Inventory.instance.RemoveItem(currentRecipe.requiredItems[i].itemData);
+                InventorySystem.instance.RemoveItem(currentRecipe.requiredItems[i].itemData);
             }
         }
         
@@ -114,6 +114,7 @@ public class Recipe : MonoBehaviour
                 }
 
                 craftingSystem.craftPanel.SetActive(false);
+                PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
             }
             else
             {
@@ -134,6 +135,7 @@ public class Recipe : MonoBehaviour
                 }
 
                 craftingSystem.craftPanel.SetActive(false);
+                PlayerController.Instance.StateMachine.ChangeState(PlayerStateType.Idle);
             }
             else
             {
@@ -142,8 +144,8 @@ public class Recipe : MonoBehaviour
         }
         else
         {
-            Inventory.instance.AddItem(currentRecipe.craftableItem);
-            QuestManager.instance.UpdateQuestProgress("", 1, currentRecipe.craftableItem);
+            InventorySystem.instance.AddItem(currentRecipe.craftableItem);
+            NewQuestManager.instance.UpdateQuestProgress("", 1, currentRecipe.craftableItem);
         }
     }
 

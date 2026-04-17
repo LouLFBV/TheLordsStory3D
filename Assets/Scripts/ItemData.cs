@@ -27,6 +27,7 @@ public class ItemData : ScriptableObject
     [Header("Attack Stats")]
     public WeaponCombatData combatData;
     public float attackPoints;
+    public float poiseDamage;
     public HandWeapon handWeaponType;
     public DamageType damageType;
 
@@ -58,7 +59,8 @@ public enum ItemType
     Destructible,
     Recipe,
     Map,
-    None
+    None, 
+    Craft
 }
 
 public enum EquipmentType

@@ -17,7 +17,8 @@ public class PNJParent : InteractableBase
     public bool isOnDial;
     protected int index = 0;
     protected Transform playerTransform;
-    protected MoveBehaviour moveBehaviour;
+    protected PlayerController player;
+    protected bool isPlayerInZone;
     protected Animator animator;
     private float vitesseDeRotation = 0.15f;
     protected int sentenceIndex = 0;
@@ -36,8 +37,7 @@ public class PNJParent : InteractableBase
     {
         leghthSentences = sentences.Count;
         animator = GetComponent<Animator>();
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        moveBehaviour = playerTransform.GetComponent<MoveBehaviour>();
+        playerTransform = PlayerController.Instance.transform;
     }
 
     public override void OnInteract(PlayerInteractor player){}
@@ -46,18 +46,11 @@ public class PNJParent : InteractableBase
     {
         Debug.Log("[PNJParent] EndCommerce()");
         isOnDial = false;
-        moveBehaviour.StartPlayer();
+        player.StateMachine.ChangeState(PlayerStateType.Idle);
         dialogueEndTime = Time.time;
         animatorPanelProduits.SetBool("PanelIsOpen", false);
         isActive.SetActive(false);
         animator.SetBool("isTalking", false);
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        var uiManager = UIManager.instance;
-        if (uiManager != null)
-        {
-            uiManager.HandlePanelClosed();
-        }
         if (navManager != null)
         {
             navManager.onCancel = null;
@@ -102,9 +95,6 @@ public class PNJParent : InteractableBase
     {
         animatorPanelProduits.SetBool("PanelIsOpen", true);
         isActive.SetActive(true);
-
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
 
         if (navManager != null)
         {
