@@ -13,8 +13,8 @@ public class ItemInteractable : InteractableBase
 
     public override void OnInteract(PlayerInteractor player)
     {
-        var interactBehaviour = player.GetComponent<InteractBehaviour>();
-        //var interactBehaviour = player.GetComponent<InteractSystem>();
+        //var interactBehaviour = player.GetComponent<InteractBehaviour>();
+        var interactBehaviour = player.GetComponent<InteractSystem>();
         interactBehaviour.DoPickUp(item);
     }
 }
