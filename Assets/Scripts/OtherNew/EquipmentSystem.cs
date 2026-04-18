@@ -20,6 +20,8 @@ public class EquipmentSystem : MonoBehaviour
 
     public Slot headSlot, chestSlot, handsSlot, legsSlot, feetSlot, arrowSlot;
 
+    [SerializeField] private GameObject[] quiverArrowsInEquipment = new GameObject[10];
+
 
     [HideInInspector]
     public ItemInInventory arrowItemInInventory;
@@ -135,6 +137,11 @@ public class EquipmentSystem : MonoBehaviour
                 arrowSlot.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
                 arrowSlot.itemTypeVisual.gameObject.SetActive(true);
                 arrowItemInInventory.itemData = null;
+                palette.slotManager.arrowSlot.slotItemData = null;
+                palette.slotManager.arrowSlot.SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
+                palette.slotManager.arrowSlot.slotInEquipment.item = null;
+                palette.slotManager.arrowSlot.slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
+                palette.slotManager.arrowSlot.countText.text = "";
                 break;
         }
 
@@ -285,6 +292,14 @@ public class EquipmentSystem : MonoBehaviour
 
         itemActionsSystem.CloseActionPanel();
         //UpdateEquipmentsDesequipButtons();
+    }
+
+    public void UpdateQuiverVisual(int currentArrowCount)
+    {
+        for (int i = 0; i < quiverArrowsInEquipment.Length; i++)
+        {
+            quiverArrowsInEquipment[i].SetActive(i < currentArrowCount);
+        }
     }
 
     #region Save/Load

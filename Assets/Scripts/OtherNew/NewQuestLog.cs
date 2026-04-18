@@ -39,6 +39,12 @@ public class NewQuestLog : MonoBehaviour
         if (instance == null) instance = this;
         else Destroy(gameObject);
     }
+    private void Start()
+    {
+
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(QuestActiveText.gameObject);
+    }
     private void ShowQuest(QuestInstance quest/*, bool isActive*/)
     {
         if (quest == null) return;
