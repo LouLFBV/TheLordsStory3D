@@ -31,7 +31,8 @@ public class InventorySystem : MonoBehaviour
     [SerializeField] private UINavigationManager navManager;
 
 
-    const int InventorySize = 32;
+    const int InventoryRessourcesCraftSize = 20;
+    const int EquipmentSize = 18;
 
     private void Awake()
     {
@@ -88,6 +89,48 @@ public class InventorySystem : MonoBehaviour
     {
         Debug.Log("Adding item: " + item.itemName);
 
+        List<ItemInInventory> targetList = null;
+
+        switch (item.itemType)
+        {
+            case ItemType.Equipment:
+            case ItemType.Consumable:
+                if (IsFullEquipment())
+                {
+                    Debug.LogWarning("Cannot add item, equipment inventory is full.");
+                    return;
+                }
+                targetList = contentEquipment;
+                break;
+
+            case ItemType.Ressource:
+                if (IsFullRessources())
+                {
+                    Debug.LogWarning("Cannot add item, ressources inventory is full.");
+                    return;
+                }
+                targetList = contentRessources;
+                break;
+
+            case ItemType.Craft:
+                if (IsFullCraft())
+                {
+                    Debug.LogWarning("Cannot add item, craft inventory is full.");
+                    return;
+                }
+                targetList = contentCraft;
+                break;
+
+            default:
+                if (IsFullRessources())
+                {
+                    Debug.LogWarning("Cannot add item, ressources inventory is full.");
+                    return;
+                }
+                targetList = contentRessources;
+                break;
+        }
+
         // Cas spécial flèches
         if (equipment.arrowItemInInventory.itemData != null)
         {
@@ -101,27 +144,7 @@ public class InventorySystem : MonoBehaviour
             }
         }
 
-        List<ItemInInventory> targetList = null;
-
-        switch (item.itemType)
-        {
-            case ItemType.Equipment:
-            case ItemType.Consumable:
-                targetList = contentEquipment;
-                break;
-
-            case ItemType.Ressource:
-                targetList = contentRessources;
-                break;
-
-            case ItemType.Craft:
-                targetList = contentCraft;
-                break;
-
-            default:
-                targetList = contentRessources;
-                break;
-        }
+       
 
         // Recherche de stacks existants
         var stacks = targetList.Where(i => i.itemData == item).ToList();
@@ -202,6 +225,10 @@ public class InventorySystem : MonoBehaviour
         return content;
     }
 
+    public List<ItemInInventory> GetContentEquipment()
+    {
+        return contentEquipment;
+    }
     public void SetContent(List<ItemInInventory> newContent)
     {
         //content = newContent;
@@ -310,15 +337,15 @@ public class InventorySystem : MonoBehaviour
 
     public bool IsFullRessources()
     {
-        return contentRessources.Count == InventorySize;
+        return contentRessources.Count == InventoryRessourcesCraftSize;
     }
     public bool IsFullCraft()
     {
-        return contentCraft.Count == InventorySize;
+        return contentCraft.Count == InventoryRessourcesCraftSize;
     }
     public bool IsFullEquipment()
     {
-        return contentEquipment.Count == InventorySize;
+        return contentEquipment.Count == EquipmentSize;
     }
 
     public void ClearContent()
