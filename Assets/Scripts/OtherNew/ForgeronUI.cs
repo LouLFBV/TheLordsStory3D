@@ -26,18 +26,35 @@ public class ForgeronUI : MonoBehaviour
         // Vous pouvez ajouter ici la logique pour afficher les recettes ou les options de forgeage spécifiques à ce type d'équipement
 
         List<ItemInInventory> items = inventory.GetContentEquipment();
-        GetContentForEquipment(items, equipmentType);
+        items = GetContentForEquipment(items, equipmentType);
 
+        CleanForgeronUI();
+        //foreach (var slot in slotForgeronUIs)
+        for (int i = 0; i < slotForgeronUIs.Count; i++)
+        {
+            var slot = slotForgeronUIs[i];
+            if (i >= items.Count)
+            {
+                Debug.Log("Pas assez d'items pour remplir tous les slots du forgeron UI");
+                slot.itemData = null;
+                slot.equipmentIcone.enabled = false;
+                slot.equipmentIcone.sprite = null;
+            }
+            else
+            {
+                Debug.Log("Remplissage du slot " + i + " avec l'item : " + items[i].itemData.itemName);
+                slot.itemData = items[i].itemData;
+                slot.equipmentIcone.enabled = true;
+                slot.equipmentIcone.sprite = items[i].itemData.visual;
+            }
+        }
+    }
+    private void CleanForgeronUI()
+    {
         foreach (var slot in slotForgeronUIs)
         {
-            foreach (var item in items)
-            {
-                if (item.itemData.equipmentType == equipmentType)
-                {
-                    slot.itemData = item.itemData;
-                    slot.equipmentIcone.sprite = item.itemData.visual;
-                }
-            }
+            slot.itemData = null;
+            slot.equipmentIcone.sprite = null;
         }
     }
     private List<ItemInInventory> GetContentForEquipment(List<ItemInInventory> items, EquipmentType equipmentType)
