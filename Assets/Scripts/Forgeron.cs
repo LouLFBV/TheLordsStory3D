@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Forgeron : PNJParent
 {
+    [Header("Forgeron Panl")]
+    [SerializeField] private ForgeronUI forgeronUI ;
+
     [Header("Upgrade")]
     [SerializeField] private int prixDeLAmelioration = 10;
     [SerializeField] private int upGradeAmount = 10;
@@ -21,6 +24,25 @@ public class Forgeron : PNJParent
         {
             SetTargeted(false, playerTransform);
             StartDialogue(sentences);
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            player = other.GetComponent<PlayerController>();
+            playerTransform = other.transform;
+            isPlayerInZone = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInZone = false;
+            player = null;
         }
     }
 
@@ -75,10 +97,9 @@ public class Forgeron : PNJParent
         }
         if (index >= currentDialogue.Count && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
-            RefreshProduits();
             if (!VerifIfEmpty())
             {
-                OpenProduitsPanel();
+                forgeronUI.OpenForgeonUI();
             }
             EndDiscussion();
             return;
@@ -124,258 +145,15 @@ public class Forgeron : PNJParent
         }
     }
 
-    // GESTION DES PRODUITS
-    private void RefreshProduits()
-    {
-        // CLEAR PARENTS PRODUITS
-        foreach (Transform child in parentsProduits.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // INVENTORY
-        foreach (ItemInInventory produit in Inventory.instance.GetContent())
-        {
-            if (produit.itemData.equipmentType != EquipmentType.Arrow &&
-                produit.itemData.equipmentType != EquipmentType.Shield &&
-                produit.itemData.equipmentType != EquipmentType.None)
-                VerifItemData(produit.itemData);
-        }
-
-        // WEAPONS
-        foreach (ItemInInventory produit in Palette.instance.weapons)
-        {
-            VerifItemData(produit.itemData);
-        }
-
-        // EQUIPMENT
-
-        VerifItemData(Equipment.instance.equipmentHeadItem);
-        VerifItemData(Equipment.instance.equipmentChestItem);
-        VerifItemData(Equipment.instance.equipmentHandsItem);
-        VerifItemData(Equipment.instance.equipmentLegsItem);
-        VerifItemData(Equipment.instance.equipmentFeetItem);
-
-        if (VerifIfEmpty())
-        {
-            EndCommerce();
-        }
-    }
-
-    private void VerifItemData(ItemData item)
-    {
-        if (item != null)
-        {
-            GameObject produitItem = Instantiate(produitItemPrefab, parentsProduits.transform);
-            SlotAmelioration slot = produitItem.GetComponent<SlotAmelioration>();
-
-            slot.nameText.text = item.itemName; 
-            
-            slot.icone.sprite = item.visual; 
-            
-            slot.prixText.text = $"Accepter pour : {prixDeLAmelioration} pièces ?"; 
-            
-            Button button = slot.acceptButton;
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => Upgrade(item));
-                if (PlayerStats.instance.goldAmount < prixDeLAmelioration || item.levelAmelioration == 3)
-                {
-                    button.interactable = false;
-                    button.GetComponent<Image>().color = Color.red;
-                    
-                }
-                else
-                {
-                    button.interactable = true;
-                    button.GetComponent<Image>().color = Color.green; 
-                    
-                }
-                if (button.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
-                {
-                    navManager.elements.Add(uiSelectable);
-                }
-            }
-
-            TextMeshProUGUI statsActuelsText = slot.statsActuels;
-            if (statsActuelsText != null)
-            {
-                if (item.equipmentType == EquipmentType.Weapon)
-                {
-                    if (item.handWeaponType == HandWeapon.Bow)
-                    {
-                        statsActuelsText.text = $"Dégâts actuels : {item.damageMax}\nPortée actuelle : { item.rangeMax}";
-                    }
-                    else
-                    {
-                        statsActuelsText.text = $"Dégâts actuels : {item.attackPoints}";
-                    }
-                }
-                else
-                    statsActuelsText.text = $"Résistance actuelle : {item.armorPoints}"; 
-            }
-
-            TextMeshProUGUI statsAmelioresText = slot.statsAmeliores;
-            if (statsAmelioresText != null)
-            {
-                if (item.equipmentType == EquipmentType.Weapon)
-                {
-                    if (item.handWeaponType == HandWeapon.Bow)
-                    {
-                        if (item.levelAmelioration == 3)
-                            statsAmelioresText.text = $"Dégâts améliorés : {item.damageMax}\nPortée amélioré : {item.rangeMax}";
-                        else
-                            statsAmelioresText.text = $"Dégâts améliorés : {item.damageMax + upGradeAmount}\nPortée amélioré : {item.rangeMax + upGradeAmount} ";
-                    }
-                    else
-                    {
-                        if (item.levelAmelioration == 3)
-                            statsAmelioresText.text = $"Dégâts après amélioration : {item.attackPoints}";
-                        else
-                            statsAmelioresText.text = $"Dégâts après amélioration : {item.attackPoints + upGradeAmount}";
-                    }
-                }
-                else
-                {
-                    if (item.levelAmelioration == 3)
-                        statsAmelioresText.text = $"Résistance après amélioration : {item.armorPoints}"; // Assign the price text
-                    else
-                        statsAmelioresText.text = $"Résistance après amélioration : {item.armorPoints + upGradeAmountPourcentage}"; // Assign the price text
-                }
-            }
-            TextMeshProUGUI niveauActuelText = slot.niveauActuel;
-            if (niveauActuelText != null)
-            {
-                niveauActuelText.text = $"Niveau actuel : {item.levelAmelioration}/3";
-            }
-            TextMeshProUGUI niveauAmelioreText = slot.niveauAmeliore;
-            if (niveauAmelioreText != null)
-            {
-                if (item.levelAmelioration == 3)
-                    niveauAmelioreText.text = $"Niveau après amélioration : {item.levelAmelioration}/3";
-                else
-                    niveauAmelioreText.text = $"Niveau après amélioration : {item.levelAmelioration + 1}/3";
-            }
-
-
-            Button resetButton = slot.resetButton;
-            if (item.levelAmelioration == 3)
-            {
-                resetButton.gameObject.SetActive(true);
-                resetButton.onClick.RemoveAllListeners();
-                resetButton.onClick.AddListener(() =>
-                {
-                    item.levelAmelioration = 0;
-                    if (item.equipmentType == EquipmentType.Weapon)
-                    {
-                        item.attackPoints -= upGradeAmount * 3;
-                    }
-                    else
-                    {
-                        HandleArmorReset(item);
-                    }
-                    item.prix -= prixDeLAmelioration * 3;
-                    UpdateText(item);
-                    RefreshProduits();
-                });
-                if (resetButton.gameObject.TryGetComponent<UISelectable>(out var uiSelectable))
-                {
-                    navManager.elements.Add(uiSelectable);
-                }
-            }
-            else
-                resetButton.gameObject.SetActive(false);
-        }
-    }
-    private void Upgrade(ItemData produit)
-    {
-        if (produit.equipmentType == EquipmentType.Weapon)
-        {
-            if(produit.handWeaponType == HandWeapon.Bow)
-            {
-                produit.rangeMin += upGradeAmount;
-                produit.rangeMax += upGradeAmount;
-                produit.damageMin += upGradeAmount;
-                produit.damageMax += upGradeAmount;
-            }
-            else
-                produit.attackPoints += upGradeAmount;
-        }
-        else
-        {
-            if (Equipment.instance.IsEquipped(produit))
-            {
-                Equipment.instance.DesequipEquipment(produit.equipmentType);
-                produit.armorPoints += upGradeAmountPourcentage;
-                Equipment.instance.EquipAction(produit);
-            }
-            else
-                produit.armorPoints += upGradeAmountPourcentage;
-        }
-
-        produit.prix += prixDeLAmelioration;
-        produit.levelAmelioration += 1;
-        if (player.Wallet.SpendGold(prixDeLAmelioration)) 
-            Debug.Log($"Achat réussi : {produit.itemName} amélioré !");
-        UpdateText(produit);
-        RefreshProduits();
-    }
-
-    private void HandleArmorReset(ItemData item)
-    {
-        if (Equipment.instance.IsEquipped(item))
-        {
-            Equipment.instance.DesequipEquipment(item.equipmentType);
-            item.armorPoints -= upGradeAmountPourcentage * 3;
-            Equipment.instance.EquipAction(item);
-        }
-    }
-
     private bool VerifIfEmpty()
     {
-        if (Inventory.instance.GetContent().Count == 0)
-            return Palette.instance.equipmentWeapon1Item == null && Palette.instance.equipmentWeapon2Item == null && 
-                Equipment.instance.equipmentHeadItem == null && Equipment.instance.equipmentChestItem == null &&
-                Equipment.instance.equipmentHandsItem == null && Equipment.instance.equipmentLegsItem == null &&
-                Equipment.instance.equipmentFeetItem == null ;
+        if (InventorySystem.instance.GetContent().Count == 0)
+            return PaletteSystem.instance.slotManager.weapons[0] == null && PaletteSystem.instance.slotManager.weapons[1] == null && 
+                EquipmentSystem.instance.headSlot.item == null && EquipmentSystem.instance.chestSlot.item == null &&
+                EquipmentSystem.instance.handsSlot.item == null && EquipmentSystem.instance.legsSlot.item == null &&
+                EquipmentSystem.instance.feetSlot.item == null ;
         else
-        {
-            bool isEmpty = true;
-            for (int i = 0; i < Inventory.instance.GetContent().Count; i++)
-            {
-                if (Inventory.instance.GetContent()[i].itemData.equipmentType != EquipmentType.None)
-                    isEmpty = false;
-            }
-            return isEmpty;
-        }
+            return InventorySystem.instance.GetContentEquipment().Count == 0;
     }
 
-    private void UpdateText(ItemData produit)
-    {
-        if (produit.equipmentType == EquipmentType.Weapon)
-        {
-            if (produit.handWeaponType == HandWeapon.Bow)
-            {
-                produit.description =
-                $"- Dégâts : { produit.damageMin} - { produit.damageMax}\n" +
-                $"- Portée : {produit.rangeMin} - {produit.rangeMax}\n";
-            }
-            else
-            {
-                produit.description =
-                $"- {produit.attackPoints} points de dégâts\n" +
-                $"- Type : {produit.damageType}\n";
-            }
-        }
-        else if (produit.equipmentType != EquipmentType.None &&
-            produit.equipmentType != EquipmentType.Shield &&
-            produit.equipmentType != EquipmentType.Weapon)
-        {
-            produit.description =
-            $"- {produit.armorPoints} points de résistance\n" +
-            $"- Type : {produit.armorType}\n";
-        }
-        produit.description += $"- Niveau : {produit.levelAmelioration}/3";
-    }
 }

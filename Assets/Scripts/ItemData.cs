@@ -14,6 +14,7 @@ public class ItemData : ScriptableObject
     public int maxStack;
     public int prix = 10;
     public int levelAmelioration = 0;
+    public int metalCost = 15;
     public RecipeData recipe;
     public GameObject iconeMap;
 
