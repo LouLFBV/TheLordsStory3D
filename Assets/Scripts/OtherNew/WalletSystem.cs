@@ -14,6 +14,8 @@ public class WalletSystem : MonoBehaviour
         UpdateGoldUI();
     }
 
+    public int GetGoldAmount() => goldAmount;
+
     public void AddGold(int amount)
     {
         goldAmount += amount;

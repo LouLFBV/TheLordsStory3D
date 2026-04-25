@@ -205,4 +205,5 @@ public class PlayerInputHandler : MonoBehaviour
     public void UseLockOnInput() => LockOnPressed = false;
     public void UseSubmitInput() => SubmitPressed = false;
     public void UseDropActionInput() => DropActionPressed = false;
+    public void UseEquipActionInput() => EqupActionPressed = false;
 }

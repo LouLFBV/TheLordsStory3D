@@ -1,20 +1,14 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Forgeron : PNJParent
 {
-    [Header("Forgeron Panl")]
+    [Header("Forgeron Panel")]
     [SerializeField] private ForgeronUI forgeronUI ;
-
-    [Header("Upgrade")]
-    [SerializeField] private int prixDeLAmelioration = 10;
-    [SerializeField] private int upGradeAmount = 10;
-    [SerializeField] private int upGradeAmountPourcentage = 5;
 
     public override void OnInteract(PlayerInteractor player)
     {
+        if (forgeronUI.isOpen) return;
         if (isOnDial && Time.time - dialogueStartTime > inputCooldown && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
             if (!DialogueManager.instance.SkipOrFinish(currentSpeaker) && !DialogueManager.instance.inDelay)
@@ -33,6 +27,7 @@ public class Forgeron : PNJParent
         if (other.CompareTag("Player"))
         {
             player = other.GetComponent<PlayerController>();
+            forgeronUI.player = player;
             playerTransform = other.transform;
             isPlayerInZone = true;
         }
@@ -88,12 +83,6 @@ public class Forgeron : PNJParent
             index = 0;
             dialogueStartTime = Time.time; // Enregistrer le temps de début du dialogue
             currentDialogue = sentence;
-
-            var uiManager = UIManager.instance;
-            if (uiManager != null)
-            {
-                uiManager.HandlePanelOpened();
-            }
         }
         if (index >= currentDialogue.Count && !animatorPanelProduits.GetBool("PanelIsOpen"))
         {
