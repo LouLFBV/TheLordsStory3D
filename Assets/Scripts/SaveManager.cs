@@ -39,7 +39,7 @@ public class SaveManager : MonoBehaviour
         SaveData data = new SaveData();
         data.playerStats = PlayerStats.instance.GetSaveData();
         data.inventory = InventorySystem.instance.GetSaveData();
-        data.palette = Palette.instance.GetSaveData();
+        data.palette = PaletteSystem.instance.GetSaveData();
         data.world = WorldStateManager.Instance.GetSaveData();
         data.sceneName = SceneManager.GetActiveScene().name;
         data.equipment = Equipment.instance.GetSaveData();

@@ -7,9 +7,10 @@ using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    public List<Button> newGameButtons;
-    public List<Button> loadGameButtons;
-    public List<Button> clearSavedDataButtons;
+    public Button newGameButton;
+    public Button loadGameButton;
+    public Button loadLastGameButton;
+    public Button clearSavedDataButton;
     [SerializeField] private Animator animatorPanelChargerPartie;
 
     [SerializeField]
@@ -46,6 +47,7 @@ public class Menu : MonoBehaviour
     private bool isNewGame;
     private bool isTransitioning = false;
 
+
     public static Menu Instance;
 
     private void Awake()
@@ -57,33 +59,24 @@ public class Menu : MonoBehaviour
     {
         if (isMainMenu)
         {
-            Time.timeScale = 1f; // Assurez-vous que le temps est normalisé au démarrage du menu
+            Time.timeScale = 1f;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            loadLastGameButton.interactable = SaveManager.Instance.HasSave(pendingSlot);
+            DisableSlotUI(false);
+
+            ActiveNewGame();
+
+            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+            return;
         }
         // Initialisation du slider de volume
         audioMixer.GetFloat("Volume", out float soundValueForSlider);
         volumeSlider.value = soundValueForSlider;
 
 
-        // Désactivation des boutons de chargement et de suppression si pas de sauvegarde
-        for (int i = 0; i < loadGameButtons.Count; i++)
-        {
-            int slot = i + 1;
-            loadGameButtons[i].interactable = SaveManager.Instance.HasSave(slot);
-        }
 
-        for (int i = 0; i < clearSavedDataButtons.Count; i++)
-        {
-            int slot = i + 1;
-            clearSavedDataButtons[i].interactable = SaveManager.Instance.HasSave(slot);
-        }
-
-        for (int i = 0; i < newGameButtons.Count; i++)
-        {
-            int slot = i + 1;
-            newGameButtons[i].interactable = !SaveManager.Instance.HasSave(slot);
-        }
+        
 
 
         // Initialisation des qualités graphiques
@@ -200,8 +193,18 @@ public class Menu : MonoBehaviour
     #region Save System
 
 
-    public void NewGame(int slot)
+    public void NewGame()
     {
+        int slot = -1;
+        SaveManager saveManager = SaveManager.Instance;
+        for (int i = 1; i <= 3; i++)
+        {
+            if (!saveManager.HasSave(i))
+            {
+                slot = i;
+                break;
+            }
+        }
         if (isTransitioning) return;
         isTransitioning = true;
 
@@ -224,7 +227,7 @@ public class Menu : MonoBehaviour
     }
     public void OpenPanelParties()
     {
-        partiesPanel.SetActive(true);
+        partiesPanel.SetActive(!partiesPanel.activeSelf);
     }
 
     //  Appelé par l'Animation Event
@@ -245,27 +248,30 @@ public class Menu : MonoBehaviour
         }
     }
 
-
-    private void DisableSlotUI(int slot)
+    private void ActiveNewGame()
     {
-        int index = slot - 1;
+        SaveManager saveManager = SaveManager.Instance;
+        newGameButton.interactable = saveManager.HasSave(1) && saveManager.HasSave(2) && saveManager.HasSave(3);
+    }
 
-        if (index < 0) return;
 
-        if (index < loadGameButtons.Count)
-            loadGameButtons[index].interactable = false;
+    public void SelectSlot(int slot)
+    {
+        pendingSlot = slot;
+        DisableSlotUI(true);
+    }
 
-        if (index < clearSavedDataButtons.Count)
-            clearSavedDataButtons[index].interactable = false;
-
-        if (index < newGameButtons.Count)
-            newGameButtons[index].interactable = true;
+    private void DisableSlotUI(bool actived)
+    {
+        clearSavedDataButton.interactable = actived;
+        loadGameButton.interactable = actived;
     }
 
     public void OnDeleteSlot(int slot)
     {
         SaveManager.Instance.DeleteSave(slot);
-        DisableSlotUI(slot);
+
+        DisableSlotUI(false);
     }
 
 
