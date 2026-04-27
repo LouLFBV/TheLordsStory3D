@@ -242,11 +242,6 @@ public class PlayerController : MonoBehaviour, ICombatant
             hitState.OnHitAnimationEnd();
         }
     }
-    //public void ReEnablePlayerMouvementFromInteractBehaviour() => InteractBehaviour.ReEnablePlayerMouvement();
-
-    //public void EnableTwoHandFromInteractBehaviour() => InteractBehaviour.EnableTwoHand();
-    //public void DisableTwoHandFromInteractBehaviour() => InteractBehaviour.DisableTwoHand();
-    //public void AddItemToInventoryFromInteractBehaviour() => InteractBehaviour.AddItemToInventory();
     public void AE_PlayHarvestingSoundEffectFromInteractBehaviour() => interactSystem.PlayHarvestingSoundEffect();
 
     public void AE_BreakHarvestableFromInteractBehaviour() => StartCoroutine(interactSystem.BreakHarvestable());
@@ -290,9 +285,40 @@ public class PlayerController : MonoBehaviour, ICombatant
         StateMachine.ChangeState(PlayerStateType.Death);
     }
 
+    #region Save Sytem
+
+    //public PlayerStatsSaveData GetSaveData()
+    //{
+    //    return new PlayerStatsSaveData
+    //    {
+    //        currentHealth = Health.CurrentHealth,
+    //        currentEndurance = currentEndurance,
+    //        gold = goldAmount,
+
+    //        position = transform.position,
+
+    //    };
+    //}
+
+    //public void LoadSaveData(PlayerStatsSaveData data)
+    //{
+    //    Health.SetHealth(data.currentHealth);
+    //    currentEndurance = data.currentEndurance;
+    //    Wallet.SetGoldAmount(data.gold);
+
+    //    transform.position = data.position;
+
+    //    UpdateHealthBar();
+    //    UpdateEndurance(0);
+    //    UpdateGoldText();
+    //    UpddateArmorText();
+    //}
+
+#endregion
+
 
 #if UNITY_EDITOR
-    private void OnDrawGizmos()
+private void OnDrawGizmos()
     {
         if (StateMachine != null && StateMachine.CurrentState != null)
         {
@@ -301,4 +327,15 @@ public class PlayerController : MonoBehaviour, ICombatant
         }
     }
 #endif
+}
+
+
+[System.Serializable]
+public class PlayerControllerSaveData
+{
+    public float currentHealth;
+    public float currentEndurance;
+    public int gold;
+
+    public Vector3 position;
 }

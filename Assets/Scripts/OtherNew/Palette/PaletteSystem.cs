@@ -24,27 +24,6 @@ public class PaletteSystem : MonoBehaviour
         }
     }
 
-    //void OnEnable()
-    //{
-
-    //    if (DeviceWatcher.Instance != null)
-    //        DeviceWatcher.Instance.OnDeviceChanged += UpdateBindingDisplay;
-    //}
-    //void OnDisable()
-    //{
-
-    //    if (DeviceWatcher.Instance != null)
-    //        DeviceWatcher.Instance.OnDeviceChanged -= UpdateBindingDisplay;
-    //}
-
-
-
-    //private void Start()
-    //{
-    //    UpdateEquipmentsDesequipButtons();
-    //    UpdateBindingDisplay(DeviceWatcher.Instance.CurrentDevice);
-    //}
-
     public void HandlePaletteLogic(PlayerController player)
     {
         inputHandler.HandleInput(player);
@@ -59,14 +38,6 @@ public class PaletteSystem : MonoBehaviour
     {
         saveSystem.LoadSaveData(data);
     }
-
-    //private void UpdateBindingDisplay(DeviceType currentDevice)
-    //{
-    //    //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon1"], iconeInputWeapon1, currentDevice);
-    //    //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Weapon2"], iconeInputWeapon2, currentDevice);
-    //    //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object1"], iconeInputObject1, currentDevice);
-    //    //InputRebindManager.UpdateBindingDisplayForAction(playerInput.actions["Object2"], iconeInputObject2, currentDevice);
-    //}
 
 }
 

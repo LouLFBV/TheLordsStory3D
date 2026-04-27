@@ -6,7 +6,6 @@ public class PNJ : InteractableBase
 {
     #region Champs/Paramètres
     [Header("Dialogue")]
-    //[SerializeField] private float distanceToInteract = 2f;
     public string namePNJ;
     public DialogueResponse[] sentences; // Dialogue par défaut
     public DialogueResponse[] sentencesIfPlayerIsBad;
@@ -25,7 +24,6 @@ public class PNJ : InteractableBase
     [SerializeField] private QuestInstance activeQuestInstance;
     public bool canGiveQuest;
     private bool isPnjInteraction; 
-    [SerializeField] private float seuilDeReputationQuest = 0f;
 
 
     [Header("Wandering")]

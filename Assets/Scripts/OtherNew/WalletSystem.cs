@@ -15,6 +15,7 @@ public class WalletSystem : MonoBehaviour
     }
 
     public int GetGoldAmount() => goldAmount;
+    public void SetGoldAmount(int newGoldAmount) { goldAmount = newGoldAmount; }
 
     public void AddGold(int amount)
     {

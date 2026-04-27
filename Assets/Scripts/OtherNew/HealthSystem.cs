@@ -59,4 +59,6 @@ public class HealthSystem : MonoBehaviour
         _isInvulnerable = state;
         // Optionnel : Changer la couleur ou ajouter un effet de transparence
     }
+
+    public void SetHealth(float newHealth) { CurrentHealth = newHealth; }
 }

@@ -229,10 +229,6 @@ public class InventorySystem : MonoBehaviour
     {
         return contentEquipment;
     }
-    public void SetContent(List<ItemInInventory> newContent)
-    {
-        //content = newContent;
-    }
 
 
     public void RefreshContent()

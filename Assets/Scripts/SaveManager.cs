@@ -37,7 +37,7 @@ public class SaveManager : MonoBehaviour
         string path = GetSavePath(currentSlot);
 
         SaveData data = new SaveData();
-        data.playerStats = PlayerStats.instance.GetSaveData();
+        //data.playerStats = PlayerStats.instance.GetSaveData();
         data.inventory = InventorySystem.instance.GetSaveData();
         data.palette = PaletteSystem.instance.GetSaveData();
         data.world = WorldStateManager.Instance.GetSaveData();
@@ -86,22 +86,22 @@ public class SaveManager : MonoBehaviour
             InventorySystem.instance.LoadSaveData(data.inventory);
 
         if (data.palette != null)
-            Palette.instance.LoadSaveData(data.palette);
+            PaletteSystem.instance.LoadSaveData(data.palette);
 
         if (data.world != null)
             WorldStateManager.Instance.LoadSaveData(data.world);
 
         if (data.equipment != null)
-            Equipment.instance.LoadSaveData(data.equipment);
+            EquipmentSystem.instance.LoadSaveData(data.equipment);
 
         if (data.map != null)
             MapManager.instance.LoadSaveData(data.map);
 
         if (data.quests != null)
-            QuestManager.instance.LoadSaveData(data.quests);
+            NewQuestManager.instance.LoadSaveData(data.quests);
 
         if (data.questLog != null)
-            QuestLog.instance.LoadSaveData(data.questLog);
+            NewQuestLog.instance.LoadSaveData(data.questLog);
         
         while (ChestInventory.Instance == null)
         {
