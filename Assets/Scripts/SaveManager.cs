@@ -37,12 +37,12 @@ public class SaveManager : MonoBehaviour
         string path = GetSavePath(currentSlot);
 
         SaveData data = new SaveData();
-        //data.playerStats = PlayerStats.instance.GetSaveData();
+        data.playerController = PlayerController.Instance.GetSaveData();
         data.inventory = InventorySystem.instance.GetSaveData();
         data.palette = PaletteSystem.instance.GetSaveData();
         data.world = WorldStateManager.Instance.GetSaveData();
         data.sceneName = SceneManager.GetActiveScene().name;
-        data.equipment = Equipment.instance.GetSaveData();
+        data.equipment = EquipmentSystem.instance.GetSaveData();
         data.map = MapManager.instance.GetSaveData();
         data.quests = QuestManager.instance.GetSaveData();
         data.questLog = QuestLog.instance.GetSaveData();
@@ -80,7 +80,7 @@ public class SaveManager : MonoBehaviour
         yield return SceneManager.LoadSceneAsync(data.sceneName);
         yield return null;
 
-        PlayerStats.instance.LoadSaveData(data.playerStats);
+        PlayerController.Instance.LoadSaveData(data.playerController);
 
         if (data.inventory != null)
             InventorySystem.instance.LoadSaveData(data.inventory);
@@ -139,7 +139,7 @@ public class SaveManager : MonoBehaviour
 [System.Serializable]
 public class SaveData
 {
-    public PlayerStatsSaveData playerStats;
+    public PlayerControllerSaveData playerController;
 
     public InventorySaveData inventory;
     public PaletteSaveData palette;

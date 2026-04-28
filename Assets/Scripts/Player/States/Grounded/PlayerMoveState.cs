@@ -9,7 +9,7 @@ public class PlayerMoveState : PlayerGroundedState
     private Vector2 cachedInput;
 
     // Vitesses
-    private float walkSpeed = 2f;
+   // private float walkSpeed = 2f;
     private float runSpeed = 4f;
     private float sprintSpeed = 7f;
 

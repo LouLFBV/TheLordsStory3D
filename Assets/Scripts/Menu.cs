@@ -219,6 +219,7 @@ public class Menu : MonoBehaviour
         isNewGame = false;
         TransitionPanel.Instance.PlayTransitionOut();
     }
+    public void SaveGame() { SaveManager.Instance.SaveGame(); }
     public void LoadGame(int slot)
     {
         pendingSlot = slot;

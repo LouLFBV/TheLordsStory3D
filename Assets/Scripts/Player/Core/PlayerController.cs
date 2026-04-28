@@ -287,38 +287,33 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     #region Save Sytem
 
-    //public PlayerStatsSaveData GetSaveData()
-    //{
-    //    return new PlayerStatsSaveData
-    //    {
-    //        currentHealth = Health.CurrentHealth,
-    //        currentEndurance = currentEndurance,
-    //        gold = goldAmount,
+    public PlayerControllerSaveData GetSaveData()
+    {
+        return new PlayerControllerSaveData
+        {
+            currentHealth = Health.CurrentHealth,
+            currentEndurance = Stamina.CurrentStamina,
+            gold = Wallet.GetGoldAmount(),
 
-    //        position = transform.position,
+            position = transform.position,
 
-    //    };
-    //}
+        };
+    }
 
-    //public void LoadSaveData(PlayerStatsSaveData data)
-    //{
-    //    Health.SetHealth(data.currentHealth);
-    //    currentEndurance = data.currentEndurance;
-    //    Wallet.SetGoldAmount(data.gold);
+    public void LoadSaveData(PlayerControllerSaveData data)
+    {
+        Health.TakeDamage(data.currentHealth);
+        Stamina.Spend(data.currentEndurance);
+        Wallet.SetGoldAmount(data.gold);
 
-    //    transform.position = data.position;
+        transform.position = data.position;
+    }
 
-    //    UpdateHealthBar();
-    //    UpdateEndurance(0);
-    //    UpdateGoldText();
-    //    UpddateArmorText();
-    //}
-
-#endregion
+    #endregion
 
 
 #if UNITY_EDITOR
-private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         if (StateMachine != null && StateMachine.CurrentState != null)
         {

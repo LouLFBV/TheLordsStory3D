@@ -362,8 +362,6 @@ public class EquipmentSystem : MonoBehaviour
             BowBehaviour.instance.UpdateQuiverVisual(data.arrowCount);
         }
 
-        //UpdateEquipmentsDesequipButtons();
-
         isLoading = false;
     }
 
