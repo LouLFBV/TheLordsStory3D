@@ -67,7 +67,7 @@ public class PaletteSaveSystem : MonoBehaviour
     {
         if (save == null) return;
 
-        ItemData item = Inventory.instance.itemDatabase.GetItemByID(save.itemID);
+        ItemData item = InventorySystem.instance.itemDatabase.GetItemByID(save.itemID);
         if (item == null) return;
 
         int index = slot - 1;
@@ -88,7 +88,7 @@ public class PaletteSaveSystem : MonoBehaviour
     {
         if (save == null) return;
 
-        ItemData item = Inventory.instance.itemDatabase.GetItemByID(save.itemID);
+        ItemData item = InventorySystem.instance.itemDatabase.GetItemByID(save.itemID);
         if (item == null) return;
 
         int index = slot - 1;
@@ -140,8 +140,8 @@ public class PaletteSaveSystem : MonoBehaviour
             libItem.itemPrefab.SetActive(true);
 
         // Informer les systèmes
-        interactSystem.SetCurrentEquippedItem(libItem);
-        PlayerStats.instance.equipmentToEquip = libItem;
+        //interactSystem.SetCurrentEquippedItem(libItem);
+        //PlayerStats.instance.equipmentToEquip = libItem;
 
         // Animator
         // ApplyWeaponTypeToAnimator(item.handWeaponType);

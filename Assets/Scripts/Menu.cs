@@ -229,6 +229,7 @@ public class Menu : MonoBehaviour
     public void OpenPanelParties()
     {
         partiesPanel.SetActive(!partiesPanel.activeSelf);
+        DisableSlotUI(false);
     }
 
     //  Appelé par l'Animation Event
@@ -252,7 +253,7 @@ public class Menu : MonoBehaviour
     private void ActiveNewGame()
     {
         SaveManager saveManager = SaveManager.Instance;
-        newGameButton.interactable = saveManager.HasSave(1) && saveManager.HasSave(2) && saveManager.HasSave(3);
+        newGameButton.interactable = !(saveManager.HasSave(1) && saveManager.HasSave(2) && saveManager.HasSave(3));
     }
 
 
@@ -268,9 +269,9 @@ public class Menu : MonoBehaviour
         loadGameButton.interactable = actived;
     }
 
-    public void OnDeleteSlot(int slot)
+    public void OnDeleteSlot()
     {
-        SaveManager.Instance.DeleteSave(slot);
+        SaveManager.Instance.DeleteSave(pendingSlot);
 
         DisableSlotUI(false);
     }

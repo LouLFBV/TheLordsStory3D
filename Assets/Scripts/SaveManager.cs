@@ -44,8 +44,8 @@ public class SaveManager : MonoBehaviour
         data.sceneName = SceneManager.GetActiveScene().name;
         data.equipment = EquipmentSystem.instance.GetSaveData();
         data.map = MapManager.instance.GetSaveData();
-        data.quests = QuestManager.instance.GetSaveData();
-        data.questLog = QuestLog.instance.GetSaveData();
+        data.quests = NewQuestManager.instance.GetSaveData();
+        data.questLog = NewQuestLog.instance.GetSaveData();
         if (ChestInventory.Instance != null)
             data.chestInventory = ChestInventory.Instance.GetSaveData();
 

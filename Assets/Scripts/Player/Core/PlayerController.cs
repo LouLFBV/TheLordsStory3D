@@ -302,8 +302,8 @@ public class PlayerController : MonoBehaviour, ICombatant
 
     public void LoadSaveData(PlayerControllerSaveData data)
     {
-        Health.TakeDamage(data.currentHealth);
-        Stamina.Spend(data.currentEndurance);
+        Health.SetHealth(data.currentHealth);
+        Stamina.SetStamania(data.currentEndurance);
         Wallet.SetGoldAmount(data.gold);
 
         transform.position = data.position;

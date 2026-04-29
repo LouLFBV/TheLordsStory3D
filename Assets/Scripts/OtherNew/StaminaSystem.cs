@@ -80,6 +80,8 @@ public class StaminaSystem : MonoBehaviour
             OnStaminaEmpty?.Invoke();
     }
 
+    public void SetStamania(float stamania) { CurrentStamina = stamania;}
+
     //public bool CanSpend(float amount)
     //{
     //    return CurrentStamina >= amount;
