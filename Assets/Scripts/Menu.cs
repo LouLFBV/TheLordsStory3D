@@ -43,9 +43,10 @@ public class Menu : MonoBehaviour
     [SerializeField] private Slider deadzoneSlider;
 
 
-    private int pendingSlot;
+    static private int pendingSlot;
     private bool isNewGame;
     private bool isTransitioning = false;
+    private bool _backToMenu = false;
 
 
     public static Menu Instance;
@@ -159,6 +160,7 @@ public class Menu : MonoBehaviour
     }
     public void LoadMenu()
     {
+        _backToMenu = true;
         if (TransitionPanel.Instance != null)
             TransitionPanel.Instance.PlayTransitionOut();
         else SceneManager.LoadScene("MainMenu");
@@ -235,7 +237,7 @@ public class Menu : MonoBehaviour
     //  Appelé par l'Animation Event
     public void OnOpenAnimationFinished()
     {
-        if (SceneManager.GetActiveScene().name != "MainMenu")
+        if (SceneManager.GetActiveScene().name != "MainMenu" && _backToMenu)
         {
             SceneManager.LoadScene("MainMenu");
         }
@@ -248,6 +250,7 @@ public class Menu : MonoBehaviour
         {
             SaveManager.Instance.LoadGame(pendingSlot);
         }
+        _backToMenu = false;
     }
 
     private void ActiveNewGame()
@@ -272,8 +275,9 @@ public class Menu : MonoBehaviour
     public void OnDeleteSlot()
     {
         SaveManager.Instance.DeleteSave(pendingSlot);
-
+        ActiveNewGame();
         DisableSlotUI(false);
+        loadLastGameButton.interactable = SaveManager.Instance.HasSave(pendingSlot);
     }
 
 

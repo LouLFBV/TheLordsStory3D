@@ -51,12 +51,22 @@ public class PlayerGroundedState : PlayerState
         // 3. PRIORITÉ : L'Attaque ou l'Arc
         if (player.Input.AttackPressed/*&& player.Stamina.HasStamina()*/)
         {
+            if (player.StateMachine.CurrentState is PlayerEquipState ||
+                player.StateMachine.CurrentState is PlayerUnequipState)
+            {
+                return;
+            }
             HandleAttackInput();
             return;
         }
 
         if (player.Input.AttackSpecialPressed)
         {
+            if (player.StateMachine.CurrentState is PlayerEquipState ||
+                player.StateMachine.CurrentState is PlayerUnequipState)
+            {
+                return;
+            }
             HandleAttackInput(true);
             return;
         }

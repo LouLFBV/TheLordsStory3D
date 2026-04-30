@@ -7,7 +7,6 @@ public class CombatSystem : MonoBehaviour
     private Animator _animator;
     private WeaponDamageDetector _weaponDetector;
     private AttackSO _currentAttackData;
-    public int attackLayer = 9;
 
     private bool canCombo;
 
@@ -22,7 +21,7 @@ public class CombatSystem : MonoBehaviour
         canCombo = false;
 
         _animator.applyRootMotion = true;
-        _animator.Play(attack.AnimationHash, attackLayer, 0f);
+        _animator.Play(attack.AnimationHash, attack.animatorLayer, 0f);
     }
 
     // --- Méthodes appelées par Animation Events ---

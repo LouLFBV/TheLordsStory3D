@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerGroundedState
 {
-    private int hHash = Animator.StringToHash("H");
-    private int vHash = Animator.StringToHash("V");
-    private int speedHash = Animator.StringToHash("Speed");
 
     private Vector2 cachedInput;
 
@@ -81,9 +78,9 @@ public class PlayerMoveState : PlayerGroundedState
         }
 
         // Paramètres Animator pour Root Motion
-        player.Animator.SetFloat(hHash, input.x, 0.1f, Time.deltaTime);
-        player.Animator.SetFloat(vHash, input.y, 0.1f, Time.deltaTime);
-        player.Animator.SetFloat(speedHash, input.magnitude * (animSpeed / sprintSpeed), 0.1f, Time.deltaTime);
+        player.Animator.SetFloat(AnimatorHashes.hHash, input.x, 0.1f, Time.deltaTime);
+        player.Animator.SetFloat(AnimatorHashes.vHash, input.y, 0.1f, Time.deltaTime);
+        player.Animator.SetFloat(AnimatorHashes.speedHash, input.magnitude * (animSpeed / sprintSpeed), 0.1f, Time.deltaTime);
 
         // Stamina
         if (isSprinting)
