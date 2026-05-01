@@ -27,9 +27,11 @@ public class PlayerEquipState : PlayerGroundedState
                 break;
             case HandWeapon.TwoHanded:
                 player.Animator.SetTrigger("EquipLongSword");
+                player.Animator.SetBool("IsTwoHandedWeapon", true);
                 break;
             case HandWeapon.OneHanded:
                 player.Animator.SetTrigger("EquipSword");
+                player.Animator.SetBool("IsOneHandedWeapon", true);
                 break;
         }
     }

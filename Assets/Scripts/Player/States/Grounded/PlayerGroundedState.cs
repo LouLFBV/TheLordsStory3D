@@ -48,8 +48,12 @@ public class PlayerGroundedState : PlayerState
             return;
         }
 
+        bool hasWeapon = false;
+        if (player.PendingLibraryItem != null)
+            if (player.PendingLibraryItem.itemPrefab != null)
+                hasWeapon = player.PendingLibraryItem.itemPrefab.activeSelf;
         // 3. PRIORITÉ : L'Attaque ou l'Arc
-        if (player.Input.AttackPressed/*&& player.Stamina.HasStamina()*/)
+        if (player.Input.AttackPressed && hasWeapon/*&& player.Stamina.HasStamina()*/)
         {
             if (player.StateMachine.CurrentState is PlayerEquipState ||
                 player.StateMachine.CurrentState is PlayerUnequipState)
@@ -60,7 +64,7 @@ public class PlayerGroundedState : PlayerState
             return;
         }
 
-        if (player.Input.AttackSpecialPressed)
+        if (player.Input.AttackSpecialPressed && hasWeapon)
         {
             if (player.StateMachine.CurrentState is PlayerEquipState ||
                 player.StateMachine.CurrentState is PlayerUnequipState)

@@ -70,7 +70,7 @@ public class PlayerAttackState : PlayerGroundedState
         // Paramètres Animator pour Root Motion
         player.Animator.SetFloat(AnimatorHashes.hHash, input.x, 0.1f, Time.deltaTime);
         player.Animator.SetFloat(AnimatorHashes.vHash, input.y, 0.1f, Time.deltaTime);
-        player.Animator.SetFloat(AnimatorHashes.speedHash, input.magnitude * 3f, 0.1f, Time.deltaTime);
+        player.Animator.SetFloat(AnimatorHashes.speedHash, input.magnitude * 3f/7f, 0.1f, Time.deltaTime);
     }
 
     public override void Exit()
