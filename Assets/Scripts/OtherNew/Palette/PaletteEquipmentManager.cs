@@ -84,6 +84,13 @@ public class PaletteEquipmentManager : MonoBehaviour
             slotManager.weaponSlots[0].SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
             slotManager.weaponSlots[0].slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
             slotManager.weaponSlots[0].imageSelected.SetActive(false);
+            if (slotManager.weaponSlots[0].isEquipped)
+            {
+                PlayerController.Instance.Animator.SetBool("BowEquipped", false);
+                PlayerController.Instance.Animator.SetBool("IsTwoHandedWeapon", false);
+                PlayerController.Instance.Animator.SetBool("IsOneHandedWeapon", false);
+            }
+            slotManager.weaponSlots[0].isEquipped = false;
 
         }
         else
@@ -93,7 +100,14 @@ public class PaletteEquipmentManager : MonoBehaviour
             slotManager.weaponSlots[1].slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
             slotManager.weaponSlots[1].SlotImage.sprite = InventorySystem.instance.emptySlotVisual;
             slotManager.weaponSlots[1].slotInEquipment.itemVisual.sprite = InventorySystem.instance.emptySlotVisual;
-            slotManager.weaponSlots[1].imageSelected.SetActive(false);
+            slotManager.weaponSlots[1].imageSelected.SetActive(false); 
+            if (slotManager.weaponSlots[1].isEquipped)
+            {
+                PlayerController.Instance.Animator.SetBool("BowEquipped", false);
+                PlayerController.Instance.Animator.SetBool("IsTwoHandedWeapon", false);
+                PlayerController.Instance.Animator.SetBool("IsOneHandedWeapon", false);
+            }
+            slotManager.weaponSlots[1].isEquipped = false;
         }
 
         // remettre dans l'inventaire
