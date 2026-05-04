@@ -8,7 +8,6 @@ public class PNJ : InteractableBase
     [Header("Dialogue")]
     public string namePNJ;
     public DialogueResponse[] sentences; // Dialogue par défaut
-    public DialogueResponse[] sentencesIfPlayerIsBad;
     public bool isOnDial;
     private int index = 0;
     private int sentenceIndex = 0;
