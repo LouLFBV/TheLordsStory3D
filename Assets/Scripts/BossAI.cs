@@ -40,6 +40,9 @@ public class BossAI : EnemyParent
         colliderOfDeath.SetActive(false);
         UpdateLife();
 
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(vie);
+
         baseVolume = audioSource.volume;
         foreach (var attack in attacksBoss)
         {

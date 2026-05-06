@@ -1,0 +1,2 @@
+Pour les slots (qui affichent les icônes, à gauche) et leur sélection : utiliser les mêmes que pour l'UI d'inventaire 
+

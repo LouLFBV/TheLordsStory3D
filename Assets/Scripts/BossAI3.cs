@@ -35,6 +35,9 @@ public class BossAI3 : EnemyParent
             colliderOfDeath.SetActive(false);
         UpdateLife();
 
+
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(vie);
         foreach (var attack in attacksBoss)
         {
             if (attack.hitBoxAttack != null)

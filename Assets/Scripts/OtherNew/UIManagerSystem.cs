@@ -48,7 +48,6 @@ public class UIManagerSystem : MonoBehaviour
     private void Update()
     {
         if (!_isCursorVisible || GamepadDetector.DetectCurrentGamepad() == GamepadType.None) return;
-
         Vector2 stickValue = PlayerController.Instance.Input.NavigateLook;
 
         // 1. Déplacement (On garde ton code, il est parfait)
@@ -68,6 +67,7 @@ public class UIManagerSystem : MonoBehaviour
             // (Sauf si tu as un système de navigation par flèches en parallèle 
             // qui tourne sur un autre script, mais même là, cliquer "là où est la souris" est plus safe)
             SimulateMouseClick();
+            Debug.Log("Click");
 
             PlayerController.Instance.Input.UseSubmitInput();
         }

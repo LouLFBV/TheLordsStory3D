@@ -33,6 +33,10 @@ public class BossAI4 : EnemyParent
             colliderOfDeath.SetActive(false);
         UpdateLife();
 
+
+        if (UIManagerSystem.Instance != null)
+            UIManagerSystem.Instance.hudElements.Add(vie);
+
         foreach (var attack in attacksBoss)
         {
             attack.hitBoxAttack.damageAmount = attack.damage;
